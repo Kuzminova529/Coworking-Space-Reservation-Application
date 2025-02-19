@@ -1,25 +1,28 @@
 package org.reservationapplication;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CoworkingSpace {
-    private final String coworkingSpaceID = UUID.randomUUID().toString();
-    private TypeOfCoworkingSpace type;
+    private static long nextId = 0L;
+    private final long coworkingSpaceID;
+    private CoworkingSpaceType type;
     private double price;
     private AvailabilityStatus availabilityStatus;
 
-
-    public CoworkingSpace(){
-        GeneralCoworkingSpaceList.addCoworkingSpace(this);
+    public CoworkingSpace(CoworkingSpaceService coworkingSpaceService) {
+        this.coworkingSpaceID = nextId++;
+        coworkingSpaceService.addCoworkingSpace(this);
     };
-    public CoworkingSpace(TypeOfCoworkingSpace type, double price, AvailabilityStatus availabilityStatus) {
+    public CoworkingSpace(CoworkingSpaceService generalCoworkingSpace, CoworkingSpaceType type, double price, AvailabilityStatus availabilityStatus) {
+        this.coworkingSpaceID = nextId++;
         this.type = type;
         this.price = price;
         this.availabilityStatus = availabilityStatus;
-        GeneralCoworkingSpaceList.addCoworkingSpace(this);
+        generalCoworkingSpace.addCoworkingSpace(this);
     }
 
-    public void setType(TypeOfCoworkingSpace type) {
+    public void setType(CoworkingSpaceType type) {
         this.type = type;
     }
 
@@ -35,7 +38,7 @@ public class CoworkingSpace {
         return availabilityStatus;
     }
 
-    public String getCoworkingSpaceID() {
+    public long getCoworkingSpaceID() {
         return coworkingSpaceID;
     }
 
@@ -47,4 +50,5 @@ public class CoworkingSpace {
                 ", price=" + price +
                 ", availabilityStatus=" + availabilityStatus ;
     }
+
 }

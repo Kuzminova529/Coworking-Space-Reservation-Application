@@ -8,12 +8,12 @@ public class Menu {
 
     private final Scanner scanner = new Scanner(System.in);
 
-    public void menu(User user) {
+    public void welcomeMenu(User user, CoworkingSpaceService coworkingSpaceService, ReservationService reservationService) {
         System.out.println("Welcome to Reservation Application");
-        mainMenu(user);
+        mainMenu(user, coworkingSpaceService, reservationService);
     }
 
-    public void mainMenu(User user) {
+    public void mainMenu(User user, CoworkingSpaceService coworkingSpaceService, ReservationService reservationService) {
         while (true) {
             System.out.println("""
                     1. Admin menu
@@ -24,14 +24,14 @@ public class Menu {
             switch (choice) {
                 case 1:
                     if ((user.getClass()== Admin.class)) {
-                        adminMenu();
+                        adminMenu(coworkingSpaceService, reservationService);
                     } else {
                         System.out.println("You are not an admin. Choose another option");
                     }
                     break;
                 case 2:
                     if (user.getClass()== Customer.class) {
-                        customerMenu((Customer) user);
+                        customerMenu((Customer) user, coworkingSpaceService, reservationService);
                     } else {
                         System.out.println("You are not a customer. Choose another option");
                     }
@@ -46,7 +46,7 @@ public class Menu {
         }
     }
 
-    public void adminMenu() {
+    public void adminMenu(CoworkingSpaceService coworkingSpaceService, ReservationService reservationService) {
         while (true) {
             System.out.println("""
                     1. Add a new coworking space
@@ -58,16 +58,16 @@ public class Menu {
             int choice = getUserChoiceInt();
             switch (choice) {
                 case 1:
-                    addCoworkingSpace();
+                    addCoworkingSpace(coworkingSpaceService);
                     break;
                 case 2:
-                    removeCoworkingSpace();
+                    removeCoworkingSpace(coworkingSpaceService);
                     break;
                 case 3:
-                    viewAllReservations();
+                    viewAllReservations(reservationService);
                     break;
                 case 4:
-                     viewAllCoworkingSpaces();
+                     viewAllCoworkingSpaces(coworkingSpaceService);
                      break;
                 case 5:
                     System.out.println("Exiting...");
@@ -78,13 +78,13 @@ public class Menu {
         }
     }
 
-    private void removeCoworkingSpace() {
+    private void removeCoworkingSpace(CoworkingSpaceService generalCoworkingSpace) {
         System.out.println("Enter id of a coworking space you want to be removed");
-        String id = scanner.nextLine();
-        GeneralCoworkingSpaceList.removeFromCoworkingSpaceListById(id);
+        long id = getUserChoiceLong();
+        generalCoworkingSpace.removeFromCoworkingSpaceById(id);
     }
-    private void addCoworkingSpace(){
-        CoworkingSpace coworkingSpace = new CoworkingSpace();
+    private void addCoworkingSpace(CoworkingSpaceService coworkingSpaceService) {
+        CoworkingSpace coworkingSpace = new CoworkingSpace(coworkingSpaceService);
         System.out.println("Enter type of Coworking space");
         System.out.print("""
                 1.Open space
@@ -95,15 +95,15 @@ public class Menu {
         int choice = getUserChoiceInt();
         switch (choice){
             case 1:{
-                coworkingSpace.setType(TypeOfCoworkingSpace.OPENSPACE);
+                coworkingSpace.setType(CoworkingSpaceType.OPENSPACE);
                 break;
             }
             case 2:{
-                coworkingSpace.setType(TypeOfCoworkingSpace.PRIVATE);
+                coworkingSpace.setType(CoworkingSpaceType.PRIVATE);
                 break;
             }
             case 3:{
-                coworkingSpace.setType(TypeOfCoworkingSpace.ROOM);
+                coworkingSpace.setType(CoworkingSpaceType.ROOM);
                 break;
             }
             default:{
@@ -134,15 +134,15 @@ public class Menu {
         }
 
     }
-    private void viewAllReservations(){
-        GeneralReservationList.printGeneralCoworkingSpaceList();
+    private void viewAllReservations(ReservationService reservationService) {
+        reservationService.printGeneralReservation();
     }
-    private void viewAllCoworkingSpaces(){
-        GeneralCoworkingSpaceList.printGeneralCoworkingSpaceList();
+    private void viewAllCoworkingSpaces(CoworkingSpaceService coworkingSpaceService){
+        coworkingSpaceService.printGeneralCoworkingSpace();
     }
 
 
-    public void customerMenu(Customer user) {
+    public void customerMenu(Customer user, CoworkingSpaceService coworkingSpaceService, ReservationService reservationService) {
         while (true) {
             System.out.println("""
                     1. Browse available spaces
@@ -154,19 +154,19 @@ public class Menu {
             int choice = getUserChoiceInt();
             switch (choice) {
                 case 1: {
-                    browseAvailableSpaces();
+                    browseAvailableSpaces(coworkingSpaceService);
                     break;
                 }
                 case 2: {
-                    makeReservation(user);
+                    makeReservation(user, coworkingSpaceService, reservationService);
                     break;
                 }
                 case 3:{
-                    cancelReservation(user);
+                    cancelReservation(reservationService);
                     break;
                 }
                 case 4:{
-                    viewPersonalReservations(user);
+                    viewPersonalReservations(reservationService);
                     break;
                 }
                 case 5: {
@@ -180,8 +180,8 @@ public class Menu {
         }
     }
 
-    private void browseAvailableSpaces(){
-        List<CoworkingSpace> availableCoworkingSpaceList = GeneralCoworkingSpaceList.getAvailableGeneralCoworkingSpaceList();
+    private void browseAvailableSpaces(CoworkingSpaceService coworkingSpaceService) {
+        List<CoworkingSpace> availableCoworkingSpaceList = coworkingSpaceService.getAvailableGeneralCoworkingSpace();
         if(availableCoworkingSpaceList.isEmpty()){
             System.out.println("There are no available coworking spaces");
         }
@@ -192,12 +192,12 @@ public class Menu {
     }
 
 
-    private void makeReservation(Customer user){
+    private void makeReservation(Customer user, CoworkingSpaceService coworkingSpaceService, ReservationService reservationService) {
         System.out.println("Enter id of coworking space you want to make");
-        String id = scanner.nextLine();
-        if(GeneralCoworkingSpaceList.isIDMatch(id)){
-            Reservation reservation = new Reservation();
-            user.addReservationList(reservation);
+        long id = getUserChoiceLong();
+        if(coworkingSpaceService.isIDMatch(id)){
+            Reservation reservation = new Reservation(reservationService);
+            reservationService.addPersonalReservation(reservation);
             reservation.setCoworkingSpaceID(id);
             reservation.setCustomerID(user.getId());
             System.out.println("Enter name for reservation");
@@ -264,20 +264,35 @@ public class Menu {
 
     }
 
-    private void cancelReservation(Customer user) {
+    private void cancelReservation( ReservationService reservationService) {
         System.out.println("Enter id of a reservation you want to be removed");
-        String id = scanner.nextLine();
-        if(user.isRemovedFromGeneralReservationListById(id)){
-            GeneralReservationList.removeFromGeneralReservationListById(id);
+        long id = getUserChoiceLong();
+        if(reservationService.removePersonalReservationById(id)){
+            reservationService.removeFromGeneralReservationById(id);
         }
     }
 
-    private void viewPersonalReservations(Customer user) {
-        if(!user.getPersonalReservationList().isEmpty())
-            System.out.println(user.getPersonalReservationList());
+    private void viewPersonalReservations(ReservationService reservationService) {
+        if(!reservationService.getPersonalReservation().isEmpty())
+            System.out.println(reservationService.getPersonalReservation());
         else
             System.out.println("There are no personal reservation list");
     }
+
+    private long getUserChoiceLong() {
+        while (true) {
+            try {
+                System.out.print("Enter: ");
+                long choice = scanner.nextLong();
+                scanner.nextLine();
+                return choice;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.next();
+            }
+        }
+    }
+
 
     private int getUserChoiceInt() {
         while (true) {
@@ -292,6 +307,7 @@ public class Menu {
             }
         }
     }
+
     private double getUserChoiceDouble() {
         while (true) {
             try {

@@ -1,17 +1,15 @@
 package org.reservationapplication;
 
-import java.util.UUID;
 
 public abstract class User {
-    private final String  userID = UUID.randomUUID().toString();
-    private boolean adminRoleStatus;
+    private static long nextId = 0L;
 
-    public boolean isAdminRoleStatus() {
-        return adminRoleStatus;
+    private final long  userID ;
+
+    public User(){
+        this.userID = nextId++;
     }
-    public String  getId() {
+    public long  getId() {
         return userID;
     }
-
-
 }

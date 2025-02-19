@@ -5,27 +5,29 @@ import java.util.Date;
 import java.util.UUID;
 
 public class Reservation {
-    private final String reservationID = UUID.randomUUID().toString();
-    private String coworkingSpaceID;
-    private String customerID;
+    private static long nextId = 0L;
+    private final long reservationID;
+    private long coworkingSpaceID;
+    private long customerID;
     private String reservationName;
     private Calendar startReservationDateAndTime = Calendar.getInstance();
     private Calendar endReservationDateAndTime = Calendar.getInstance();
 
-    public Reservation(){
-        GeneralReservationList.addGeneralReservationList(this);
+    public Reservation(ReservationService generalReservation) {
+        this.reservationID = nextId++;
+        generalReservation.addGeneralReservation(this);
     }
 
-    public String getReservationID() {
+    public long getReservationID() {
         return reservationID;
     }
 
 
-    public void setCoworkingSpaceID(String coworkingSpaceID) {
+    public void setCoworkingSpaceID(long coworkingSpaceID) {
         this.coworkingSpaceID = coworkingSpaceID;
     }
 
-    public void setCustomerID(String customerID) {
+    public void setCustomerID(long customerID) {
         this.customerID = customerID;
     }
 

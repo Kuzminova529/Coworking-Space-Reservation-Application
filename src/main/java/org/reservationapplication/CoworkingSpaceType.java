@@ -1,13 +1,13 @@
 package org.reservationapplication;
 
-public enum TypeOfCoworkingSpace {
+public enum CoworkingSpaceType {
     OPENSPACE("open space"),
     PRIVATE("private"),
     ROOM("room");
 
     private String type;
 
-    TypeOfCoworkingSpace(String type) {
+    CoworkingSpaceType(String type) {
         this.type = type;
     }
 
