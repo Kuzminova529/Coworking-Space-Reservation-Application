@@ -7,6 +7,7 @@ import java.util.UUID;
 public class Reservation {
     private final String reservationID = UUID.randomUUID().toString();
     private String coworkingSpaceID;
+    private String customerID;
     private String reservationName;
     private Calendar startReservationDateAndTime = Calendar.getInstance();
     private Calendar endReservationDateAndTime = Calendar.getInstance();
@@ -24,6 +25,9 @@ public class Reservation {
         this.coworkingSpaceID = coworkingSpaceID;
     }
 
+    public void setCustomerID(String customerID) {
+        this.customerID = customerID;
+    }
 
     public void setReservationName(String reservationName) {
         this.reservationName = reservationName;

@@ -199,6 +199,7 @@ public class Menu {
             Reservation reservation = new Reservation();
             user.addReservationList(reservation);
             reservation.setCoworkingSpaceID(id);
+            reservation.setCustomerID(user.getId());
             System.out.println("Enter name for reservation");
             reservation.setReservationName(scanner.nextLine());
             while (true){
