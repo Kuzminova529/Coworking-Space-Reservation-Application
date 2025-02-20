@@ -1,8 +1,7 @@
 package org.reservationapplication;
 
-import java.text.ParseException;
+
 import java.util.*;
-import java.text.SimpleDateFormat;
 
 public class Menu {
 
@@ -195,72 +194,7 @@ public class Menu {
     private void makeReservation(Customer user, CoworkingSpaceService coworkingSpaceService, ReservationService reservationService) {
         System.out.println("Enter id of coworking space you want to make");
         long id = getUserChoiceLong();
-        if(coworkingSpaceService.isIDMatch(id)){
-            Reservation reservation = new Reservation(reservationService);
-            reservationService.addPersonalReservation(reservation);
-            reservation.setCoworkingSpaceID(id);
-            reservation.setCustomerID(user.getId());
-            System.out.println("Enter name for reservation");
-            reservation.setReservationName(scanner.nextLine());
-            while (true){
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-
-                System.out.println("Enter the reservation date (for example, 31.12.2025):");
-                String dateInput = scanner.nextLine();
-
-                System.out.println("Enter the start time of the reservation (for example, 10:00):");
-                String startTimeInput = scanner.nextLine();
-
-                System.out.println("Enter the end time of the reservation (for example, 12:00):");
-                String endTimeInput = scanner.nextLine();
-
-                try {
-                    Calendar today = Calendar.getInstance();
-                    today.set(Calendar.HOUR_OF_DAY, 0);
-                    today.set(Calendar.MINUTE, 0);
-                    today.set(Calendar.SECOND, 0);
-                    today.set(Calendar.MILLISECOND, 0);
-
-                    Calendar bookingDate = Calendar.getInstance();
-                    bookingDate.setTime(dateFormat.parse(dateInput));
-
-
-                    if (bookingDate.before(today)) {
-                        throw new IllegalArgumentException("You cannot book for a past date!");
-                    }
-
-                    Calendar startCalendar = Calendar.getInstance();
-                    startCalendar.setTime(dateFormat.parse(dateInput));
-                    Date startTime = timeFormat.parse(startTimeInput);
-                    startCalendar.set(Calendar.HOUR_OF_DAY, startTime.getHours());
-                    startCalendar.set(Calendar.MINUTE, startTime.getMinutes());
-
-
-                    Calendar endCalendar = Calendar.getInstance();
-                    endCalendar.setTime(dateFormat.parse(dateInput));
-                    Date endTime = timeFormat.parse(endTimeInput);
-                    endCalendar.set(Calendar.HOUR_OF_DAY, endTime.getHours());
-                    endCalendar.set(Calendar.MINUTE, endTime.getMinutes());
-
-
-                    if (startCalendar.after(endCalendar) || startCalendar.equals(endCalendar)) {
-                        throw new IllegalArgumentException("The start time of the reservation must be before the end time!");
-                    }
-
-                    reservation.setStartReservationDateAndTime(startCalendar);
-                    reservation.setEndReservationDateAndTime(endCalendar);
-                    break;
-
-                } catch (ParseException e) {
-                    System.out.println("Invalid date or time format. Try again.");
-                } catch (IllegalArgumentException e) {
-                    System.out.println(e.getMessage());
-                }
-            }
-        }
-        else System.out.println("Invalid ID");
-
+        reservationService.addReservation(id, user,coworkingSpaceService,reservationService);
 
     }
 

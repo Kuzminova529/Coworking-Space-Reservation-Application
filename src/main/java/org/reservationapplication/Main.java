@@ -20,6 +20,5 @@ public class Main {
 
         menu.welcomeMenu(user1, coworkingSpaceService, reservationService);//load menu
 
-
     }
 }
