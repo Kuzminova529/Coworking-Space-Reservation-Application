@@ -206,8 +206,10 @@ public class Menu {
 
             System.out.println("Enter the end time of the reservation (for example, 12:00):");
             String endTimeInput = scanner.nextLine();
-            if(reservationService.isAddedReservation(id, reservationName, dateInput, startTimeInput, endTimeInput, user, coworkingSpaceService, reservationService))
+            if(reservationService.isAddedReservation(id, reservationName, dateInput, startTimeInput, endTimeInput, user, coworkingSpaceService, reservationService)) {
+                System.out.println("Reservation made");
                 break;
+            }
         } while (true);
     }
 

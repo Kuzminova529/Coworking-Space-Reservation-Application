@@ -1,8 +1,7 @@
 package org.reservationapplication;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Reservation {
     private static long nextId = 0L;
@@ -10,8 +9,8 @@ public class Reservation {
     private long coworkingSpaceID;
     private long customerID;
     private String reservationName;
-    private Calendar startReservationDateAndTime = Calendar.getInstance();
-    private Calendar endReservationDateAndTime = Calendar.getInstance();
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
 
     public Reservation(ReservationService generalReservation) {
         this.reservationID = nextId++;
@@ -36,24 +35,27 @@ public class Reservation {
     }
 
 
-    public void setStartReservationDateAndTime(Calendar startReservationDateAdnTime) {
-        this.startReservationDateAndTime = startReservationDateAdnTime;
+    public void setStartReservationDateAndTime(LocalDateTime startDateTime) {
+        this.startDateTime = startDateTime;
     }
 
 
-    public void setEndReservationDateAndTime(Calendar endReservationDateAdnTime) {
-        this.endReservationDateAndTime = endReservationDateAdnTime;
+    public void setEndReservationDateAndTime(LocalDateTime endDateTime) {
+        this.endDateTime = endDateTime;
     }
 
     @Override
     public String toString() {
-        Date startDate = startReservationDateAndTime.getTime();
-        Date endDate = endReservationDateAndTime.getTime();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+
+        String formattedStartDateTime = startDateTime.format(formatter);
+        String formattedEndDateTime = endDateTime.format(formatter);
         return "Reservation: " +
                 "reservationID='" + reservationID + '\'' +
                 ", coworkingSpaceID='" + coworkingSpaceID + '\'' +
+                ", customerID='" + customerID + '\'' +
                 ", reservationName='" + reservationName + '\'' +
-                ", startReservationDateAdnTime=" + startDate +
-                ", endReservationDateAdnTime=" + endDate;
+                ", startReservationDateAdnTime=" + formattedStartDateTime +
+                ", endReservationDateAdnTime=" + formattedEndDateTime;
     }
 }
