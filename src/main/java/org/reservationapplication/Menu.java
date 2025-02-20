@@ -192,10 +192,23 @@ public class Menu {
 
 
     private void makeReservation(Customer user, CoworkingSpaceService coworkingSpaceService, ReservationService reservationService) {
-        System.out.println("Enter id of coworking space you want to make");
-        long id = getUserChoiceLong();
-        reservationService.addReservation(id, user,coworkingSpaceService,reservationService);
+        do {
+            System.out.println("Enter id of coworking space you want to make");
 
+            long id = getUserChoiceLong();
+            System.out.println("Enter name for reservation");
+            String reservationName = scanner.nextLine();
+            System.out.println("Enter the reservation date (for example, 31.12.2025):");
+            String dateInput = scanner.nextLine();
+
+            System.out.println("Enter the start time of the reservation (for example, 10:00):");
+            String startTimeInput = scanner.nextLine();
+
+            System.out.println("Enter the end time of the reservation (for example, 12:00):");
+            String endTimeInput = scanner.nextLine();
+            if(reservationService.isAddedReservation(id, reservationName, dateInput, startTimeInput, endTimeInput, user, coworkingSpaceService, reservationService))
+                break;
+        } while (true);
     }
 
     private void cancelReservation( ReservationService reservationService) {
