@@ -1,0 +1,135 @@
+package org.reservationapplication.service;
+
+import org.reservationapplication.model.AvailabilityStatus;
+import org.reservationapplication.model.CoworkingSpace;
+import org.reservationapplication.model.CoworkingSpaceType;
+import org.reservationapplication.model.Customer;
+
+import java.util.List;
+import java.util.Scanner;
+
+import static org.reservationapplication.service.UserChoiceCheckService.*;
+import static org.reservationapplication.service.UserChoiceCheckService.getUserChoiceLong;
+
+public class MenuService {
+
+    Scanner scanner = new Scanner(System.in);
+
+    public void addCoworkingSpace(CoworkingSpaceServiceImpl coworkingSpaceService) {
+        CoworkingSpace coworkingSpace = new CoworkingSpace();
+
+        System.out.println("Enter type of Coworking space");
+        System.out.print("""
+                1.Open space
+                2.Private
+                3.Room
+                """);
+
+        int choice = getUserChoiceInt();
+        switch (choice){
+            case 1:{
+                coworkingSpace.setType(CoworkingSpaceType.OPENSPACE);
+                break;
+            }
+            case 2:{
+                coworkingSpace.setType(CoworkingSpaceType.PRIVATE);
+                break;
+            }
+            case 3:{
+                coworkingSpace.setType(CoworkingSpaceType.ROOM);
+                break;
+            }
+            default:{
+                System.out.println("Invalid choice, please try again.");
+                return;
+            }
+        }
+
+        System.out.println("Enter price of Coworking space");
+        double price = getUserChoiceDouble();
+        coworkingSpace.setPrice(price);
+
+        System.out.println("Enter availability status of Coworking space");
+        System.out.print("""
+                1.Available
+                2.Unavailable
+                """);
+        choice = getUserChoiceInt();
+        switch (choice){
+            case 1:{
+                coworkingSpace.setAvailabilityStatus(AvailabilityStatus.AVAILABLE);
+                break;
+            }
+            case 2:{
+                coworkingSpace.setAvailabilityStatus(AvailabilityStatus.UNAVAILABLE);
+                break;
+            }
+            default:{
+                System.out.println("Invalid choice, please try again.");
+                return;
+            }
+        }
+        coworkingSpaceService.addCoworkingSpace(coworkingSpace);
+    }
+
+    public void removeCoworkingSpace(CoworkingSpaceServiceImpl coworkingSpaceService) {
+        System.out.println("Enter id of a coworking space you want to be removed");
+        long id = getUserChoiceLong();
+        coworkingSpaceService.removeCoworkingSpace(id);
+    }
+
+    public void viewAllReservations(ReservationServiceImpl reservationService) {
+        reservationService.printGeneralReservation();
+    }
+
+    public void viewAllCoworkingSpaces(CoworkingSpaceServiceImpl coworkingSpaceService){
+        coworkingSpaceService.printGeneralCoworkingSpace();
+    }
+
+    public void browseAvailableSpaces(CoworkingSpaceServiceImpl coworkingSpaceService) {
+        List<CoworkingSpace> availableCoworkingSpaceList = coworkingSpaceService.loadAvailableCoworkingSpace();
+        if(availableCoworkingSpaceList.isEmpty()){
+            System.out.println("There are no available coworking spaces");
+        }
+        else {
+            System.out.println("There are " + availableCoworkingSpaceList.size() + " available coworking spaces");
+            System.out.println(availableCoworkingSpaceList);
+        }
+    }
+
+    public void makeReservation(Customer user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
+        System.out.println("Enter id of coworking space you want to make");
+        long coworkingSpaceID = getUserChoiceLong();
+
+        System.out.println("Enter name for reservation");
+        String reservationName = scanner.nextLine();
+
+        System.out.println("Enter the reservation date (for example, 31.12.2025):");
+        String dateInput = scanner.nextLine();
+
+        System.out.println("Enter the start time of the reservation (for example, 10:00):");
+        String startTimeInput = scanner.nextLine();
+
+        System.out.println("Enter the end time of the reservation (for example, 12:00):");
+        String endTimeInput = scanner.nextLine();
+
+        reservationService.userAddReservation(coworkingSpaceID, reservationName, dateInput, startTimeInput, endTimeInput, user, coworkingSpaceService, reservationService);
+    }
+
+    public void cancelReservation(ReservationServiceImpl reservationService) {
+        System.out.println("Enter id of a reservation you want to be removed");
+        long id = getUserChoiceLong();
+        if(reservationService.removePersonalReservationById(id)){
+            reservationService.removeFromGeneralReservationById(id);
+        }
+    }
+
+    public void viewPersonalReservations(ReservationServiceImpl reservationService) {
+        if(!reservationService.getPersonalReservation().isEmpty()) {
+            System.out.println(reservationService.getPersonalReservation());
+        }
+        else {
+            System.out.println("There are no personal reservation list");
+        }
+    }
+}

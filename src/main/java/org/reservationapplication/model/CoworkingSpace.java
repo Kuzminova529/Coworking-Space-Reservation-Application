@@ -1,45 +1,52 @@
-package org.reservationapplication;
+package org.reservationapplication.model;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class CoworkingSpace {
     private static long nextId = 0L;
-    private final long coworkingSpaceID;
+    private long coworkingSpaceID;
     private CoworkingSpaceType type;
     private double price;
     private AvailabilityStatus availabilityStatus;
 
-    public CoworkingSpace(CoworkingSpaceService coworkingSpaceService) {
+    public CoworkingSpace() {
         this.coworkingSpaceID = nextId++;
-        coworkingSpaceService.addCoworkingSpace(this);
     };
-    public CoworkingSpace(CoworkingSpaceService generalCoworkingSpace, CoworkingSpaceType type, double price, AvailabilityStatus availabilityStatus) {
-        this.coworkingSpaceID = nextId++;
-        this.type = type;
-        this.price = price;
-        this.availabilityStatus = availabilityStatus;
-        generalCoworkingSpace.addCoworkingSpace(this);
+
+
+    public long getCoworkingSpaceID() {
+        return coworkingSpaceID;
+    }
+
+
+    public CoworkingSpaceType getType() {
+        return type;
     }
 
     public void setType(CoworkingSpaceType type) {
         this.type = type;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public double getPrice() {
+        return price;
     }
 
-    public void setAvailabilityStatus(AvailabilityStatus availabilityStatus) {
-        this.availabilityStatus = availabilityStatus;
+    public void setPrice(double price) {
+        this.price = price;
     }
 
     public AvailabilityStatus getAvailabilityStatus() {
         return availabilityStatus;
     }
 
-    public long getCoworkingSpaceID() {
-        return coworkingSpaceID;
+    public void setAvailabilityStatus(AvailabilityStatus availabilityStatus) {
+        this.availabilityStatus = availabilityStatus;
+    }
+
+    public static long getNextId() {
+        return nextId;
+    }
+    public static void setNextId(long nextId) {
+        CoworkingSpace.nextId = nextId;
     }
 
     @Override

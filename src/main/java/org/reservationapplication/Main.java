@@ -1,24 +1,19 @@
 package org.reservationapplication;
 
-import java.util.List;
-import java.util.ArrayList;
+import org.reservationapplication.model.*;
+import org.reservationapplication.service.CoworkingSpaceServiceImpl;
+import org.reservationapplication.service.ReservationServiceImpl;
 
 public class Main {
     public static void main(String[] args) {
 
-        List<CoworkingSpace> generalCoworkingSpace = new ArrayList<>();
-        CoworkingSpaceService coworkingSpaceService = new CoworkingSpaceService(generalCoworkingSpace);
+        CoworkingSpaceServiceImpl coworkingSpaceService = new CoworkingSpaceServiceImpl();
 
-        List<Reservation> personalReservation = new ArrayList<>();
-        List<Reservation> generalReservationList = new ArrayList<>();
-        ReservationService reservationService = new ReservationService(personalReservation, generalReservationList);
+        ReservationServiceImpl reservationService = new ReservationServiceImpl();
 
         Menu menu = new Menu();
-        CoworkingSpace space1 = new CoworkingSpace(coworkingSpaceService, CoworkingSpaceType.OPENSPACE,12.1,AvailabilityStatus.AVAILABLE);
+        User user = new Customer();
 
-        User user1 = new Customer();//creating user
-
-        menu.welcomeMenu(user1, coworkingSpaceService, reservationService);//load menu
-
+        menu.welcomeMenu(user, coworkingSpaceService, reservationService);
     }
 }

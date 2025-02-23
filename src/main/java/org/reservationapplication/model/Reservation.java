@@ -1,4 +1,4 @@
-package org.reservationapplication;
+package org.reservationapplication.model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -12,35 +12,51 @@ public class Reservation {
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
 
-    public Reservation(ReservationService generalReservation) {
+    public Reservation() {
         this.reservationID = nextId++;
-        generalReservation.addGeneralReservation(this);
     }
 
     public long getReservationID() {
         return reservationID;
     }
 
+    public long getCoworkingSpaceID() {
+        return coworkingSpaceID;
+    }
 
     public void setCoworkingSpaceID(long coworkingSpaceID) {
         this.coworkingSpaceID = coworkingSpaceID;
+    }
+
+    public long getCustomerID() {
+        return customerID;
     }
 
     public void setCustomerID(long customerID) {
         this.customerID = customerID;
     }
 
+    public String getReservationName() {
+        return reservationName;
+    }
+
     public void setReservationName(String reservationName) {
         this.reservationName = reservationName;
     }
 
+    public LocalDateTime getStartDateTime() {
+        return startDateTime;
+    }
 
-    public void setStartReservationDateAndTime(LocalDateTime startDateTime) {
+    public void setStartDateTime(LocalDateTime startDateTime) {
         this.startDateTime = startDateTime;
     }
 
+    public LocalDateTime getEndDateTime() {
+        return endDateTime;
+    }
 
-    public void setEndReservationDateAndTime(LocalDateTime endDateTime) {
+    public void setEndDateTime(LocalDateTime endDateTime) {
         this.endDateTime = endDateTime;
     }
 

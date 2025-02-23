@@ -1,21 +1,26 @@
-package org.reservationapplication;
+package org.reservationapplication.service;
+
+import org.reservationapplication.model.AvailabilityStatus;
+import org.reservationapplication.model.Customer;
+import org.reservationapplication.model.Reservation;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class ReservationService {
+public class ReservationServiceImpl implements ReservationService{
     private final List<Reservation> personalReservation;
     private final List<Reservation> generalReservationList;
 
 
-    public ReservationService(List<Reservation> personalReservation, List<Reservation> generalReservationList) {
-        this.personalReservation = personalReservation;
-        this.generalReservationList = generalReservationList;
+    public ReservationServiceImpl() {
+        this.personalReservation = new ArrayList<>();
+        this.generalReservationList = new ArrayList<>();
     }
 
     public List<Reservation> getPersonalReservation() {
@@ -56,15 +61,16 @@ public class ReservationService {
         System.out.println("Reservation with ID " + id + " not found.");
     }
 
-    public boolean isAddedReservation(
+    public void userAddReservation(
             long id, String reservationName, String dateInput,
             String startTimeInput, String endTimeInput,
-            Customer user, CoworkingSpaceService coworkingSpaceService,
-            ReservationService reservationService) {
+            Customer user, CoworkingSpaceServiceImpl coworkingSpaceService,
+            ReservationServiceImpl reservationService) {
 
-        if (coworkingSpaceService.isIDMatch(id)) {
-            Reservation reservation = new Reservation(reservationService);
-            reservationService.addPersonalReservation(reservation);
+        if (coworkingSpaceService.getGeneralCoworkingSpace()
+                .stream()
+                .anyMatch(coworkingSpace -> coworkingSpace.getCoworkingSpaceID() == id && coworkingSpace.getAvailabilityStatus()== AvailabilityStatus.AVAILABLE)) {
+            Reservation reservation = new Reservation();
             reservation.setCoworkingSpaceID(id);
             reservation.setCustomerID(user.getId());
             reservation.setReservationName(reservationName);
@@ -90,20 +96,19 @@ public class ReservationService {
                     throw new IllegalArgumentException("The reservation start time must be before the end time!");
                 }
 
-                reservation.setStartReservationDateAndTime(startDateTime);
-                reservation.setEndReservationDateAndTime(endDateTime);
+                reservation.setStartDateTime(startDateTime);
+                reservation.setEndDateTime(endDateTime);
+
+                reservationService.addGeneralReservation(reservation);
+                reservationService.addPersonalReservation(reservation);
 
             } catch (DateTimeParseException e) {
                 System.out.println("Invalid date or time format. Try again.");
-                return false;
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
-                return false;
             }
-            return true;
         } else {
             System.out.println("Invalid ID");
-            return false;
         }
     }
 
