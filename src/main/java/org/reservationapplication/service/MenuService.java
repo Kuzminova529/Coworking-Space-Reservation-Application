@@ -119,7 +119,7 @@ public class MenuService {
     public void cancelReservation(ReservationServiceImpl reservationService) {
         System.out.println("Enter id of a reservation you want to be removed");
         long id = getUserChoiceLong();
-        reservationService.removeAllReservationById(id);
+        reservationService.removeReservationById(id);
     }
 
     public void viewPersonalReservations(ReservationServiceImpl reservationService) {

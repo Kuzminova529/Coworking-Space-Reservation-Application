@@ -25,7 +25,7 @@ public class ReservationServiceImpl implements ReservationService{
         return allReservation;
     }
 
-    public boolean removeAllReservationById(long id) {
+    public boolean removeReservationById(long id) {
         Iterator<Reservation> iterator = allReservation.iterator();
         while (iterator.hasNext()) {
             Reservation reservation = iterator.next();
@@ -39,7 +39,7 @@ public class ReservationServiceImpl implements ReservationService{
         return false;
     }
 
-    public void addAllReservation(Reservation reservation) {
+    public void addReservation(Reservation reservation) {
         allReservation.add(reservation);
     }
 
@@ -81,7 +81,7 @@ public class ReservationServiceImpl implements ReservationService{
                 reservation.setStartDateTime(startDateTime);
                 reservation.setEndDateTime(endDateTime);
 
-                reservationService.addAllReservation(reservation);
+                reservationService.addReservation(reservation);
 
             } catch (DateTimeParseException e) {
                 System.out.println("Invalid date or time format. Try again.");

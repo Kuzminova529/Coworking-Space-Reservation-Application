@@ -20,7 +20,6 @@ public class UserChoiceCheckService {
         }
     }
 
-
     public static int getUserChoiceInt() {
         while (true) {
             try {

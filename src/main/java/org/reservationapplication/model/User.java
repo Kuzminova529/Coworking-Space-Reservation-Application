@@ -8,6 +8,7 @@ public abstract class User {
     public User(){
         this.userID = nextId++;
     }
+    
     public long  getId() {
         return userID;
     }

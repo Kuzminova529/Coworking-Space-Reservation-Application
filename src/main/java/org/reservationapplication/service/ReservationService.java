@@ -8,9 +8,9 @@ import java.util.List;
 public interface ReservationService {
     public List<Reservation> getAllReservation();
 
-    public void addAllReservation(Reservation reservation);
+    public void addReservation(Reservation reservation);
 
-    public boolean removeAllReservationById(long id);
+    public boolean removeReservationById(long id);
 
     public void userAddReservation(long id, String reservationName, String dateInput,
                                    String startTimeInput, String endTimeInput,
