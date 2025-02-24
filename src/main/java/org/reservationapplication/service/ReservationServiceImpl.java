@@ -1,29 +1,32 @@
-package org.reservationapplication;
+package org.reservationapplication.service;
+
+import org.reservationapplication.model.AvailabilityStatus;
+import org.reservationapplication.model.Customer;
+import org.reservationapplication.model.Reservation;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class ReservationService {
-    private final List<Reservation> personalReservation;
-    private final List<Reservation> generalReservationList;
+public class ReservationServiceImpl implements ReservationService{
+    private final List<Reservation> allReservation;
 
 
-    public ReservationService(List<Reservation> personalReservation, List<Reservation> generalReservationList) {
-        this.personalReservation = personalReservation;
-        this.generalReservationList = generalReservationList;
+    public ReservationServiceImpl() {
+        this.allReservation = new ArrayList<>();
     }
 
-    public List<Reservation> getPersonalReservation() {
-        return personalReservation;
+    public List<Reservation> getAllReservation() {
+        return allReservation;
     }
 
-    public boolean removePersonalReservationById(long id) {
-        Iterator<Reservation> iterator = personalReservation.iterator();
+    public boolean removeReservationById(long id) {
+        Iterator<Reservation> iterator = allReservation.iterator();
         while (iterator.hasNext()) {
             Reservation reservation = iterator.next();
             if (reservation.getReservationID() == id) {
@@ -36,35 +39,20 @@ public class ReservationService {
         return false;
     }
 
-    public void addPersonalReservation(Reservation reservation) {
-        personalReservation.add(reservation);
+    public void addReservation(Reservation reservation) {
+        allReservation.add(reservation);
     }
 
-    public void addGeneralReservation(Reservation reservation) {
-        generalReservationList.add(reservation);
-    }
-
-    public void removeFromGeneralReservationById(long id) {
-        Iterator<Reservation> iterator = generalReservationList.iterator();
-        while (iterator.hasNext()) {
-            Reservation reservation = iterator.next();
-            if (reservation.getReservationID()==id) {
-                iterator.remove();
-                return;
-            }
-        }
-        System.out.println("Reservation with ID " + id + " not found.");
-    }
-
-    public boolean isAddedReservation(
+    public void userAddReservation(
             long id, String reservationName, String dateInput,
             String startTimeInput, String endTimeInput,
-            Customer user, CoworkingSpaceService coworkingSpaceService,
-            ReservationService reservationService) {
+            Customer user, CoworkingSpaceServiceImpl coworkingSpaceService,
+            ReservationServiceImpl reservationService) {
 
-        if (coworkingSpaceService.isIDMatch(id)) {
-            Reservation reservation = new Reservation(reservationService);
-            reservationService.addPersonalReservation(reservation);
+        if (coworkingSpaceService.getGeneralCoworkingSpace()
+                .stream()
+                .anyMatch(coworkingSpace -> coworkingSpace.getID() == id && coworkingSpace.getAvailabilityStatus()== AvailabilityStatus.AVAILABLE)) {
+            Reservation reservation = new Reservation();
             reservation.setCoworkingSpaceID(id);
             reservation.setCustomerID(user.getId());
             reservation.setReservationName(reservationName);
@@ -90,27 +78,18 @@ public class ReservationService {
                     throw new IllegalArgumentException("The reservation start time must be before the end time!");
                 }
 
-                reservation.setStartReservationDateAndTime(startDateTime);
-                reservation.setEndReservationDateAndTime(endDateTime);
+                reservation.setStartDateTime(startDateTime);
+                reservation.setEndDateTime(endDateTime);
+
+                reservationService.addReservation(reservation);
 
             } catch (DateTimeParseException e) {
                 System.out.println("Invalid date or time format. Try again.");
-                return false;
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
-                return false;
             }
-            return true;
         } else {
             System.out.println("Invalid ID");
-            return false;
-        }
-    }
-
-
-    public void printGeneralReservation() {
-        for (Reservation reservation : generalReservationList) {
-            System.out.println(reservation);
         }
     }
 }

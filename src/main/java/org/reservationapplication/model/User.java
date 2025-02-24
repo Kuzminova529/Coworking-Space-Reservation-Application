@@ -1,5 +1,4 @@
-package org.reservationapplication;
-
+package org.reservationapplication.model;
 
 public abstract class User {
     private static long nextId = 0L;
@@ -9,6 +8,7 @@ public abstract class User {
     public User(){
         this.userID = nextId++;
     }
+    
     public long  getId() {
         return userID;
     }
