@@ -14,21 +14,19 @@ import java.util.Iterator;
 import java.util.List;
 
 public class ReservationServiceImpl implements ReservationService{
-    private final List<Reservation> personalReservation;
-    private final List<Reservation> generalReservationList;
+    private final List<Reservation> allReservation;
 
 
     public ReservationServiceImpl() {
-        this.personalReservation = new ArrayList<>();
-        this.generalReservationList = new ArrayList<>();
+        this.allReservation = new ArrayList<>();
     }
 
-    public List<Reservation> getPersonalReservation() {
-        return personalReservation;
+    public List<Reservation> getAllReservation() {
+        return allReservation;
     }
 
-    public boolean removePersonalReservationById(long id) {
-        Iterator<Reservation> iterator = personalReservation.iterator();
+    public boolean removeAllReservationById(long id) {
+        Iterator<Reservation> iterator = allReservation.iterator();
         while (iterator.hasNext()) {
             Reservation reservation = iterator.next();
             if (reservation.getReservationID() == id) {
@@ -41,24 +39,8 @@ public class ReservationServiceImpl implements ReservationService{
         return false;
     }
 
-    public void addPersonalReservation(Reservation reservation) {
-        personalReservation.add(reservation);
-    }
-
-    public void addGeneralReservation(Reservation reservation) {
-        generalReservationList.add(reservation);
-    }
-
-    public void removeFromGeneralReservationById(long id) {
-        Iterator<Reservation> iterator = generalReservationList.iterator();
-        while (iterator.hasNext()) {
-            Reservation reservation = iterator.next();
-            if (reservation.getReservationID()==id) {
-                iterator.remove();
-                return;
-            }
-        }
-        System.out.println("Reservation with ID " + id + " not found.");
+    public void addAllReservation(Reservation reservation) {
+        allReservation.add(reservation);
     }
 
     public void userAddReservation(
@@ -69,7 +51,7 @@ public class ReservationServiceImpl implements ReservationService{
 
         if (coworkingSpaceService.getGeneralCoworkingSpace()
                 .stream()
-                .anyMatch(coworkingSpace -> coworkingSpace.getCoworkingSpaceID() == id && coworkingSpace.getAvailabilityStatus()== AvailabilityStatus.AVAILABLE)) {
+                .anyMatch(coworkingSpace -> coworkingSpace.getID() == id && coworkingSpace.getAvailabilityStatus()== AvailabilityStatus.AVAILABLE)) {
             Reservation reservation = new Reservation();
             reservation.setCoworkingSpaceID(id);
             reservation.setCustomerID(user.getId());
@@ -99,8 +81,7 @@ public class ReservationServiceImpl implements ReservationService{
                 reservation.setStartDateTime(startDateTime);
                 reservation.setEndDateTime(endDateTime);
 
-                reservationService.addGeneralReservation(reservation);
-                reservationService.addPersonalReservation(reservation);
+                reservationService.addAllReservation(reservation);
 
             } catch (DateTimeParseException e) {
                 System.out.println("Invalid date or time format. Try again.");
@@ -109,13 +90,6 @@ public class ReservationServiceImpl implements ReservationService{
             }
         } else {
             System.out.println("Invalid ID");
-        }
-    }
-
-
-    public void printGeneralReservation() {
-        for (Reservation reservation : generalReservationList) {
-            System.out.println(reservation);
         }
     }
 }

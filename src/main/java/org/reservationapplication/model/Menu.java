@@ -1,13 +1,9 @@
 package org.reservationapplication.model;
 
-
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 import org.reservationapplication.service.MenuService;
 import org.reservationapplication.service.ReservationServiceImpl;
-
-
-import static org.reservationapplication.service.UserChoiceCheckService.*;
-
+import org.reservationapplication.controller.UserChoiceCheckController;
 
 public class Menu {
 
@@ -17,7 +13,6 @@ public class Menu {
     }
 
 
-
     public void mainMenu(User user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
         while (true) {
             System.out.println("""
@@ -25,17 +20,17 @@ public class Menu {
                     2. Customer menu
                     3. Exit
                     """);
-            int choice = getUserChoiceInt();
+            int choice = UserChoiceCheckController.getUserChoiceInt();
             switch (choice) {
                 case 1:
-                    if ((user.getClass()== Admin.class)) {
+                    if ((user instanceof Admin)) {
                         adminMenu(coworkingSpaceService, reservationService);
                     } else {
                         System.out.println("You are not an admin. Choose another option");
                     }
                     break;
                 case 2:
-                    if (user.getClass()== Customer.class) {
+                    if (user instanceof Customer) {
                         customerMenu((Customer) user, coworkingSpaceService, reservationService);
                     } else {
                         System.out.println("You are not a customer. Choose another option");
@@ -50,7 +45,7 @@ public class Menu {
         }
     }
 
-    public void adminMenu( CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
+    public void adminMenu(CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
         MenuService menuService = new MenuService();
         while (true) {
             System.out.println("""
@@ -60,7 +55,7 @@ public class Menu {
                     4. View all coworking spaces
                     5. Back to Main Menu
                     """);
-            int choice = getUserChoiceInt();
+            int choice = UserChoiceCheckController.getUserChoiceInt();
             switch (choice) {
                 case 1:
                     menuService.addCoworkingSpace(coworkingSpaceService);
@@ -72,8 +67,8 @@ public class Menu {
                     menuService.viewAllReservations(reservationService);
                     break;
                 case 4:
-                     menuService.viewAllCoworkingSpaces(coworkingSpaceService);
-                     break;
+                    menuService.viewAllCoworkingSpaces(coworkingSpaceService);
+                    break;
                 case 5:
                     System.out.println("Exiting...");
                     return;
@@ -82,7 +77,6 @@ public class Menu {
             }
         }
     }
-
 
 
     public void customerMenu(Customer user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
@@ -95,7 +89,7 @@ public class Menu {
                     4. View my reservations
                     5. Back to Main Menu
                     """);
-            int choice = getUserChoiceInt();
+            int choice = UserChoiceCheckController.getUserChoiceInt();
             switch (choice) {
                 case 1: {
                     menuService.browseAvailableSpaces(coworkingSpaceService);
@@ -103,13 +97,12 @@ public class Menu {
                 }
                 case 2: {
                     menuService.makeReservation(user, coworkingSpaceService, reservationService);
-                    break;
                 }
-                case 3:{
+                case 3: {
                     menuService.cancelReservation(reservationService);
                     break;
                 }
-                case 4:{
+                case 4: {
                     menuService.viewPersonalReservations(reservationService);
                     break;
                 }

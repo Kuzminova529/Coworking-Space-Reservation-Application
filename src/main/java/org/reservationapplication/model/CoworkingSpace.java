@@ -12,11 +12,9 @@ public class CoworkingSpace {
         this.coworkingSpaceID = nextId++;
     };
 
-
-    public long getCoworkingSpaceID() {
+    public long getID() {
         return coworkingSpaceID;
     }
-
 
     public CoworkingSpaceType getType() {
         return type;

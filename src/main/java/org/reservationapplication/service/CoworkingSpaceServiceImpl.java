@@ -6,7 +6,6 @@ import org.reservationapplication.model.CoworkingSpace;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
     private List<CoworkingSpace> generalCoworkingSpace;
 
@@ -23,7 +22,7 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
     }
 
     public void removeCoworkingSpace(long id) {
-        generalCoworkingSpace.removeIf(space -> space.getCoworkingSpaceID() == id);
+        generalCoworkingSpace.removeIf(space -> space.getID() == id);
     }
 
     public void printGeneralCoworkingSpace() {

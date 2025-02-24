@@ -1,9 +1,6 @@
 package org.reservationapplication.service;
 
-import org.reservationapplication.model.AvailabilityStatus;
-import org.reservationapplication.model.CoworkingSpace;
-import org.reservationapplication.model.CoworkingSpaceType;
-import org.reservationapplication.model.Customer;
+import org.reservationapplication.model.*;
 
 import java.util.List;
 import java.util.Scanner;
@@ -79,7 +76,10 @@ public class MenuService {
     }
 
     public void viewAllReservations(ReservationServiceImpl reservationService) {
-        reservationService.printGeneralReservation();
+        List<Reservation> reservations = reservationService.getAllReservation();;
+        for (Reservation reservation : reservations) {
+            System.out.println(reservation);
+        }
     }
 
     public void viewAllCoworkingSpaces(CoworkingSpaceServiceImpl coworkingSpaceService){
@@ -119,14 +119,12 @@ public class MenuService {
     public void cancelReservation(ReservationServiceImpl reservationService) {
         System.out.println("Enter id of a reservation you want to be removed");
         long id = getUserChoiceLong();
-        if(reservationService.removePersonalReservationById(id)){
-            reservationService.removeFromGeneralReservationById(id);
-        }
+        reservationService.removeAllReservationById(id);
     }
 
     public void viewPersonalReservations(ReservationServiceImpl reservationService) {
-        if(!reservationService.getPersonalReservation().isEmpty()) {
-            System.out.println(reservationService.getPersonalReservation());
+        if(!reservationService.getAllReservation().isEmpty()) {
+            System.out.println(reservationService.getAllReservation());
         }
         else {
             System.out.println("There are no personal reservation list");
