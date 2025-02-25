@@ -1,4 +1,4 @@
-package org.reservationapplication;
+package org.reservationapplication.model;
 
 public enum AvailabilityStatus {
     AVAILABLE("available"),

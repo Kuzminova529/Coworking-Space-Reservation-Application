@@ -1,4 +1,4 @@
-package org.reservationapplication;
+package org.reservationapplication.model;
 
 public enum CoworkingSpaceType {
     OPENSPACE("open space"),

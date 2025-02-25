@@ -1,19 +1,21 @@
 package org.reservationapplication.model;
 
-import org.reservationapplication.service.CoworkingSpaceService;
-import org.reservationapplication.service.ReservationService;
+import org.reservationapplication.service.CoworkingSpaceServiceImpl;
+import org.reservationapplication.service.ReservationServiceImpl;
+
+import java.util.List;
 
 public class ApplicationState {
     private User currentUser;
-    private CoworkingSpaceService coworkingSpaceService;
-    private ReservationService reservationService;
+    private List<CoworkingSpace> coworkingSpaces;
+    private List<Reservation> reservations;
 
     public ApplicationState() {}
 
-    public ApplicationState(User currentUser, CoworkingSpaceService coworkingSpaceService, ReservationService reservationService) {
+    public ApplicationState(User currentUser, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
         this.currentUser = currentUser;
-        this.coworkingSpaceService = coworkingSpaceService;
-        this.reservationService = reservationService;
+        this.coworkingSpaces = coworkingSpaceService.getAllCoworkingSpace();
+        this.reservations = reservationService.getAllReservation();
     }
 
     public User getCurrentUser() {
@@ -24,19 +26,19 @@ public class ApplicationState {
         this.currentUser = currentUser;
     }
 
-    public CoworkingSpaceService getCoworkingSpaceService() {
-        return coworkingSpaceService;
+    public List<CoworkingSpace> getCoworkingSpaces() {
+        return coworkingSpaces;
     }
 
-    public void setCoworkingSpaceService(CoworkingSpaceService coworkingSpaceService) {
-        this.coworkingSpaceService = coworkingSpaceService;
+    public void setCoworkingSpaces(List<CoworkingSpace> coworkingSpaces) {
+        this.coworkingSpaces = coworkingSpaces;
     }
 
-    public ReservationService getReservationService() {
-        return reservationService;
+    public List<Reservation> getReservations() {
+        return reservations;
     }
 
-    public void setReservationService(ReservationService reservationService) {
-        this.reservationService = reservationService;
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
     }
 }
