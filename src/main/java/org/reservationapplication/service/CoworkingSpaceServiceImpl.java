@@ -1,5 +1,6 @@
 package org.reservationapplication.service;
 
+import org.reservationapplication.exeption.CoworkingSpaceNotFoundException;
 import org.reservationapplication.model.AvailabilityStatus;
 import org.reservationapplication.model.CoworkingSpace;
 
@@ -17,6 +18,16 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
         for (CoworkingSpace cs : coworkingSpaces) {
                 addCoworkingSpace(cs);
         }
+    }
+
+    public CoworkingSpace getCoworkingSpaceByID(long id) {
+        List<CoworkingSpace> coworkingSpaces = cacheServiceCoworkingSpace.getAllCoworkingSpaces();
+        for (CoworkingSpace cs : coworkingSpaces) {
+            if (cs.getID() == id) {
+                return cs;
+            }
+        }
+        throw new CoworkingSpaceNotFoundException(id);
     }
 
     public List<CoworkingSpace> getAllCoworkingSpace() {

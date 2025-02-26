@@ -12,9 +12,9 @@ public interface ReservationService {
 
     public boolean removeReservationById(long id);
 
-    public void userAddReservation(long id, String reservationName, String dateInput,
-                                   String startTimeInput, String endTimeInput,
-                                   Customer user, CoworkingSpaceServiceImpl coworkingSpaceService,
-                                   ReservationServiceImpl reservationService);
+    public boolean userAddReservation(long id, String reservationName, String dateInput,
+                                      String startTimeInput, String endTimeInput,
+                                      Customer user, CoworkingSpaceServiceImpl coworkingSpaceService,
+                                      ReservationServiceImpl reservationService);
 
 }

@@ -116,7 +116,10 @@ public class MenuService {
         System.out.println("Enter the end time of the reservation (for example, 12:00):");
         String endTimeInput = scanner.nextLine();
 
-        reservationService.userAddReservation(coworkingSpaceID, reservationName, dateInput, startTimeInput, endTimeInput, user, coworkingSpaceService, reservationService);
+        if(reservationService.userAddReservation(coworkingSpaceID, reservationName, dateInput, startTimeInput, endTimeInput, user, coworkingSpaceService, reservationService))
+            System.out.println("Reservation added successfully");
+        else
+            System.out.println("Space is unavailable");
     }
 
     public void cancelReservation(ReservationServiceImpl reservationService) {

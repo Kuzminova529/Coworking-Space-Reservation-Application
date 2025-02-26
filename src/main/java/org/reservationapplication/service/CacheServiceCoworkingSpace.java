@@ -15,7 +15,7 @@ public class CacheServiceCoworkingSpace {
     public CacheServiceCoworkingSpace() {
         this.cache = Caffeine.newBuilder()
                 .expireAfterWrite(10, TimeUnit.MINUTES) // Clears cache every 10mins
-                .maximumSize(100) // Coworking spases limit
+                .maximumSize(100) // Coworking spaces limit
                 .build();
     }
 

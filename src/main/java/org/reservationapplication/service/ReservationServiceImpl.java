@@ -54,15 +54,13 @@ public class ReservationServiceImpl implements ReservationService{
         allReservation.add(reservation);
     }
 
-    public void userAddReservation(
+    public boolean userAddReservation(
             long id, String reservationName, String dateInput,
             String startTimeInput, String endTimeInput,
             Customer user, CoworkingSpaceServiceImpl coworkingSpaceService,
             ReservationServiceImpl reservationService) {
 
-        if (coworkingSpaceService.getAllCoworkingSpace()
-                .stream()
-                .anyMatch(coworkingSpace -> coworkingSpace.getID() == id && coworkingSpace.getAvailabilityStatus()== AvailabilityStatus.AVAILABLE)) {
+        if (coworkingSpaceService.getCoworkingSpaceByID(id).getAvailabilityStatus() == AvailabilityStatus.AVAILABLE ) {
             Reservation reservation = new Reservation();
             reservation.setCoworkingSpaceID(id);
             reservation.setCustomerID(user.getId());
@@ -94,13 +92,13 @@ public class ReservationServiceImpl implements ReservationService{
 
                 reservationService.addReservation(reservation);
 
+                return true;
             } catch (DateTimeParseException e) {
                 System.out.println("Invalid date or time format. Try again.");
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
             }
-        } else {
-            System.out.println("Invalid ID");
         }
+        return false;
     }
 }
