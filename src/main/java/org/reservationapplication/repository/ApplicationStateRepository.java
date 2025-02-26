@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.exc.StreamWriteException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.reservationapplication.model.ApplicationState;
+import org.reservationapplication.model.Customer;
 import org.reservationapplication.model.User;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 import org.reservationapplication.service.ReservationServiceImpl;
@@ -18,8 +19,38 @@ public class ApplicationStateRepository {
 
     private ApplicationState applicationState;
 
+    public ApplicationStateRepository() {};
+
     public ApplicationStateRepository(User currentUser, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
         this.applicationState = new ApplicationState(currentUser, coworkingSpaceService, reservationService);
+    }
+
+    public ApplicationState readState() {
+        try {
+            objectMapper.registerModule(new JavaTimeModule());
+            File file = new File(APPLICATION_FILE_NAME);
+
+            if (!file.exists()) {
+                System.out.println("File not found: " + APPLICATION_FILE_NAME);
+                return defaultApplicationState();
+            }
+
+            return objectMapper.readValue(file, ApplicationState.class);
+        } catch (IOException e) {
+            System.out.println("Empty state");
+            e.printStackTrace();
+            return defaultApplicationState();
+        }
+    }
+
+    private ApplicationState defaultApplicationState() {
+        User defaultUser = new Customer();
+        CoworkingSpaceServiceImpl defaultCoworkingSpaceService = new CoworkingSpaceServiceImpl();
+        ReservationServiceImpl defaultReservationService = new ReservationServiceImpl();
+
+        ApplicationState defaultApplicationState = new ApplicationState( defaultUser, defaultCoworkingSpaceService, defaultReservationService);
+
+        return defaultApplicationState;
     }
 
     public void saveState(){

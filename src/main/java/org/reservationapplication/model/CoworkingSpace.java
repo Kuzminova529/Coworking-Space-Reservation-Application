@@ -1,9 +1,5 @@
 package org.reservationapplication.model;
 
-
-import org.reservationapplication.repository.CoworkingSpaceRepository;
-import org.reservationapplication.service.CoworkingSpaceServiceImpl;
-
 import static org.reservationapplication.repository.CoworkingSpaceRepository.getNextID;
 
 public class CoworkingSpace {

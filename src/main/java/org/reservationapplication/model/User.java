@@ -16,12 +16,16 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public abstract class User {
     private static long nextId = 0L;
 
-    private final long  userID ;
+    private long id;
 
     public User(){
-        this.userID = nextId++;
+        this.id = nextId++;
     }
-    public long  getId() {
-        return userID;
+
+    public void setId(long id){
+        this.id = id;
+    }
+    public long getId() {
+        return id;
     }
 }

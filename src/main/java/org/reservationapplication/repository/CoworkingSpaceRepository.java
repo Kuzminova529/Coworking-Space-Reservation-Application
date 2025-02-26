@@ -21,14 +21,14 @@ public class CoworkingSpaceRepository {
     }
 
     public static long getNextID(){
-        return nextId++;
+        return nextId;
     }
 
-    public void saveCoworkingSpace(List<CoworkingSpace> generalCoworkingSpace) {
+    public void saveCoworkingSpace(List<CoworkingSpace> allCoworkingSpaces) {
         File file = new File(COWORKING_FILE_NAME);
 
         try {
-            objectMapper.writeValue(file, generalCoworkingSpace);
+            objectMapper.writeValue(file, allCoworkingSpaces);
         } catch (IOException e) {
             throw new CoworkingStorageException("Failed to save coworking spaces to file", e);
         }
@@ -65,6 +65,11 @@ public class CoworkingSpaceRepository {
         if (!removed) {
             throw new CoworkingSpaceNotFoundException(id);
         }
+        saveCoworkingSpace(coworkingSpaces);
+    }
+
+    public void deleteAllCoworkingSpaces() {
+        List<CoworkingSpace> coworkingSpaces = new ArrayList<>();
         saveCoworkingSpace(coworkingSpaces);
     }
 

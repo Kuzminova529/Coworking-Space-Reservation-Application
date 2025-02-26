@@ -19,6 +19,10 @@ public class ReservationServiceImpl implements ReservationService{
         this.allReservation = new ArrayList<>();
     }
 
+    public ReservationServiceImpl(List<Reservation> allReservation) {
+        this.allReservation = allReservation;
+    }
+
     public List<Reservation> getAllReservation() {
         return allReservation;
     }
@@ -34,16 +38,16 @@ public class ReservationServiceImpl implements ReservationService{
         return reservations;
     }
 
-    public void removeReservationById(long id) {
+    public boolean removeReservationById(long id) {
         Iterator<Reservation> iterator = allReservation.iterator();
         while (iterator.hasNext()) {
             Reservation reservation = iterator.next();
             if (reservation.getReservationID() == id) {
                 iterator.remove();
-                System.out.println("Reservation with ID " + id + " has been removed.");
+                return true;
             }
         }
-        System.out.println("Reservation with ID " + id + " not found.");
+        return false;
     }
 
     public void addReservation(Reservation reservation) {

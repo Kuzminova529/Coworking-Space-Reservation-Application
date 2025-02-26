@@ -10,7 +10,7 @@ public interface ReservationService {
 
     public void addReservation(Reservation reservation);
 
-    public void removeReservationById(long id);
+    public boolean removeReservationById(long id);
 
     public void userAddReservation(long id, String reservationName, String dateInput,
                                    String startTimeInput, String endTimeInput,

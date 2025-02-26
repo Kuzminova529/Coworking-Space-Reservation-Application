@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import static org.reservationapplication.controller.UserChoiceCheckController.*;
+import static org.reservationapplication.repository.CoworkingSpaceRepository.getNextID;
 
 public class MenuService {
 
@@ -13,6 +14,7 @@ public class MenuService {
 
     public void addCoworkingSpace(CoworkingSpaceServiceImpl coworkingSpaceService) {
         CoworkingSpace coworkingSpace = new CoworkingSpace();
+        coworkingSpace.setID(getNextID());
 
         System.out.println("Enter type of Coworking space");
         System.out.print("""
@@ -120,7 +122,12 @@ public class MenuService {
     public void cancelReservation(ReservationServiceImpl reservationService) {
         System.out.println("Enter id of a reservation you want to be removed");
         long id = getUserChoiceLong();
-        reservationService.removeReservationById(id);
+        if (reservationService.removeReservationById(id)){
+            System.out.println("Reservation has been cancelled");
+        }
+        else {
+            System.out.println("Reservation with ID " + id + " not found.");
+        }
     }
 
     public void viewPersonalReservations(User user, ReservationServiceImpl reservationService) {
