@@ -10,6 +10,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ReservationServiceImpl implements ReservationService{
     private final List<Reservation> allReservation;
@@ -38,6 +39,12 @@ public class ReservationServiceImpl implements ReservationService{
         return reservations;
     }
 
+    public List<Reservation> getReservationsByCoworkingSpaceAndDate(long coworkingSpaceId, LocalDate date) {
+        return allReservation.stream()
+                .filter(r -> r.getCoworkingSpaceID() == coworkingSpaceId && r.getStartDateTime().toLocalDate().equals(date))
+                .collect(Collectors.toList());
+    }
+
     public boolean removeReservationById(long id) {
         Iterator<Reservation> iterator = allReservation.iterator();
         while (iterator.hasNext()) {
@@ -55,8 +62,8 @@ public class ReservationServiceImpl implements ReservationService{
     }
 
     public boolean userAddReservation(
-            long id, String reservationName, String dateInput,
-            String startTimeInput, String endTimeInput,
+            long id, String reservationName, LocalDate bookingDate,
+            LocalDateTime startDateTime, LocalDateTime endDateTime,
             Customer user, CoworkingSpaceServiceImpl coworkingSpaceService,
             ReservationServiceImpl reservationService) {
 
@@ -66,25 +73,32 @@ public class ReservationServiceImpl implements ReservationService{
             reservation.setCustomerID(user.getId());
             reservation.setReservationName(reservationName);
 
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-
-            try {
-                LocalDate bookingDate = LocalDate.parse(dateInput, dateFormatter);
-                LocalTime startTime = LocalTime.parse(startTimeInput, timeFormatter);
-                LocalTime endTime = LocalTime.parse(endTimeInput, timeFormatter);
-
-                LocalDate today = LocalDate.now();
+            LocalDate today = LocalDate.now();
 
                 if (bookingDate.isBefore(today)) {
                     throw new IllegalArgumentException("You cannot register a past date!");
                 }
 
-                LocalDateTime startDateTime = LocalDateTime.of(bookingDate, startTime);
-                LocalDateTime endDateTime = LocalDateTime.of(bookingDate, endTime);
-
                 if (!startDateTime.isBefore(endDateTime)) {
                     throw new IllegalArgumentException("The reservation start time must be before the end time!");
+                }
+
+                List<Reservation> existingReservations = reservationService.getReservationsByCoworkingSpaceAndDate(id, bookingDate);
+
+                for (Reservation existing : existingReservations) {
+
+                    LocalDateTime existingStart = existing.getStartDateTime();
+                    LocalDateTime existingEnd = existing.getEndDateTime();
+
+                    // The exact same time
+                    if (startDateTime.equals(existingStart) && endDateTime.equals(existingEnd)) {
+                        throw new IllegalArgumentException("This exact time slot is already booked!");
+                    }
+
+                    // Intersection of time
+                    if (startDateTime.isBefore(existingEnd) && endDateTime.isAfter(existingStart)) {
+                        throw new IllegalArgumentException("This time slot is already booked!");
+                    }
                 }
 
                 reservation.setStartDateTime(startDateTime);
@@ -93,11 +107,6 @@ public class ReservationServiceImpl implements ReservationService{
                 reservationService.addReservation(reservation);
 
                 return true;
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid date or time format. Try again.");
-            } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
-            }
         }
         return false;
     }

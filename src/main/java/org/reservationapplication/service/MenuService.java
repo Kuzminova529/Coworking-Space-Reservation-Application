@@ -2,6 +2,11 @@ package org.reservationapplication.service;
 
 import org.reservationapplication.model.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -116,10 +121,30 @@ public class MenuService {
         System.out.println("Enter the end time of the reservation (for example, 12:00):");
         String endTimeInput = scanner.nextLine();
 
-        if(reservationService.userAddReservation(coworkingSpaceID, reservationName, dateInput, startTimeInput, endTimeInput, user, coworkingSpaceService, reservationService))
-            System.out.println("Reservation added successfully");
-        else
-            System.out.println("Space is unavailable");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        try {
+            LocalDate bookingDate = LocalDate.parse(dateInput, dateFormatter);
+            LocalTime startTime = LocalTime.parse(startTimeInput, timeFormatter);
+            LocalTime endTime = LocalTime.parse(endTimeInput, timeFormatter);
+
+
+            LocalDateTime startDateTime = LocalDateTime.of(bookingDate, startTime);
+            LocalDateTime endDateTime = LocalDateTime.of(bookingDate, endTime);
+
+            if(reservationService.userAddReservation(coworkingSpaceID, reservationName, bookingDate, startDateTime, endDateTime, user, coworkingSpaceService, reservationService)) {
+                System.out.println("Reservation added successfully");
+            }
+            else {
+                System.out.println("Space is unavailable");
+            }
+
+        } catch (DateTimeParseException e) {
+        System.out.println("Invalid date or time format. Try again.");
+        } catch (IllegalArgumentException e) {
+        System.out.println(e.getMessage());
+        }
     }
 
     public void cancelReservation(ReservationServiceImpl reservationService) {
