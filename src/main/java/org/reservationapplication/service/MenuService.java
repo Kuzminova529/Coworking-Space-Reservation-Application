@@ -2,11 +2,16 @@ package org.reservationapplication.service;
 
 import org.reservationapplication.model.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
-import static org.reservationapplication.service.UserChoiceCheckService.*;
-import static org.reservationapplication.service.UserChoiceCheckService.getUserChoiceLong;
+import static org.reservationapplication.controller.UserChoiceCheckController.*;
+import static org.reservationapplication.repository.CoworkingSpaceRepository.getNextID;
 
 public class MenuService {
 
@@ -14,6 +19,7 @@ public class MenuService {
 
     public void addCoworkingSpace(CoworkingSpaceServiceImpl coworkingSpaceService) {
         CoworkingSpace coworkingSpace = new CoworkingSpace();
+        coworkingSpace.setID(getNextID());
 
         System.out.println("Enter type of Coworking space");
         System.out.print("""
@@ -79,16 +85,18 @@ public class MenuService {
         List<Reservation> reservations = reservationService.getAllReservation();;
         for (Reservation reservation : reservations) {
             System.out.println(reservation);
-        }
-    }
+        }    }
 
     public void viewAllCoworkingSpaces(CoworkingSpaceServiceImpl coworkingSpaceService){
-        coworkingSpaceService.printGeneralCoworkingSpace();
+        List<CoworkingSpace> coworkingSpaces = coworkingSpaceService.getAllCoworkingSpace();
+        for (CoworkingSpace coworkingSpace : coworkingSpaces) {
+            System.out.println(coworkingSpace);
+        }
     }
 
     public void browseAvailableSpaces(CoworkingSpaceServiceImpl coworkingSpaceService) {
         List<CoworkingSpace> availableCoworkingSpaceList = coworkingSpaceService.loadAvailableCoworkingSpace();
-        if(availableCoworkingSpaceList.isEmpty()){
+        if (availableCoworkingSpaceList.isEmpty()){
             System.out.println("There are no available coworking spaces");
         }
         else {
@@ -113,18 +121,47 @@ public class MenuService {
         System.out.println("Enter the end time of the reservation (for example, 12:00):");
         String endTimeInput = scanner.nextLine();
 
-        reservationService.userAddReservation(coworkingSpaceID, reservationName, dateInput, startTimeInput, endTimeInput, user, coworkingSpaceService, reservationService);
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        try {
+            LocalDate bookingDate = LocalDate.parse(dateInput, dateFormatter);
+            LocalTime startTime = LocalTime.parse(startTimeInput, timeFormatter);
+            LocalTime endTime = LocalTime.parse(endTimeInput, timeFormatter);
+
+
+            LocalDateTime startDateTime = LocalDateTime.of(bookingDate, startTime);
+            LocalDateTime endDateTime = LocalDateTime.of(bookingDate, endTime);
+
+            if(reservationService.userAddReservation(coworkingSpaceID, reservationName, bookingDate, startDateTime, endDateTime, user, coworkingSpaceService, reservationService)) {
+                System.out.println("Reservation added successfully");
+            }
+            else {
+                System.out.println("Space is unavailable");
+            }
+
+        } catch (DateTimeParseException e) {
+        System.out.println("Invalid date or time format. Try again.");
+        } catch (IllegalArgumentException e) {
+        System.out.println(e.getMessage());
+        }
     }
 
     public void cancelReservation(ReservationServiceImpl reservationService) {
         System.out.println("Enter id of a reservation you want to be removed");
         long id = getUserChoiceLong();
-        reservationService.removeReservationById(id);
+        if (reservationService.removeReservationById(id)){
+            System.out.println("Reservation has been cancelled");
+        }
+        else {
+            System.out.println("Reservation with ID " + id + " not found.");
+        }
     }
 
-    public void viewPersonalReservations(ReservationServiceImpl reservationService) {
-        if(!reservationService.getAllReservation().isEmpty()) {
-            System.out.println(reservationService.getAllReservation());
+    public void viewPersonalReservations(User user, ReservationServiceImpl reservationService) {
+        List<Reservation> personalReservations =reservationService.getPersonalReservation(user);
+        if (!personalReservations.isEmpty()) {
+            System.out.println(personalReservations);
         }
         else {
             System.out.println("There are no personal reservation list");

@@ -1,5 +1,6 @@
 package org.reservationapplication.service;
 
+import org.reservationapplication.exeption.CoworkingSpaceNotFoundException;
 import org.reservationapplication.model.AvailabilityStatus;
 import org.reservationapplication.model.CoworkingSpace;
 
@@ -7,39 +8,48 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
-    private List<CoworkingSpace> generalCoworkingSpace;
+    private CacheServiceCoworkingSpace cacheServiceCoworkingSpace = new CacheServiceCoworkingSpace();
 
     public CoworkingSpaceServiceImpl() {
-        this.generalCoworkingSpace = new ArrayList<>();
     }
 
-    public List<CoworkingSpace> getGeneralCoworkingSpace() {
-        return generalCoworkingSpace;
+    public CoworkingSpaceServiceImpl(List<CoworkingSpace> coworkingSpaces) {
+        cacheServiceCoworkingSpace.removeAllCoworkingSpaces();
+        for (CoworkingSpace cs : coworkingSpaces) {
+                addCoworkingSpace(cs);
+        }
+    }
+
+    public CoworkingSpace getCoworkingSpaceByID(long id) {
+        List<CoworkingSpace> coworkingSpaces = cacheServiceCoworkingSpace.getAllCoworkingSpaces();
+        for (CoworkingSpace cs : coworkingSpaces) {
+            if (cs.getID() == id) {
+                return cs;
+            }
+        }
+        throw new CoworkingSpaceNotFoundException(id);
+    }
+
+    public List<CoworkingSpace> getAllCoworkingSpace() {
+        return cacheServiceCoworkingSpace.getAllCoworkingSpaces();
     }
 
     public void addCoworkingSpace(CoworkingSpace coworkingSpace) {
-        generalCoworkingSpace.add(coworkingSpace);
+        cacheServiceCoworkingSpace.addCoworkingSpace(coworkingSpace);
     }
 
     public void removeCoworkingSpace(long id) {
-        generalCoworkingSpace.removeIf(space -> space.getID() == id);
-    }
-
-    public void printGeneralCoworkingSpace() {
-        for (CoworkingSpace coworkingSpace : generalCoworkingSpace) {
-            System.out.println(coworkingSpace);
-        }
+        cacheServiceCoworkingSpace.removeCoworkingSpaceByID(id);
     }
 
     public List<CoworkingSpace> loadAvailableCoworkingSpace() {
-        List<CoworkingSpace> availableCoworkingSpaceList = new ArrayList<>();
-        for (CoworkingSpace coworkingSpace : generalCoworkingSpace) {
-
-            if (coworkingSpace.getAvailabilityStatus() == AvailabilityStatus.AVAILABLE) {
-                availableCoworkingSpaceList.add(coworkingSpace);
+        List<CoworkingSpace> coworkingSpaces = cacheServiceCoworkingSpace.getAllCoworkingSpaces();
+        List<CoworkingSpace> availableSpaces = new ArrayList<>();
+        for (CoworkingSpace cs : coworkingSpaces) {
+            if (cs.getAvailabilityStatus() == AvailabilityStatus.AVAILABLE) {
+                availableSpaces.add(cs);
             }
-
         }
-        return availableCoworkingSpaceList;
+        return availableSpaces;
     }
 }

@@ -19,7 +19,7 @@ public class UserChoiceCheckController {
             }
         }
     }
-    
+  
     public static int getUserChoiceInt() {
         while (true) {
             try {

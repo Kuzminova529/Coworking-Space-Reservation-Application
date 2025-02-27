@@ -1,7 +1,7 @@
 package org.reservationapplication.model;
 
 public enum CoworkingSpaceType {
-    OPENSPACE("openspace"),
+    OPENSPACE("open space"),
     PRIVATE("private"),
     ROOM("room");
 
