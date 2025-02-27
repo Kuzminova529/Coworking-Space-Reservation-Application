@@ -6,10 +6,12 @@ import java.util.List;
 
 public interface CoworkingSpaceService {
 
-    public List<CoworkingSpace> getGeneralCoworkingSpace();
+    public List<CoworkingSpace> getAllCoworkingSpace();
+
     public void addCoworkingSpace(CoworkingSpace coworkingSpace);
+
     public void removeCoworkingSpace(long id);
-    public void printGeneralCoworkingSpace();
+
     public List<CoworkingSpace> loadAvailableCoworkingSpace();
 
 }

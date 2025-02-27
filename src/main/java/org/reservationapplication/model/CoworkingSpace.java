@@ -1,19 +1,17 @@
 package org.reservationapplication.model;
 
-
 public class CoworkingSpace {
-    private static long nextId = 0L;
     private long coworkingSpaceID;
     private CoworkingSpaceType type;
     private double price;
     private AvailabilityStatus availabilityStatus;
-
-    public CoworkingSpace() {
-        this.coworkingSpaceID = nextId++;
-    };
-
+  
     public long getID() {
         return coworkingSpaceID;
+    }
+
+    public void setID(long coworkingSpaceID) {
+        this.coworkingSpaceID = coworkingSpaceID;
     }
 
     public CoworkingSpaceType getType() {
@@ -38,13 +36,6 @@ public class CoworkingSpace {
 
     public void setAvailabilityStatus(AvailabilityStatus availabilityStatus) {
         this.availabilityStatus = availabilityStatus;
-    }
-
-    public static long getNextId() {
-        return nextId;
-    }
-    public static void setNextId(long nextId) {
-        CoworkingSpace.nextId = nextId;
     }
 
     @Override
