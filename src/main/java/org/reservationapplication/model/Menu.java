@@ -1,6 +1,5 @@
 package org.reservationapplication.model;
 
-
 import org.reservationapplication.repository.ApplicationStateRepository;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 import org.reservationapplication.service.MenuService;
@@ -8,7 +7,6 @@ import org.reservationapplication.service.ReservationServiceImpl;
 
 
 import static org.reservationapplication.controller.UserChoiceCheckController.*;
-
 
 public class Menu {
 

@@ -1,9 +1,9 @@
-package org.reservationapplication.controller;
+package org.reservationapplication.service;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class UserChoiceCheckController {
+public class UserChoiceCheckService {
     private static Scanner scanner = new Scanner(System.in);
 
     public static long getUserChoiceLong() {
@@ -19,7 +19,7 @@ public class UserChoiceCheckController {
             }
         }
     }
-  
+
     public static int getUserChoiceInt() {
         while (true) {
             try {

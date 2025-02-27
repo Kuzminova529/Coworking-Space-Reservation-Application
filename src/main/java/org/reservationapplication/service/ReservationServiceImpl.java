@@ -73,12 +73,12 @@ public class ReservationServiceImpl implements ReservationService{
             reservation.setCustomerID(user.getId());
             reservation.setReservationName(reservationName);
 
-            LocalDate today = LocalDate.now();
 
+            LocalDate today = LocalDate.now();
+          
                 if (bookingDate.isBefore(today)) {
                     throw new IllegalArgumentException("You cannot register a past date!");
                 }
-
                 if (!startDateTime.isBefore(endDateTime)) {
                     throw new IllegalArgumentException("The reservation start time must be before the end time!");
                 }

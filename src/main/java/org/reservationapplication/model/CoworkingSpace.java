@@ -1,18 +1,11 @@
 package org.reservationapplication.model;
 
-import static org.reservationapplication.repository.CoworkingSpaceRepository.getNextID;
-
 public class CoworkingSpace {
     private long coworkingSpaceID;
     private CoworkingSpaceType type;
     private double price;
     private AvailabilityStatus availabilityStatus;
-
-    public CoworkingSpace() {
-        this.coworkingSpaceID = getNextID();//gets from CoworkingSpaceRepository
-    };
-
-
+  
     public long getID() {
         return coworkingSpaceID;
     }

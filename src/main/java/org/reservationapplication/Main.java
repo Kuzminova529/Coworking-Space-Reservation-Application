@@ -7,7 +7,7 @@ import org.reservationapplication.service.ReservationServiceImpl;
 
 public class Main {
     public static void main(String[] args) {
-
+      
         Menu menu = new Menu();
 
         ApplicationStateRepository appStateRepo= new ApplicationStateRepository();
