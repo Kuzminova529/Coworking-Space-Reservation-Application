@@ -86,14 +86,14 @@ public class MenuService {
     public void viewAllReservations(ReservationServiceImpl reservationService) {
         TreeSet<Reservation> reservations = reservationService.getAllReservation();;
         for (Reservation reservation : reservations) {
-            System.out.println(reservation);
+            Loggers.USER_LOGGER.info(reservation.toString());
         }
     }
 
     public void viewAllCoworkingSpaces(CoworkingSpaceServiceImpl coworkingSpaceService){
         List<CoworkingSpace> coworkingSpaces = coworkingSpaceService.getAllCoworkingSpace();
         for (CoworkingSpace coworkingSpace : coworkingSpaces) {
-            System.out.println(coworkingSpace);
+            Loggers.USER_LOGGER.info(coworkingSpace.toString());
         }
     }
 
@@ -104,7 +104,7 @@ public class MenuService {
         }
         else {
             Loggers.USER_LOGGER.info("There are {} available coworking spaces", availableCoworkingSpaceList.size());
-            System.out.println(availableCoworkingSpaceList);
+            Loggers.USER_LOGGER.info(availableCoworkingSpaceList.toString());
         }
     }
 
@@ -148,7 +148,6 @@ public class MenuService {
             Loggers.USER_LOGGER.error("Invalid date or time format. Please try again.");
             Loggers.TECHNICAL_LOGGER.error("DateTimeParseException occurred: Invalid date or time format.", e);
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
             Loggers.USER_LOGGER.error("An illegal argument was provided. Please check your input.");
             Loggers.TECHNICAL_LOGGER.error("IllegalArgumentException occurred: {}", e.getMessage(), e);
         }
@@ -170,7 +169,7 @@ public class MenuService {
     public void viewPersonalReservations(User user, ReservationServiceImpl reservationService) {
         TreeSet<Reservation> personalReservations = reservationService.getPersonalReservation(user);
         if (!personalReservations.isEmpty()) {
-            System.out.println(personalReservations);
+            Loggers.USER_LOGGER.info(personalReservations.toString());
         }
         else {
             Loggers.USER_LOGGER.info("There are no personal reservation list");
