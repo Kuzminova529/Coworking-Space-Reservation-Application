@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CoworkingSpaceRepository {
+public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace, Long>{
     private static final String COWORKING_FILE_NAME = "coworking_spaces.json";
     private ObjectMapper objectMapper;
     private static long nextId = 0L;
@@ -24,17 +24,19 @@ public class CoworkingSpaceRepository {
         return nextId;
     }
 
-    public void saveCoworkingSpace(List<CoworkingSpace> allCoworkingSpaces) {
+    @Override
+    public void save(List<CoworkingSpace> coworkingSpaces) {
         File file = new File(COWORKING_FILE_NAME);
 
         try {
-            objectMapper.writeValue(file, allCoworkingSpaces);
+            objectMapper.writeValue(file, coworkingSpaces);
         } catch (IOException e) {
             throw new CoworkingStorageException("Failed to save coworking spaces to file", e);
         }
     }
 
-    public List<CoworkingSpace> readCoworkingSpace() {
+    @Override
+    public List<CoworkingSpace> read() {
         File file = new File(COWORKING_FILE_NAME);
         List<CoworkingSpace> generalCoworkingSpace;
 
@@ -51,26 +53,29 @@ public class CoworkingSpaceRepository {
         }
     }
 
-    public void addCoworkingSpace(CoworkingSpace coworkingSpace) {
-        List<CoworkingSpace> coworkingSpaces = readCoworkingSpace();
+    @Override
+    public void add(CoworkingSpace coworkingSpace) {
+        List<CoworkingSpace> coworkingSpaces = read();
 
         coworkingSpaces.add(coworkingSpace);
-        saveCoworkingSpace(coworkingSpaces);
+        save(coworkingSpaces);
     }
 
-    public void deleteCoworkingSpaceByID(long id) {
-        List<CoworkingSpace> coworkingSpaces = readCoworkingSpace();
+    @Override
+    public void deleteByID(Long id) {
+        List<CoworkingSpace> coworkingSpaces = read();
         boolean removed = coworkingSpaces.removeIf(coworkingSpace -> coworkingSpace.getID() == id);
 
         if (!removed) {
             throw new CoworkingSpaceNotFoundException(id);
         }
-        saveCoworkingSpace(coworkingSpaces);
+        save(coworkingSpaces);
     }
 
-    public void deleteAllCoworkingSpaces() {
+    @Override
+    public void deleteAll() {
         List<CoworkingSpace> coworkingSpaces = new ArrayList<>();
-        saveCoworkingSpace(coworkingSpaces);
+        save(coworkingSpaces);
     }
 
     private void updateID(List<CoworkingSpace> generalCoworkingSpace){

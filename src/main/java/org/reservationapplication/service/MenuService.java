@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.TreeSet;
 
 import static org.reservationapplication.controller.UserChoiceCheckController.*;
 import static org.reservationapplication.repository.CoworkingSpaceRepository.getNextID;
@@ -82,7 +83,7 @@ public class MenuService {
     }
 
     public void viewAllReservations(ReservationServiceImpl reservationService) {
-        List<Reservation> reservations = reservationService.getAllReservation();;
+        TreeSet<Reservation> reservations = reservationService.getAllReservation();;
         for (Reservation reservation : reservations) {
             System.out.println(reservation);
         }    }
@@ -159,7 +160,7 @@ public class MenuService {
     }
 
     public void viewPersonalReservations(User user, ReservationServiceImpl reservationService) {
-        List<Reservation> personalReservations =reservationService.getPersonalReservation(user);
+        TreeSet<Reservation> personalReservations =reservationService.getPersonalReservation(user);
         if (!personalReservations.isEmpty()) {
             System.out.println(personalReservations);
         }
