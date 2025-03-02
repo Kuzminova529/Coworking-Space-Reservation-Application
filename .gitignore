@@ -1,3 +1,4 @@
+logs/
 target/
 .idea/
 !.mvn/wrapper/maven-wrapper.jar

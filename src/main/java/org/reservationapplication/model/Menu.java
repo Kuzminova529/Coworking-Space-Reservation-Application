@@ -1,6 +1,7 @@
 package org.reservationapplication.model;
 
 import org.reservationapplication.controller.UserChoiceCheckController;
+import org.reservationapplication.logger.Loggers;
 import org.reservationapplication.repository.ApplicationStateRepository;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 import org.reservationapplication.service.MenuService;
@@ -12,13 +13,13 @@ public class Menu {
     UserChoiceCheckController userChoiceCheckController = new UserChoiceCheckController();
 
     public void welcomeMenu(User user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
-        System.out.println("Welcome to Reservation Application");
+        Loggers.USER_LOGGER.info("Welcome to Reservation Application");
         mainMenu(user, coworkingSpaceService, reservationService);
     }
 
     public void mainMenu(User user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
         while (true) {
-            System.out.println("""
+            Loggers.USER_LOGGER.info("""
                     1. Admin menu
                     2. Customer menu
                     3. Exit
@@ -29,21 +30,21 @@ public class Menu {
                     if ((user instanceof Admin)) {
                         adminMenu(user, coworkingSpaceService, reservationService);
                     } else {
-                        System.out.println("You are not an admin. Choose another option");
+                        Loggers.USER_LOGGER.warn("You are not an admin. Choose another option");
                     }
                     break;
                 case 2:
                     if (user instanceof Customer) {
                         customerMenu((Customer) user, coworkingSpaceService, reservationService);
                     } else {
-                        System.out.println("You are not a customer. Choose another option");
+                        Loggers.USER_LOGGER.warn("You are not a customer. Choose another option");
                     }
                     break;
                 case 3:
-                    System.out.println("Exiting...");
+                    Loggers.USER_LOGGER.info("Exiting...");
                     return;
                 default:
-                    System.out.println("Invalid choice, please try again.");
+                    Loggers.USER_LOGGER.warn("Invalid choice, please try again.");
             }
         }
     }
@@ -51,7 +52,7 @@ public class Menu {
     public void adminMenu( User user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
         MenuService menuService = new MenuService();
         while (true) {
-            System.out.println("""
+            Loggers.USER_LOGGER.info("""
                     1. Add a new coworking space
                     2. Remove a coworking space
                     3. View all reservations
@@ -81,11 +82,11 @@ public class Menu {
                     break;
                 }
                 case 5: {
-                    System.out.println("Exiting...");
+                    Loggers.USER_LOGGER.info("Exiting...");
                     return;
                 }
                 default: {
-                    System.out.println("Invalid choice, please try again.");
+                    Loggers.USER_LOGGER.warn("Invalid choice, please try again.");
                 }
             }
         }
@@ -94,7 +95,7 @@ public class Menu {
     public void customerMenu(Customer user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
         MenuService menuService = new MenuService();
         while (true) {
-            System.out.println("""
+            Loggers.USER_LOGGER.info("""
                     1. Browse available spaces
                     2. Make a reservation
                     3. Cancel reservation
@@ -127,7 +128,7 @@ public class Menu {
                     return;
                 }
                 default: {
-                    System.out.println("Invalid choice, please try again.");
+                    Loggers.USER_LOGGER.warn("Invalid choice, please try again.");
                 }
             }
         }

@@ -3,8 +3,7 @@ package org.reservationapplication.repository;
 import com.fasterxml.jackson.core.exc.StreamWriteException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.reservationapplication.logger.TechnicalLoggable;
-import org.reservationapplication.logger.UserLoggable;
+import org.reservationapplication.logger.Loggers;
 import org.reservationapplication.model.ApplicationState;
 import org.reservationapplication.model.Customer;
 import org.reservationapplication.model.User;
@@ -15,7 +14,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.File;
 import java.io.IOException;
 
-public class ApplicationStateRepository implements TechnicalLoggable, UserLoggable {
+public class ApplicationStateRepository {
     private static final String APPLICATION_FILE_NAME = "application_state.json";
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -33,13 +32,14 @@ public class ApplicationStateRepository implements TechnicalLoggable, UserLoggab
             File file = new File(APPLICATION_FILE_NAME);
 
             if (!file.exists()) {
-                getTechnicalLogger().info("File not found: " + APPLICATION_FILE_NAME);
+                Loggers.USER_LOGGER.info("File not found: " + APPLICATION_FILE_NAME);
+                Loggers.TECHNICAL_LOGGER.info("Application state file not found: " + APPLICATION_FILE_NAME);
                 return defaultApplicationState();
             }
 
             return objectMapper.readValue(file, ApplicationState.class);
         } catch (IOException e) {
-            getTechnicalLogger().error("Exception: {}",e.getMessage(),e);
+            Loggers.TECHNICAL_LOGGER.error("Exception: {}",e.getMessage(),e);
             return defaultApplicationState();
         }
     }
@@ -59,14 +59,14 @@ public class ApplicationStateRepository implements TechnicalLoggable, UserLoggab
             objectMapper.registerModule( new JavaTimeModule());//new module to serialize LocalDateTime
             objectMapper.writeValue(new File(APPLICATION_FILE_NAME), this.applicationState);
         } catch (StreamWriteException e) {
-            getUserLogger().error("Stream writing error.");
-            getTechnicalLogger().error("Exception: {}",e.getMessage(),e);
+            Loggers.USER_LOGGER.error("Stream writing error.");
+            Loggers.TECHNICAL_LOGGER.error("Exception: {}",e.getMessage(),e);
         } catch (DatabindException e) {
-            getUserLogger().error("Data binding error.");
-            getTechnicalLogger().error("Exception: {}",e.getMessage(),e);
+            Loggers.USER_LOGGER.error("Data binding error.");
+            Loggers.TECHNICAL_LOGGER.error("Exception: {}",e.getMessage(),e);
         } catch (IOException e) {
-            getUserLogger().error("Input-output error.");
-            getTechnicalLogger().error("Exception: {}",e.getMessage(),e);
+            Loggers.USER_LOGGER.error("Input-output error.");
+            Loggers.TECHNICAL_LOGGER.error("Exception: {}",e.getMessage(),e);
         }
     }
 }

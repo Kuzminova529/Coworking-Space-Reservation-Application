@@ -1,8 +1,7 @@
 package org.reservationapplication.service;
 
 import org.reservationapplication.controller.UserChoiceCheckController;
-import org.reservationapplication.logger.TechnicalLoggable;
-import org.reservationapplication.logger.UserLoggable;
+import org.reservationapplication.logger.Loggers;
 import org.reservationapplication.model.*;
 
 import java.time.LocalDate;
@@ -16,7 +15,7 @@ import java.util.TreeSet;
 
 import static org.reservationapplication.repository.CoworkingSpaceRepository.getNextID;
 
-public class MenuService implements TechnicalLoggable, UserLoggable {
+public class MenuService {
     UserChoiceCheckController userChoiceCheckController = new UserChoiceCheckController();
     Scanner scanner = new Scanner(System.in);
 
@@ -24,8 +23,8 @@ public class MenuService implements TechnicalLoggable, UserLoggable {
         CoworkingSpace coworkingSpace = new CoworkingSpace();
         coworkingSpace.setID(getNextID());
 
-        System.out.println("Enter type of Coworking space");
-        System.out.print("""
+        Loggers.USER_LOGGER.info("Enter type of Coworking space");
+        Loggers.USER_LOGGER.info("""
                 1.Open space
                 2.Private
                 3.Room
@@ -46,17 +45,17 @@ public class MenuService implements TechnicalLoggable, UserLoggable {
                 break;
             }
             default:{
-                getUserLogger().info("Invalid choice, please try again.");
+                Loggers.USER_LOGGER.warn("Invalid choice, please try again.");
                 return;
             }
         }
 
-        System.out.println("Enter price of Coworking space");
+        Loggers.USER_LOGGER.info("Enter price of Coworking space");
         double price = userChoiceCheckController.getUserChoiceDouble();
         coworkingSpace.setPrice(price);
 
-        System.out.println("Enter availability status of Coworking space");
-        System.out.print("""
+        Loggers.USER_LOGGER.info("Enter availability status of Coworking space");
+        Loggers.USER_LOGGER.info("""
                 1.Available
                 2.Unavailable
                 """);
@@ -71,7 +70,7 @@ public class MenuService implements TechnicalLoggable, UserLoggable {
                 break;
             }
             default:{
-                getUserLogger().info("Invalid choice, please try again.");
+                Loggers.USER_LOGGER.warn("Invalid choice, please try again.");
                 return;
             }
         }
@@ -79,7 +78,7 @@ public class MenuService implements TechnicalLoggable, UserLoggable {
     }
 
     public void removeCoworkingSpace(CoworkingSpaceServiceImpl coworkingSpaceService) {
-        System.out.println("Enter id of a coworking space you want to be removed");
+        Loggers.USER_LOGGER.info("Enter id of a coworking space you want to be removed");
         long id = userChoiceCheckController.getUserChoiceLong();
         coworkingSpaceService.removeCoworkingSpace(id);
     }
@@ -101,28 +100,28 @@ public class MenuService implements TechnicalLoggable, UserLoggable {
     public void browseAvailableSpaces(CoworkingSpaceServiceImpl coworkingSpaceService) {
         List<CoworkingSpace> availableCoworkingSpaceList = coworkingSpaceService.loadAvailableCoworkingSpace();
         if (availableCoworkingSpaceList.isEmpty()){
-            getUserLogger().info("There are no available coworking spaces");
+            Loggers.USER_LOGGER.info("There are no available coworking spaces");
         }
         else {
-            getUserLogger().info("There are {} available coworking spaces", availableCoworkingSpaceList.size());
+            Loggers.USER_LOGGER.info("There are {} available coworking spaces", availableCoworkingSpaceList.size());
             System.out.println(availableCoworkingSpaceList);
         }
     }
 
     public void makeReservation(Customer user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
-        System.out.println("Enter id of coworking space you want to make");
+        Loggers.USER_LOGGER.info("Enter id of coworking space you want to make");
         long coworkingSpaceID = userChoiceCheckController.getUserChoiceLong();
 
-        System.out.println("Enter name for reservation");
+        Loggers.USER_LOGGER.info("Enter name for reservation");
         String reservationName = scanner.nextLine();
 
-        System.out.println("Enter the reservation date (for example, 31.12.2025):");
+        Loggers.USER_LOGGER.info("Enter the reservation date (for example, 31.12.2025):");
         String dateInput = scanner.nextLine();
 
-        System.out.println("Enter the start time of the reservation (for example, 10:00):");
+        Loggers.USER_LOGGER.info("Enter the start time of the reservation (for example, 10:00):");
         String startTimeInput = scanner.nextLine();
 
-        System.out.println("Enter the end time of the reservation (for example, 12:00):");
+        Loggers.USER_LOGGER.info("Enter the end time of the reservation (for example, 12:00):");
         String endTimeInput = scanner.nextLine();
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -138,33 +137,33 @@ public class MenuService implements TechnicalLoggable, UserLoggable {
             LocalDateTime endDateTime = LocalDateTime.of(bookingDate, endTime);
 
             if(reservationService.userAddReservation(coworkingSpaceID, reservationName, bookingDate, startDateTime, endDateTime, user, coworkingSpaceService, reservationService)) {
-                getUserLogger().info("Reservation added successfully");
-                getTechnicalLogger().info("Reservation of coworking space {} added successfully", coworkingSpaceID);
+                Loggers.USER_LOGGER.info("Reservation added successfully");
+                Loggers.TECHNICAL_LOGGER.info("Reservation of coworking space {} added successfully", coworkingSpaceID);
             }
             else {
-                getUserLogger().info("Space is unavailable");
+                Loggers.USER_LOGGER.info("Space is unavailable");
             }
 
         } catch (DateTimeParseException e) {
-            getUserLogger().error("Invalid date or time format. Please try again.");
-            getTechnicalLogger().error("DateTimeParseException occurred: Invalid date or time format.", e);
+            Loggers.USER_LOGGER.error("Invalid date or time format. Please try again.");
+            Loggers.TECHNICAL_LOGGER.error("DateTimeParseException occurred: Invalid date or time format.", e);
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
-            getUserLogger().error("An illegal argument was provided. Please check your input.");
-            getTechnicalLogger().error("IllegalArgumentException occurred: {}", e.getMessage(), e);
+            Loggers.USER_LOGGER.error("An illegal argument was provided. Please check your input.");
+            Loggers.TECHNICAL_LOGGER.error("IllegalArgumentException occurred: {}", e.getMessage(), e);
         }
     }
 
     public void cancelReservation(ReservationServiceImpl reservationService) {
-        System.out.println("Enter id of a reservation you want to be removed");
+        Loggers.USER_LOGGER.info("Enter id of a reservation you want to be removed");
         long id = userChoiceCheckController.getUserChoiceLong();
         if (reservationService.removeReservationById(id)){
-            System.out.println("Reservation has been cancelled");
-            getTechnicalLogger().info("Reservation with ID {} has been successfully deleted.", id);
+            Loggers.USER_LOGGER.info("Reservation has been cancelled");
+            Loggers.TECHNICAL_LOGGER.info("Reservation with ID {} has been successfully deleted.", id);
         }
         else {
-            System.out.println("Reservation with ID " + id + " not found.");
-            getTechnicalLogger().warn("Attempting to delete a non-existent reservation with an ID {}", id);
+            Loggers.USER_LOGGER.info("Reservation with ID " + id + " not found.");
+            Loggers.TECHNICAL_LOGGER.warn("Attempting to delete a non-existent reservation with an ID {}", id);
         }
     }
 
@@ -174,7 +173,7 @@ public class MenuService implements TechnicalLoggable, UserLoggable {
             System.out.println(personalReservations);
         }
         else {
-            getUserLogger().info("There are no personal reservation list");
+            Loggers.USER_LOGGER.info("There are no personal reservation list");
         }
     }
 }

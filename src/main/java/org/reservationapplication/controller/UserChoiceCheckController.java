@@ -1,25 +1,23 @@
 package org.reservationapplication.controller;
 
-import org.reservationapplication.logger.TechnicalLoggable;
-import org.reservationapplication.logger.UserLoggable;
+import org.reservationapplication.logger.Loggers;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class UserChoiceCheckController implements TechnicalLoggable, UserLoggable {
+public class UserChoiceCheckController {
     private static Scanner scanner = new Scanner(System.in);
 
     public long getUserChoiceLong() {
         while (true) {
             try {
-                System.out.print("Enter: ");
+                Loggers.USER_LOGGER.info("Enter: ");
                 long choice = scanner.nextLong();
                 scanner.nextLine();
                 return choice;
             } catch (InputMismatchException e) {
-                getUserLogger().warn("The user entered an incorrect value. A number was expected.");
-                getTechnicalLogger().error("Input error: incorrect number format.", e);
-                System.out.println("Invalid input. Please enter a number.");
+                Loggers.USER_LOGGER.warn("Invalid input. Please enter a number.");
+                Loggers.TECHNICAL_LOGGER.error("Input error: incorrect number format.", e);
                 scanner.next();
             }
         }
@@ -28,14 +26,13 @@ public class UserChoiceCheckController implements TechnicalLoggable, UserLoggabl
     public int getUserChoiceInt() {
         while (true) {
             try {
-                System.out.print("Enter: ");
+                Loggers.USER_LOGGER.info("Enter: ");
                 int choice = scanner.nextInt();
                 scanner.nextLine();
                 return choice;
             } catch (InputMismatchException e) {
-                getUserLogger().warn("The user entered an incorrect value. A number was expected.");
-                getTechnicalLogger().error("Input error: incorrect number format.", e);
-                System.out.println("Invalid input. Please enter a number.");
+                Loggers.USER_LOGGER.warn("Invalid input. Please enter a number.");
+                Loggers.TECHNICAL_LOGGER.error("Input error: incorrect number format.", e);
                 scanner.next();
             }
         }
@@ -44,14 +41,13 @@ public class UserChoiceCheckController implements TechnicalLoggable, UserLoggabl
     public double getUserChoiceDouble() {
         while (true) {
             try {
-                System.out.print("Enter: ");
+                Loggers.USER_LOGGER.info("Enter: ");
                 double choice = scanner.nextDouble();
                 scanner.nextLine();
                 return choice;
             } catch (InputMismatchException e) {
-                getUserLogger().warn("The user entered an incorrect value. Double was expected.");
-                getTechnicalLogger().error("Input error: incorrect double number format.", e);
-                System.out.println("Invalid input. Please enter a double number.");
+                Loggers.USER_LOGGER.warn("Invalid input. Please enter a double number.");
+                Loggers.TECHNICAL_LOGGER.error("Input error: incorrect number format.", e);
                 scanner.next();
             }
         }
