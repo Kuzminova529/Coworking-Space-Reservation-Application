@@ -1,5 +1,7 @@
 package org.reservationapplication.service;
 
+import org.reservationapplication.logger.TechnicalLoggable;
+import org.reservationapplication.logger.UserLoggable;
 import org.reservationapplication.model.*;
 
 import java.time.LocalDate;
@@ -7,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ReservationServiceImpl implements ReservationService{
+public class ReservationServiceImpl implements ReservationService, TechnicalLoggable, UserLoggable {
     Comparator<Reservation> dateTimeComparator = Comparator.comparing(Reservation::getStartDateTime);
 
     TreeSet<Reservation> allReservation;
@@ -75,9 +77,15 @@ public class ReservationServiceImpl implements ReservationService{
             LocalDate today = LocalDate.now();
 
             if (bookingDate.isBefore(today)) {
+                getTechnicalLogger().error("Attempted to register a booking with a past date: {}", bookingDate);
+                getUserLogger().error("You cannot register a past date!");
+
                 throw new IllegalArgumentException("You cannot register a past date!");
             }
             if (!startDateTime.isBefore(endDateTime)) {
+                getTechnicalLogger().error("Reservation start time {} is not before end time {}", startDateTime, endDateTime);
+                getUserLogger().error("The reservation start time must be before the end time!");
+
                 throw new IllegalArgumentException("The reservation start time must be before the end time!");
             }
 
@@ -90,11 +98,16 @@ public class ReservationServiceImpl implements ReservationService{
 
                 // The exact same time
                 if (startDateTime.equals(existingStart) && endDateTime.equals(existingEnd)) {
+                    getTechnicalLogger().error("Reservation start time {} and end time {} equals already booked reservation {} and {}", startDateTime, endDateTime, existingStart, existingEnd);
+                    getUserLogger().error("The reservation time is already booked");
+
                     throw new IllegalArgumentException("This exact time slot is already booked!");
                 }
 
                 // Intersection of time
                 if (startDateTime.isBefore(existingEnd) && endDateTime.isAfter(existingStart)) {
+                    getTechnicalLogger().error("Reservation start time {} and end time {} intersect with already booked reservation {} and {}", startDateTime, endDateTime, existingStart, existingEnd);
+                    getUserLogger().error("The reservation time intersect with is already booked reservation");
                     throw new IllegalArgumentException("This time slot is already booked!");
                 }
             }

@@ -1,14 +1,15 @@
 package org.reservationapplication.model;
 
+import org.reservationapplication.controller.UserChoiceCheckController;
 import org.reservationapplication.repository.ApplicationStateRepository;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 import org.reservationapplication.service.MenuService;
 import org.reservationapplication.service.ReservationServiceImpl;
 
 
-import static org.reservationapplication.controller.UserChoiceCheckController.*;
-
 public class Menu {
+
+    UserChoiceCheckController userChoiceCheckController = new UserChoiceCheckController();
 
     public void welcomeMenu(User user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
         System.out.println("Welcome to Reservation Application");
@@ -22,7 +23,7 @@ public class Menu {
                     2. Customer menu
                     3. Exit
                     """);
-            int choice = getUserChoiceInt();
+            int choice = userChoiceCheckController.getUserChoiceInt();
             switch (choice) {
                 case 1:
                     if ((user instanceof Admin)) {
@@ -57,7 +58,7 @@ public class Menu {
                     4. View all coworking spaces
                     5. Back to Main Menu
                     """);
-            int choice = getUserChoiceInt();
+            int choice = userChoiceCheckController.getUserChoiceInt();
             switch (choice) {
                 case 1: {
                     menuService.addCoworkingSpace(coworkingSpaceService);
@@ -100,7 +101,7 @@ public class Menu {
                     4. View my reservations
                     5. Back to Main Menu
                     """);
-            int choice = getUserChoiceInt();
+            int choice = userChoiceCheckController.getUserChoiceInt();
             switch (choice) {
                 case 1: {
                     menuService.browseAvailableSpaces(coworkingSpaceService);
@@ -126,7 +127,6 @@ public class Menu {
                     return;
                 }
                 default: {
-
                     System.out.println("Invalid choice, please try again.");
                 }
             }

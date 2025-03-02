@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.reservationapplication.exeption.CoworkingSpaceNotFoundException;
 import org.reservationapplication.exeption.CoworkingStorageException;
+import org.reservationapplication.logger.TechnicalLoggable;
+import org.reservationapplication.logger.UserLoggable;
 import org.reservationapplication.model.CoworkingSpace;
 
 import java.io.File;
@@ -11,7 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace, Long>{
+public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace, Long>, TechnicalLoggable, UserLoggable {
     private static final String COWORKING_FILE_NAME = "coworking_spaces.json";
     private ObjectMapper objectMapper;
     private static long nextId = 0L;
@@ -30,7 +32,11 @@ public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace
 
         try {
             objectMapper.writeValue(file, coworkingSpaces);
+            getTechnicalLogger().info("Coworking spaces have been successfully serialized to {}", file.getAbsolutePath());
         } catch (IOException e) {
+            getTechnicalLogger().error("Failed to serialize coworking spaces to file: {}", e.getMessage(), e);
+            getUserLogger().error("An error occurred while saving coworking spaces. Please try again later.");
+
             throw new CoworkingStorageException("Failed to save coworking spaces to file", e);
         }
     }
@@ -44,11 +50,15 @@ public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace
             if (file.exists() && file.length() > 0) {
                 generalCoworkingSpace = objectMapper.readValue(file, new TypeReference<>(){});
                 updateID(generalCoworkingSpace);
+                getTechnicalLogger().info("Coworking spaces have been successfully deserialized from {}", file.getAbsolutePath());
                 return generalCoworkingSpace;
             } else {
                 return new ArrayList<>();
             }
         } catch (IOException e) {
+            getTechnicalLogger().error("Failed to deserialize coworking spaces from file: {}", e.getMessage(), e);
+            getUserLogger().error("An error occurred while reading coworking spaces. Please try again later.");
+
             throw new CoworkingStorageException("Failed to read coworking spaces from file", e);
         }
     }

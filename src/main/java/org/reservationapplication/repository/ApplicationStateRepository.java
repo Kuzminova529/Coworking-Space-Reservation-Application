@@ -3,6 +3,8 @@ package org.reservationapplication.repository;
 import com.fasterxml.jackson.core.exc.StreamWriteException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.reservationapplication.logger.TechnicalLoggable;
+import org.reservationapplication.logger.UserLoggable;
 import org.reservationapplication.model.ApplicationState;
 import org.reservationapplication.model.Customer;
 import org.reservationapplication.model.User;
@@ -13,7 +15,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.File;
 import java.io.IOException;
 
-public class ApplicationStateRepository {
+public class ApplicationStateRepository implements TechnicalLoggable, UserLoggable {
     private static final String APPLICATION_FILE_NAME = "application_state.json";
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -31,14 +33,13 @@ public class ApplicationStateRepository {
             File file = new File(APPLICATION_FILE_NAME);
 
             if (!file.exists()) {
-                System.out.println("File not found: " + APPLICATION_FILE_NAME);
+                getTechnicalLogger().info("File not found: " + APPLICATION_FILE_NAME);
                 return defaultApplicationState();
             }
 
             return objectMapper.readValue(file, ApplicationState.class);
         } catch (IOException e) {
-            System.out.println("Empty state");
-            e.printStackTrace();
+            getTechnicalLogger().error("Exception: {}",e.getMessage(),e);
             return defaultApplicationState();
         }
     }
@@ -58,14 +59,14 @@ public class ApplicationStateRepository {
             objectMapper.registerModule( new JavaTimeModule());//new module to serialize LocalDateTime
             objectMapper.writeValue(new File(APPLICATION_FILE_NAME), this.applicationState);
         } catch (StreamWriteException e) {
-            System.out.println("Stream writing error.");
-            e.printStackTrace();
+            getUserLogger().error("Stream writing error.");
+            getTechnicalLogger().error("Exception: {}",e.getMessage(),e);
         } catch (DatabindException e) {
-            System.out.println("Data binding error.");
-            e.printStackTrace();
+            getUserLogger().error("Data binding error.");
+            getTechnicalLogger().error("Exception: {}",e.getMessage(),e);
         } catch (IOException e) {
-            System.out.println("Input-output error.");
-            e.printStackTrace();
+            getUserLogger().error("Input-output error.");
+            getTechnicalLogger().error("Exception: {}",e.getMessage(),e);
         }
     }
 }
