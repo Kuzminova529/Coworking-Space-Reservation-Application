@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.reservationapplication.exeption.CoworkingSpaceNotFoundException;
 import org.reservationapplication.exeption.CoworkingStorageException;
+import org.reservationapplication.logger.Loggers;
 import org.reservationapplication.model.CoworkingSpace;
 
 import java.io.File;
@@ -11,7 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CoworkingSpaceRepository {
+public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace, Long> {
     private static final String COWORKING_FILE_NAME = "coworking_spaces.json";
     private ObjectMapper objectMapper;
     private static long nextId = 0L;
@@ -24,17 +25,23 @@ public class CoworkingSpaceRepository {
         return nextId;
     }
 
-    public void saveCoworkingSpace(List<CoworkingSpace> allCoworkingSpaces) {
+    @Override
+    public void save(List<CoworkingSpace> coworkingSpaces) {
         File file = new File(COWORKING_FILE_NAME);
 
         try {
-            objectMapper.writeValue(file, allCoworkingSpaces);
+            objectMapper.writeValue(file, coworkingSpaces);
+            Loggers.TECHNICAL_LOGGER.info("Coworking spaces have been successfully serialized to {}", file.getAbsolutePath());
         } catch (IOException e) {
+            Loggers.TECHNICAL_LOGGER.error("Failed to serialize coworking spaces to file: {}", e.getMessage(), e);
+            Loggers.USER_LOGGER.error("An error occurred while saving coworking spaces. Please try again later.");
+
             throw new CoworkingStorageException("Failed to save coworking spaces to file", e);
         }
     }
 
-    public List<CoworkingSpace> readCoworkingSpace() {
+    @Override
+    public List<CoworkingSpace> read() {
         File file = new File(COWORKING_FILE_NAME);
         List<CoworkingSpace> generalCoworkingSpace;
 
@@ -42,35 +49,42 @@ public class CoworkingSpaceRepository {
             if (file.exists() && file.length() > 0) {
                 generalCoworkingSpace = objectMapper.readValue(file, new TypeReference<>(){});
                 updateID(generalCoworkingSpace);
+                Loggers.TECHNICAL_LOGGER.info("Coworking spaces have been successfully deserialized from {}", file.getAbsolutePath());
                 return generalCoworkingSpace;
             } else {
                 return new ArrayList<>();
             }
         } catch (IOException e) {
+            Loggers.TECHNICAL_LOGGER.error("Failed to deserialize coworking spaces from file: {}", e.getMessage(), e);
+            Loggers.USER_LOGGER.error("An error occurred while reading coworking spaces. Please try again later.");
+
             throw new CoworkingStorageException("Failed to read coworking spaces from file", e);
         }
     }
 
-    public void addCoworkingSpace(CoworkingSpace coworkingSpace) {
-        List<CoworkingSpace> coworkingSpaces = readCoworkingSpace();
+    @Override
+    public void add(CoworkingSpace coworkingSpace) {
+        List<CoworkingSpace> coworkingSpaces = read();
 
         coworkingSpaces.add(coworkingSpace);
-        saveCoworkingSpace(coworkingSpaces);
+        save(coworkingSpaces);
     }
 
-    public void deleteCoworkingSpaceByID(long id) {
-        List<CoworkingSpace> coworkingSpaces = readCoworkingSpace();
+    @Override
+    public void deleteByID(Long id) {
+        List<CoworkingSpace> coworkingSpaces = read();
         boolean removed = coworkingSpaces.removeIf(coworkingSpace -> coworkingSpace.getID() == id);
 
         if (!removed) {
             throw new CoworkingSpaceNotFoundException(id);
         }
-        saveCoworkingSpace(coworkingSpaces);
+        save(coworkingSpaces);
     }
 
-    public void deleteAllCoworkingSpaces() {
+    @Override
+    public void deleteAll() {
         List<CoworkingSpace> coworkingSpaces = new ArrayList<>();
-        saveCoworkingSpace(coworkingSpaces);
+        save(coworkingSpaces);
     }
 
     private void updateID(List<CoworkingSpace> generalCoworkingSpace){

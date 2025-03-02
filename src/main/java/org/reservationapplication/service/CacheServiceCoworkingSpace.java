@@ -20,21 +20,21 @@ public class CacheServiceCoworkingSpace {
     }
 
     public List<CoworkingSpace> getAllCoworkingSpaces() {
-        return cache.get("coworkings", key -> repository.readCoworkingSpace());
+        return cache.get("coworkings", key -> repository.read());
     }
 
     public void addCoworkingSpace(CoworkingSpace coworkingSpace) {
-        repository.addCoworkingSpace(coworkingSpace);
+        repository.add(coworkingSpace);
         cache.invalidate("coworkings");
     }
 
     public void removeCoworkingSpaceByID(long id) {
-        repository.deleteCoworkingSpaceByID(id);
+        repository.deleteByID(id);
         cache.invalidate("coworkings");
     }
 
     public void removeAllCoworkingSpaces() {
-        repository.deleteAllCoworkingSpaces();
+        repository.deleteAll();
         cache.invalidateAll();
     }
 }

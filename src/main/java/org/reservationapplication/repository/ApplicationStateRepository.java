@@ -3,6 +3,7 @@ package org.reservationapplication.repository;
 import com.fasterxml.jackson.core.exc.StreamWriteException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.reservationapplication.logger.Loggers;
 import org.reservationapplication.model.ApplicationState;
 import org.reservationapplication.model.Customer;
 import org.reservationapplication.model.User;
@@ -31,14 +32,14 @@ public class ApplicationStateRepository {
             File file = new File(APPLICATION_FILE_NAME);
 
             if (!file.exists()) {
-                System.out.println("File not found: " + APPLICATION_FILE_NAME);
+                Loggers.USER_LOGGER.info("File not found: " + APPLICATION_FILE_NAME);
+                Loggers.TECHNICAL_LOGGER.info("Application state file not found: " + APPLICATION_FILE_NAME);
                 return defaultApplicationState();
             }
 
             return objectMapper.readValue(file, ApplicationState.class);
         } catch (IOException e) {
-            System.out.println("Empty state");
-            e.printStackTrace();
+            Loggers.TECHNICAL_LOGGER.error("Exception: {}",e.getMessage(),e);
             return defaultApplicationState();
         }
     }
@@ -58,14 +59,14 @@ public class ApplicationStateRepository {
             objectMapper.registerModule( new JavaTimeModule());//new module to serialize LocalDateTime
             objectMapper.writeValue(new File(APPLICATION_FILE_NAME), this.applicationState);
         } catch (StreamWriteException e) {
-            System.out.println("Stream writing error.");
-            e.printStackTrace();
+            Loggers.USER_LOGGER.error("Stream writing error.");
+            Loggers.TECHNICAL_LOGGER.error("Exception: {}",e.getMessage(),e);
         } catch (DatabindException e) {
-            System.out.println("Data binding error.");
-            e.printStackTrace();
+            Loggers.USER_LOGGER.error("Data binding error.");
+            Loggers.TECHNICAL_LOGGER.error("Exception: {}",e.getMessage(),e);
         } catch (IOException e) {
-            System.out.println("Input-output error.");
-            e.printStackTrace();
+            Loggers.USER_LOGGER.error("Input-output error.");
+            Loggers.TECHNICAL_LOGGER.error("Exception: {}",e.getMessage(),e);
         }
     }
 }

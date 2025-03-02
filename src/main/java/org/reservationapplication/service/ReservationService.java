@@ -5,11 +5,10 @@ import org.reservationapplication.model.Reservation;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
+import java.util.TreeSet;
 
 public interface ReservationService {
-    public List<Reservation> getAllReservation();
+    public TreeSet<Reservation> getAllReservation();
 
     public void addReservation(Reservation reservation);
 

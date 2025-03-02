@@ -3,7 +3,7 @@ package org.reservationapplication.model;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Reservation {
+public class Reservation implements Comparable<Reservation>{
     private static long nextId = 0L;
     private final long reservationID;
     private long coworkingSpaceID;
@@ -71,7 +71,12 @@ public class Reservation {
                 ", coworkingSpaceID='" + coworkingSpaceID + '\'' +
                 ", customerID='" + customerID + '\'' +
                 ", reservationName='" + reservationName + '\'' +
-                ", startReservationDateAdnTime=" + formattedStartDateTime +
-                ", endReservationDateAdnTime=" + formattedEndDateTime;
+                ", startReservationDateAndTime=" + formattedStartDateTime +
+                ", endReservationDateAndTime=" + formattedEndDateTime;
+    }
+
+    @Override
+    public int compareTo(Reservation other) {
+        return this.startDateTime.compareTo(other.startDateTime);
     }
 }

@@ -4,11 +4,12 @@ import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 import org.reservationapplication.service.ReservationServiceImpl;
 
 import java.util.List;
+import java.util.TreeSet;
 
 public class ApplicationState {
     private User currentUser;
     private List<CoworkingSpace> coworkingSpaces;
-    private List<Reservation> reservations;
+    private TreeSet<Reservation> reservations;
 
     public ApplicationState() {}
 
@@ -34,11 +35,11 @@ public class ApplicationState {
         this.coworkingSpaces = coworkingSpaces;
     }
 
-    public List<Reservation> getReservations() {
+    public TreeSet<Reservation> getReservations() {
         return reservations;
     }
 
-    public void setReservations(List<Reservation> reservations) {
+    public void setReservations(TreeSet<Reservation> reservations) {
         this.reservations = reservations;
     }
 }

@@ -1,36 +1,34 @@
 package org.reservationapplication.service;
 
+import org.reservationapplication.logger.Loggers;
 import org.reservationapplication.model.*;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
-public class ReservationServiceImpl implements ReservationService{
-    private final List<Reservation> allReservation;
+public class ReservationServiceImpl implements ReservationService {
+    Comparator<Reservation> dateTimeComparator = Comparator.comparing(Reservation::getStartDateTime);
+
+    TreeSet<Reservation> allReservation;
 
 
     public ReservationServiceImpl() {
-        this.allReservation = new ArrayList<>();
+        this.allReservation = new TreeSet<>(dateTimeComparator);
     }
 
-    public ReservationServiceImpl(List<Reservation> allReservation) {
+    public ReservationServiceImpl(TreeSet<Reservation> allReservation) {
         this.allReservation = allReservation;
     }
 
-    public List<Reservation> getAllReservation() {
+    public TreeSet<Reservation> getAllReservation() {
         return allReservation;
     }
 
-    public List<Reservation> getPersonalReservation(User user) {
-        List<Reservation> reservations = getAllReservation();
-        List<Reservation> personalReservations = new ArrayList<>();
+    public TreeSet<Reservation> getPersonalReservation(User user) {
+        TreeSet<Reservation> reservations = getAllReservation();
+        TreeSet<Reservation> personalReservations = new TreeSet<>(dateTimeComparator);
         for (Reservation reservation : reservations) {
             if (reservation.getCustomerID() == user.getId()) {
                 personalReservations.add(reservation);
@@ -39,10 +37,11 @@ public class ReservationServiceImpl implements ReservationService{
         return reservations;
     }
 
-    public List<Reservation> getReservationsByCoworkingSpaceAndDate(long coworkingSpaceId, LocalDate date) {
+    public TreeSet<Reservation> getReservationsByCoworkingSpaceAndDate(long coworkingSpaceId, LocalDate date) {
         return allReservation.stream()
-                .filter(r -> r.getCoworkingSpaceID() == coworkingSpaceId && r.getStartDateTime().toLocalDate().equals(date))
-                .collect(Collectors.toList());
+                .filter(r -> r.getCoworkingSpaceID() == coworkingSpaceId &&
+                        r.getStartDateTime().toLocalDate().equals(date))
+                .collect(Collectors.toCollection(() -> new TreeSet<>(dateTimeComparator)));
     }
 
     public boolean removeReservationById(long id) {
@@ -75,38 +74,49 @@ public class ReservationServiceImpl implements ReservationService{
 
 
             LocalDate today = LocalDate.now();
-          
-                if (bookingDate.isBefore(today)) {
-                    throw new IllegalArgumentException("You cannot register a past date!");
+
+            if (bookingDate.isBefore(today)) {
+                Loggers.TECHNICAL_LOGGER.warn("Attempted to register a booking with a past date: {}", bookingDate);
+                Loggers.USER_LOGGER.warn("You cannot register a past date!");
+
+                throw new IllegalArgumentException("You cannot register a past date!");
+            }
+            if (!startDateTime.isBefore(endDateTime)) {
+                Loggers.TECHNICAL_LOGGER.warn("Reservation start time {} is not before end time {}", startDateTime, endDateTime);
+                Loggers.USER_LOGGER.warn("The reservation start time must be before the end time!");
+
+                throw new IllegalArgumentException("The reservation start time must be before the end time!");
+            }
+
+            TreeSet<Reservation> existingReservations = reservationService.getReservationsByCoworkingSpaceAndDate(id, bookingDate);
+
+            for (Reservation existing : existingReservations) {
+
+                LocalDateTime existingStart = existing.getStartDateTime();
+                LocalDateTime existingEnd = existing.getEndDateTime();
+
+                // The exact same time
+                if (startDateTime.equals(existingStart) && endDateTime.equals(existingEnd)) {
+                    Loggers.TECHNICAL_LOGGER.warn("Reservation start time {} and end time {} equals already booked reservation {} and {}", startDateTime, endDateTime, existingStart, existingEnd);
+                    Loggers.USER_LOGGER.warn("The reservation time is already booked");
+
+                    throw new IllegalArgumentException("This exact time slot is already booked!");
                 }
-                if (!startDateTime.isBefore(endDateTime)) {
-                    throw new IllegalArgumentException("The reservation start time must be before the end time!");
+
+                // Intersection of time
+                if (startDateTime.isBefore(existingEnd) && endDateTime.isAfter(existingStart)) {
+                    Loggers.TECHNICAL_LOGGER.warn("Reservation start time {} and end time {} intersect with already booked reservation {} and {}", startDateTime, endDateTime, existingStart, existingEnd);
+                    Loggers.USER_LOGGER.warn("The reservation time intersect with is already booked reservation");
+                    throw new IllegalArgumentException("This time slot is already booked!");
                 }
+            }
 
-                List<Reservation> existingReservations = reservationService.getReservationsByCoworkingSpaceAndDate(id, bookingDate);
+            reservation.setStartDateTime(startDateTime);
+            reservation.setEndDateTime(endDateTime);
 
-                for (Reservation existing : existingReservations) {
+            reservationService.addReservation(reservation);
 
-                    LocalDateTime existingStart = existing.getStartDateTime();
-                    LocalDateTime existingEnd = existing.getEndDateTime();
-
-                    // The exact same time
-                    if (startDateTime.equals(existingStart) && endDateTime.equals(existingEnd)) {
-                        throw new IllegalArgumentException("This exact time slot is already booked!");
-                    }
-
-                    // Intersection of time
-                    if (startDateTime.isBefore(existingEnd) && endDateTime.isAfter(existingStart)) {
-                        throw new IllegalArgumentException("This time slot is already booked!");
-                    }
-                }
-
-                reservation.setStartDateTime(startDateTime);
-                reservation.setEndDateTime(endDateTime);
-
-                reservationService.addReservation(reservation);
-
-                return true;
+            return true;
         }
         return false;
     }
