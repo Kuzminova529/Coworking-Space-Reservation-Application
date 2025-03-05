@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace, Long> {
     private static final String COWORKING_FILE_NAME = "coworking_spaces.json";
@@ -43,14 +44,14 @@ public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace
     @Override
     public List<CoworkingSpace> read() {
         File file = new File(COWORKING_FILE_NAME);
-        List<CoworkingSpace> generalCoworkingSpace;
+        List<CoworkingSpace> allCoworkingSpaces;
 
         try {
             if (file.exists() && file.length() > 0) {
-                generalCoworkingSpace = objectMapper.readValue(file, new TypeReference<>(){});
-                updateID(generalCoworkingSpace);
+                allCoworkingSpaces = objectMapper.readValue(file, new TypeReference<>(){});
+                updateID(allCoworkingSpaces);
                 Loggers.TECHNICAL_LOGGER.info("Coworking spaces have been successfully deserialized from {}", file.getAbsolutePath());
-                return generalCoworkingSpace;
+                return allCoworkingSpaces;
             } else {
                 return new ArrayList<>();
             }
@@ -79,6 +80,12 @@ public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace
             throw new CoworkingSpaceNotFoundException(id);
         }
         save(coworkingSpaces);
+    }
+
+    public Optional<CoworkingSpace> getById(Long id) {
+        return read().stream()
+                .filter(coworkingSpace -> coworkingSpace.getID() == id)
+                .findFirst();
     }
 
     @Override

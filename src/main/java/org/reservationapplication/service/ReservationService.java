@@ -10,13 +10,13 @@ import java.util.Optional;
 import java.util.TreeSet;
 
 public interface ReservationService {
-    public Optional<TreeSet<Reservation>> getAllReservation();
+    public TreeSet<Reservation> getAllReservation();
 
     public void addReservation(Reservation reservation);
 
     public boolean removeReservationById(long id);
 
-    public Optional<TreeSet<Reservation>> getPersonalReservation(User user);
+    public TreeSet<Reservation> getPersonalReservation(User user);
 
     public boolean userAddReservation(
             long id, String reservationName, LocalDate bookingDate,

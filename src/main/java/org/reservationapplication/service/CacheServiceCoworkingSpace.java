@@ -6,6 +6,7 @@ import org.reservationapplication.model.CoworkingSpace;
 import org.reservationapplication.repository.CoworkingSpaceRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public class CacheServiceCoworkingSpace {

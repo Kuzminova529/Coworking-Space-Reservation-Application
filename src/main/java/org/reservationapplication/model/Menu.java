@@ -6,7 +6,7 @@ import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 import org.reservationapplication.service.MenuService;
 import org.reservationapplication.service.ReservationServiceImpl;
 
-import static org.reservationapplication.util.InputSupplierFactory.intSupplierCreator;
+import static org.reservationapplication.util.UserInputHandler.intSupplierCreator;
 
 
 public class Menu {

@@ -5,7 +5,7 @@ import org.reservationapplication.logger.Loggers;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class InputSupplierFactory {
+public class UserInputHandler {
     static Scanner scanner = new Scanner(System.in);
 
     public static final InputSupplierCreator<Integer,Integer> intSupplierCreator = new InputSupplierCreator<>(Loggers.USER_LOGGER::info, () -> {

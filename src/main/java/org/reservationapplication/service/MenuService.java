@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.TreeSet;
 
 import static org.reservationapplication.repository.CoworkingSpaceRepository.getNextID;
-import static org.reservationapplication.util.InputSupplierFactory.*;
+import static org.reservationapplication.util.UserInputHandler.*;
 
 public class MenuService {
 
@@ -71,25 +71,33 @@ public class MenuService {
     }
 
     public void viewAllReservations(ReservationServiceImpl reservationService) {
-        Optional<TreeSet<Reservation>> reservations = reservationService.getAllReservation();
-        reservations.ifPresentOrElse(
-                list -> list.forEach(reservation -> Loggers.USER_LOGGER.info(reservation.toString())),
-                () -> Loggers.USER_LOGGER.warn("No reservations found")
-        );
+        TreeSet<Reservation> reservations = reservationService.getAllReservation();
+        if(!reservations.isEmpty()) {
+            reservations.forEach(reservation -> Loggers.USER_LOGGER.info(reservation.toString()));
+        }
+        else{
+            Loggers.USER_LOGGER.warn("No reservations found");
+    }
     }
 
     public void viewAllCoworkingSpaces(CoworkingSpaceServiceImpl coworkingSpaceService){
-        Optional<List<CoworkingSpace>> optionalSpaces = coworkingSpaceService.getAllCoworkingSpace();
-        optionalSpaces.ifPresentOrElse(
-                list -> list.forEach(coworkingSpace -> Loggers.USER_LOGGER.info(coworkingSpace.toString())),
-                () -> Loggers.USER_LOGGER.warn("No soworking spaces found"));
+        List<CoworkingSpace> coworkingSpaces = coworkingSpaceService.getAllCoworkingSpace();
+        if(!coworkingSpaces.isEmpty()) {
+            coworkingSpaces.forEach(coworkingSpace -> Loggers.USER_LOGGER.info(coworkingSpace.toString()));
+        }
+        else{
+            Loggers.USER_LOGGER.warn("No coworking space found");
+        }
     }
 
     public void viewAvailableSpaces(CoworkingSpaceServiceImpl coworkingSpaceService) {
-        Optional<List<CoworkingSpace>> availableCoworkingSpaceList = coworkingSpaceService.getAvailableCoworkingSpace();
-        availableCoworkingSpaceList.ifPresentOrElse(
-                list -> list.forEach(availableCoworkingSpace -> Loggers.USER_LOGGER.info(availableCoworkingSpace.toString())),
-                () -> Loggers.USER_LOGGER.warn("There are no available coworking spaces"));
+        List<CoworkingSpace> availableCoworkingSpaces = coworkingSpaceService.getAvailableCoworkingSpace();
+        if(!availableCoworkingSpaces.isEmpty()) {
+            availableCoworkingSpaces.forEach(reservation -> Loggers.USER_LOGGER.info(availableCoworkingSpaces.toString()));
+        }
+        else{
+            Loggers.USER_LOGGER.warn("No coworking space found");
+        }
     }
 
     public void makeReservation(Customer user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
@@ -145,9 +153,11 @@ public class MenuService {
     }
 
     public void viewPersonalReservations(User user, ReservationServiceImpl reservationService) {
-        Optional<TreeSet<Reservation>> personalReservations = reservationService.getPersonalReservation(user);
-        personalReservations.ifPresentOrElse(
-                list -> list.forEach(personalReservation -> Loggers.USER_LOGGER.info(personalReservation.toString())),
-                () -> Loggers.USER_LOGGER.warn("There are no personal reservations"));
-    }
+        TreeSet<Reservation> personalReservations = reservationService.getPersonalReservation(user);
+        if(!personalReservations.isEmpty()) {
+            personalReservations.forEach(coworkingSpace -> Loggers.USER_LOGGER.info(coworkingSpace.toString()));
+        }
+        else{
+            Loggers.USER_LOGGER.warn("No reservations found");
+        }   }
 }
