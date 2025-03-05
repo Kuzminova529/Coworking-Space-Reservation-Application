@@ -1,6 +1,5 @@
 package org.reservationapplication.service;
 
-import org.reservationapplication.controller.UserChoiceCheckController;
 import org.reservationapplication.logger.Loggers;
 import org.reservationapplication.model.*;
 
@@ -10,119 +9,99 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Optional;
 import java.util.TreeSet;
 
 import static org.reservationapplication.repository.CoworkingSpaceRepository.getNextID;
+import static org.reservationapplication.util.InputSupplierFactory.*;
 
 public class MenuService {
-    UserChoiceCheckController userChoiceCheckController = new UserChoiceCheckController();
-    Scanner scanner = new Scanner(System.in);
 
     public void addCoworkingSpace(CoworkingSpaceServiceImpl coworkingSpaceService) {
         CoworkingSpace coworkingSpace = new CoworkingSpace();
         coworkingSpace.setID(getNextID());
 
-        Loggers.USER_LOGGER.info("Enter type of Coworking space");
-        Loggers.USER_LOGGER.info("""
+        int choice = intSupplierCreator.supplier("""
+                Enter type of Coworking space:
                 1.Open space
                 2.Private
                 3.Room
-                """);
+                """).get();
 
-        int choice = userChoiceCheckController.getUserChoiceInt();
         switch (choice){
-            case 1:{
+            case 1:
                 coworkingSpace.setType(CoworkingSpaceType.OPENSPACE);
                 break;
-            }
-            case 2:{
+            case 2:
                 coworkingSpace.setType(CoworkingSpaceType.PRIVATE);
                 break;
-            }
-            case 3:{
+            case 3:
                 coworkingSpace.setType(CoworkingSpaceType.ROOM);
                 break;
-            }
-            default:{
+            default:
                 Loggers.USER_LOGGER.warn("Invalid choice, please try again.");
                 return;
-            }
         }
 
-        Loggers.USER_LOGGER.info("Enter price of Coworking space");
-        double price = userChoiceCheckController.getUserChoiceDouble();
+        double price = doubleSupplierCreator.supplier("Enter price of Coworking space").get();
         coworkingSpace.setPrice(price);
 
         Loggers.USER_LOGGER.info("Enter availability status of Coworking space");
-        Loggers.USER_LOGGER.info("""
+        choice = intSupplierCreator.supplier("""
                 1.Available
                 2.Unavailable
-                """);
-        choice = userChoiceCheckController.getUserChoiceInt();
+                """).get();
         switch (choice){
-            case 1:{
+            case 1:
                 coworkingSpace.setAvailabilityStatus(AvailabilityStatus.AVAILABLE);
                 break;
-            }
-            case 2:{
+            case 2:
                 coworkingSpace.setAvailabilityStatus(AvailabilityStatus.UNAVAILABLE);
                 break;
-            }
-            default:{
+            default:
                 Loggers.USER_LOGGER.warn("Invalid choice, please try again.");
                 return;
-            }
         }
         coworkingSpaceService.addCoworkingSpace(coworkingSpace);
     }
 
     public void removeCoworkingSpace(CoworkingSpaceServiceImpl coworkingSpaceService) {
-        Loggers.USER_LOGGER.info("Enter id of a coworking space you want to be removed");
-        long id = userChoiceCheckController.getUserChoiceLong();
+        long id = longSupplierCreator.supplier("Enter id of a coworking space you want to be removed").get();
         coworkingSpaceService.removeCoworkingSpace(id);
     }
 
     public void viewAllReservations(ReservationServiceImpl reservationService) {
-        TreeSet<Reservation> reservations = reservationService.getAllReservation();;
-        for (Reservation reservation : reservations) {
-            Loggers.USER_LOGGER.info(reservation.toString());
-        }
+        Optional<TreeSet<Reservation>> reservations = reservationService.getAllReservation();
+        reservations.ifPresentOrElse(
+                list -> list.forEach(reservation -> Loggers.USER_LOGGER.info(reservation.toString())),
+                () -> Loggers.USER_LOGGER.warn("No reservations found")
+        );
     }
 
     public void viewAllCoworkingSpaces(CoworkingSpaceServiceImpl coworkingSpaceService){
-        List<CoworkingSpace> coworkingSpaces = coworkingSpaceService.getAllCoworkingSpace();
-        for (CoworkingSpace coworkingSpace : coworkingSpaces) {
-            Loggers.USER_LOGGER.info(coworkingSpace.toString());
-        }
+        Optional<List<CoworkingSpace>> optionalSpaces = coworkingSpaceService.getAllCoworkingSpace();
+        optionalSpaces.ifPresentOrElse(
+                list -> list.forEach(coworkingSpace -> Loggers.USER_LOGGER.info(coworkingSpace.toString())),
+                () -> Loggers.USER_LOGGER.warn("No soworking spaces found"));
     }
 
-    public void browseAvailableSpaces(CoworkingSpaceServiceImpl coworkingSpaceService) {
-        List<CoworkingSpace> availableCoworkingSpaceList = coworkingSpaceService.loadAvailableCoworkingSpace();
-        if (availableCoworkingSpaceList.isEmpty()){
-            Loggers.USER_LOGGER.info("There are no available coworking spaces");
-        }
-        else {
-            Loggers.USER_LOGGER.info("There are {} available coworking spaces", availableCoworkingSpaceList.size());
-            Loggers.USER_LOGGER.info(availableCoworkingSpaceList.toString());
-        }
+    public void viewAvailableSpaces(CoworkingSpaceServiceImpl coworkingSpaceService) {
+        Optional<List<CoworkingSpace>> availableCoworkingSpaceList = coworkingSpaceService.getAvailableCoworkingSpace();
+        availableCoworkingSpaceList.ifPresentOrElse(
+                list -> list.forEach(availableCoworkingSpace -> Loggers.USER_LOGGER.info(availableCoworkingSpace.toString())),
+                () -> Loggers.USER_LOGGER.warn("There are no available coworking spaces"));
     }
 
     public void makeReservation(Customer user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
-        Loggers.USER_LOGGER.info("Enter id of coworking space you want to make");
-        long coworkingSpaceID = userChoiceCheckController.getUserChoiceLong();
+        long coworkingSpaceID = longSupplierCreator.supplier("Enter id of coworking space you want to make").get();
 
-        Loggers.USER_LOGGER.info("Enter name for reservation");
-        String reservationName = scanner.nextLine();
+        String reservationName = stringSupplierCreator.supplier("Enter name for reservation").get();
 
-        Loggers.USER_LOGGER.info("Enter the reservation date (for example, 31.12.2025):");
-        String dateInput = scanner.nextLine();
+        String dateInput = stringSupplierCreator.supplier("Enter the reservation date (for example, 31.12.2025):").get();
 
-        Loggers.USER_LOGGER.info("Enter the start time of the reservation (for example, 10:00):");
-        String startTimeInput = scanner.nextLine();
+        String startTimeInput = stringSupplierCreator.supplier("Enter the start time (for example, 10:00):").get();
 
-        Loggers.USER_LOGGER.info("Enter the end time of the reservation (for example, 12:00):");
-        String endTimeInput = scanner.nextLine();
+        String endTimeInput = stringSupplierCreator.supplier("Enter the end time (for example, 12:00):").get();
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -154,25 +133,21 @@ public class MenuService {
     }
 
     public void cancelReservation(ReservationServiceImpl reservationService) {
-        Loggers.USER_LOGGER.info("Enter id of a reservation you want to be removed");
-        long id = userChoiceCheckController.getUserChoiceLong();
+        long id = longSupplierCreator.supplier("Enter id of a reservation you want to be removed").get();
         if (reservationService.removeReservationById(id)){
             Loggers.USER_LOGGER.info("Reservation has been cancelled");
             Loggers.TECHNICAL_LOGGER.info("Reservation with ID {} has been successfully deleted.", id);
         }
         else {
-            Loggers.USER_LOGGER.info("Reservation with ID " + id + " not found.");
+            Loggers.USER_LOGGER.warn("Reservation with ID " + id + " not found.");
             Loggers.TECHNICAL_LOGGER.warn("Attempting to delete a non-existent reservation with an ID {}", id);
         }
     }
 
     public void viewPersonalReservations(User user, ReservationServiceImpl reservationService) {
-        TreeSet<Reservation> personalReservations = reservationService.getPersonalReservation(user);
-        if (!personalReservations.isEmpty()) {
-            Loggers.USER_LOGGER.info(personalReservations.toString());
-        }
-        else {
-            Loggers.USER_LOGGER.info("There are no personal reservation list");
-        }
+        Optional<TreeSet<Reservation>> personalReservations = reservationService.getPersonalReservation(user);
+        personalReservations.ifPresentOrElse(
+                list -> list.forEach(personalReservation -> Loggers.USER_LOGGER.info(personalReservation.toString())),
+                () -> Loggers.USER_LOGGER.warn("There are no personal reservations"));
     }
 }

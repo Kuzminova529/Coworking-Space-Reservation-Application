@@ -22,19 +22,21 @@ public class ReservationServiceImpl implements ReservationService {
         this.allReservation = allReservation;
     }
 
-    public TreeSet<Reservation> getAllReservation() {
-        return allReservation;
+    public Optional<TreeSet<Reservation>> getAllReservation() {
+        return Optional.ofNullable(allReservation);
     }
 
-    public TreeSet<Reservation> getPersonalReservation(User user) {
-        TreeSet<Reservation> reservations = getAllReservation();
+    public Optional<TreeSet<Reservation>> getPersonalReservation(User user) {
+        Optional<TreeSet<Reservation>> reservations = getAllReservation();
         TreeSet<Reservation> personalReservations = new TreeSet<>(dateTimeComparator);
-        for (Reservation reservation : reservations) {
-            if (reservation.getCustomerID() == user.getId()) {
-                personalReservations.add(reservation);
+        if (reservations.isPresent()) {
+            for (Reservation reservation : reservations.get()) {
+                if (reservation.getCustomerID() == user.getId()) {
+                    personalReservations.add(reservation);
+                }
             }
         }
-        return reservations;
+            return Optional.ofNullable(personalReservations);
     }
 
     public TreeSet<Reservation> getReservationsByCoworkingSpaceAndDate(long coworkingSpaceId, LocalDate date) {

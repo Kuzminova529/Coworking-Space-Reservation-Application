@@ -2,17 +2,21 @@ package org.reservationapplication.service;
 
 import org.reservationapplication.model.Customer;
 import org.reservationapplication.model.Reservation;
+import org.reservationapplication.model.User;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.TreeSet;
 
 public interface ReservationService {
-    public TreeSet<Reservation> getAllReservation();
+    public Optional<TreeSet<Reservation>> getAllReservation();
 
     public void addReservation(Reservation reservation);
 
     public boolean removeReservationById(long id);
+
+    public Optional<TreeSet<Reservation>> getPersonalReservation(User user);
 
     public boolean userAddReservation(
             long id, String reservationName, LocalDate bookingDate,

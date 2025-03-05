@@ -6,6 +6,7 @@ import org.reservationapplication.model.CoworkingSpace;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
     private CacheServiceCoworkingSpace cacheServiceCoworkingSpace = new CacheServiceCoworkingSpace();
@@ -30,8 +31,8 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
         throw new CoworkingSpaceNotFoundException(id);
     }
 
-    public List<CoworkingSpace> getAllCoworkingSpace() {
-        return cacheServiceCoworkingSpace.getAllCoworkingSpaces();
+    public Optional<List<CoworkingSpace>> getAllCoworkingSpace() {
+        return Optional.ofNullable(cacheServiceCoworkingSpace.getAllCoworkingSpaces());
     }
 
     public void addCoworkingSpace(CoworkingSpace coworkingSpace) {
@@ -42,7 +43,7 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
         cacheServiceCoworkingSpace.removeCoworkingSpaceByID(id);
     }
 
-    public List<CoworkingSpace> loadAvailableCoworkingSpace() {
+    public Optional<List<CoworkingSpace>> getAvailableCoworkingSpace() {
         List<CoworkingSpace> coworkingSpaces = cacheServiceCoworkingSpace.getAllCoworkingSpaces();
         List<CoworkingSpace> availableSpaces = new ArrayList<>();
         for (CoworkingSpace cs : coworkingSpaces) {
@@ -50,6 +51,6 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
                 availableSpaces.add(cs);
             }
         }
-        return availableSpaces;
+        return Optional.ofNullable(availableSpaces);
     }
 }

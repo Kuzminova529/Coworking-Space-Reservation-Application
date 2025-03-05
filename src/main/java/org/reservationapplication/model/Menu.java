@@ -1,16 +1,15 @@
 package org.reservationapplication.model;
 
-import org.reservationapplication.controller.UserChoiceCheckController;
 import org.reservationapplication.logger.Loggers;
 import org.reservationapplication.repository.ApplicationStateRepository;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 import org.reservationapplication.service.MenuService;
 import org.reservationapplication.service.ReservationServiceImpl;
 
+import static org.reservationapplication.util.InputSupplierFactory.intSupplierCreator;
+
 
 public class Menu {
-
-    UserChoiceCheckController userChoiceCheckController = new UserChoiceCheckController();
 
     public void welcomeMenu(User user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
         Loggers.USER_LOGGER.info("Welcome to Reservation Application");
@@ -19,12 +18,12 @@ public class Menu {
 
     public void mainMenu(User user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
         while (true) {
-            Loggers.USER_LOGGER.info("""
-                    1. Admin menu
-                    2. Customer menu
-                    3. Exit
-                    """);
-            int choice = userChoiceCheckController.getUserChoiceInt();
+             int choice = intSupplierCreator.supplier("""
+                      1. Admin menu
+                      2. Customer menu
+                      3. Exit
+                      """).get();
+
             switch (choice) {
                 case 1:
                     if ((user instanceof Admin)) {
@@ -44,7 +43,7 @@ public class Menu {
                     Loggers.USER_LOGGER.info("Exiting...");
                     return;
                 default:
-                    Loggers.USER_LOGGER.warn("Invalid choice, please try again.");
+                    Loggers.USER_LOGGER.warn("Invalid choice, please try again.(1-3)");
             }
         }
     }
@@ -52,14 +51,13 @@ public class Menu {
     public void adminMenu( User user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
         MenuService menuService = new MenuService();
         while (true) {
-            Loggers.USER_LOGGER.info("""
+            int choice = intSupplierCreator.supplier("""
                     1. Add a new coworking space
                     2. Remove a coworking space
                     3. View all reservations
                     4. View all coworking spaces
                     5. Back to Main Menu
-                    """);
-            int choice = userChoiceCheckController.getUserChoiceInt();
+                    """).get();
             switch (choice) {
                 case 1: {
                     menuService.addCoworkingSpace(coworkingSpaceService);
@@ -95,17 +93,16 @@ public class Menu {
     public void customerMenu(Customer user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
         MenuService menuService = new MenuService();
         while (true) {
-            Loggers.USER_LOGGER.info("""
+            int choice = intSupplierCreator.supplier("""
                     1. Browse available spaces
                     2. Make a reservation
                     3. Cancel reservation
                     4. View my reservations
                     5. Back to Main Menu
-                    """);
-            int choice = userChoiceCheckController.getUserChoiceInt();
+                    """).get();
             switch (choice) {
                 case 1: {
-                    menuService.browseAvailableSpaces(coworkingSpaceService);
+                    menuService.viewAvailableSpaces(coworkingSpaceService);
                     break;
                 }
                 case 2: {
@@ -128,7 +125,7 @@ public class Menu {
                     return;
                 }
                 default: {
-                    Loggers.USER_LOGGER.warn("Invalid choice, please try again.");
+                    Loggers.USER_LOGGER.warn("Invalid choice, please try again.(1-5)");
                 }
             }
         }
