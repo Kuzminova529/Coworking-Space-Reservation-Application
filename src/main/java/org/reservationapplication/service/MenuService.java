@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.TreeSet;
 
 import static org.reservationapplication.repository.CoworkingSpaceRepository.getNextID;
+import static org.reservationapplication.service.Constants.*;
 import static org.reservationapplication.util.UserInputHandler.*;
 
 public class MenuService {
@@ -21,12 +22,7 @@ public class MenuService {
         CoworkingSpace coworkingSpace = new CoworkingSpace();
         coworkingSpace.setID(getNextID());
 
-        int choice = intSupplierCreator.supplier("""
-                Enter type of Coworking space:
-                1.Open space
-                2.Private
-                3.Room
-                """).get();
+        int choice = intSupplierCreator.supplier(COWORKING_SPACE_TYPE_PROMPT).get();
 
         switch (choice){
             case 1:
@@ -43,14 +39,11 @@ public class MenuService {
                 return;
         }
 
-        double price = doubleSupplierCreator.supplier("Enter price of Coworking space").get();
+        double price = doubleSupplierCreator.supplier(COWORKING_SPACE_PRICE_PROMPT).get();
         coworkingSpace.setPrice(price);
 
-        Loggers.USER_LOGGER.info("Enter availability status of Coworking space");
-        choice = intSupplierCreator.supplier("""
-                1.Available
-                2.Unavailable
-                """).get();
+        Loggers.USER_LOGGER.info(COWORKING_SPACE_AVAILABILITY_PROMPT);
+        choice = intSupplierCreator.supplier(COWORKING_SPACE_AVAILABILITY_STATUS_PROMPT).get();
         switch (choice){
             case 1:
                 coworkingSpace.setAvailabilityStatus(AvailabilityStatus.AVAILABLE);
@@ -66,7 +59,7 @@ public class MenuService {
     }
 
     public void removeCoworkingSpace(CoworkingSpaceServiceImpl coworkingSpaceService) {
-        long id = longSupplierCreator.supplier("Enter id of a coworking space you want to be removed").get();
+        long id = longSupplierCreator.supplier(COWORKING_SPACE_ID_PROMPT).get();
         coworkingSpaceService.removeCoworkingSpace(id);
     }
 
@@ -75,7 +68,7 @@ public class MenuService {
         if(!reservations.isEmpty()) {
             reservations.forEach(reservation -> Loggers.USER_LOGGER.info(reservation.toString()));
         }
-        else{
+        else {
             Loggers.USER_LOGGER.warn("No reservations found");
     }
     }
@@ -85,7 +78,7 @@ public class MenuService {
         if(!coworkingSpaces.isEmpty()) {
             coworkingSpaces.forEach(coworkingSpace -> Loggers.USER_LOGGER.info(coworkingSpace.toString()));
         }
-        else{
+        else {
             Loggers.USER_LOGGER.warn("No coworking space found");
         }
     }
@@ -95,21 +88,21 @@ public class MenuService {
         if(!availableCoworkingSpaces.isEmpty()) {
             availableCoworkingSpaces.forEach(reservation -> Loggers.USER_LOGGER.info(availableCoworkingSpaces.toString()));
         }
-        else{
+        else {
             Loggers.USER_LOGGER.warn("No coworking space found");
         }
     }
 
     public void makeReservation(Customer user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
-        long coworkingSpaceID = longSupplierCreator.supplier("Enter id of coworking space you want to make").get();
+        long coworkingSpaceID = longSupplierCreator.supplier(COWORKING_SPACE_ID_PROMPT).get();
 
-        String reservationName = stringSupplierCreator.supplier("Enter name for reservation").get();
+        String reservationName = stringSupplierCreator.supplier(RESERVATION_NAME_PROMPT).get();
 
-        String dateInput = stringSupplierCreator.supplier("Enter the reservation date (for example, 31.12.2025):").get();
+        String dateInput = stringSupplierCreator.supplier(RESERVATION_DATE_PROMPT).get();
 
-        String startTimeInput = stringSupplierCreator.supplier("Enter the start time (for example, 10:00):").get();
+        String startTimeInput = stringSupplierCreator.supplier(START_TIME_PROMPT).get();
 
-        String endTimeInput = stringSupplierCreator.supplier("Enter the end time (for example, 12:00):").get();
+        String endTimeInput = stringSupplierCreator.supplier(END_TIME_PROMPT).get();
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -141,7 +134,7 @@ public class MenuService {
     }
 
     public void cancelReservation(ReservationServiceImpl reservationService) {
-        long id = longSupplierCreator.supplier("Enter id of a reservation you want to be removed").get();
+        long id = longSupplierCreator.supplier(RESERVATION_ID_PROMPT).get();
         if (reservationService.removeReservationById(id)){
             Loggers.USER_LOGGER.info("Reservation has been cancelled");
             Loggers.TECHNICAL_LOGGER.info("Reservation with ID {} has been successfully deleted.", id);
@@ -157,7 +150,7 @@ public class MenuService {
         if(!personalReservations.isEmpty()) {
             personalReservations.forEach(coworkingSpace -> Loggers.USER_LOGGER.info(coworkingSpace.toString()));
         }
-        else{
+        else {
             Loggers.USER_LOGGER.warn("No reservations found");
         }   }
 }

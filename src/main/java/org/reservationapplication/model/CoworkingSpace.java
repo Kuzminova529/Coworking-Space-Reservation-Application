@@ -1,17 +1,19 @@
 package org.reservationapplication.model;
 
+import java.util.Objects;
+
 public class CoworkingSpace {
-    private long coworkingSpaceID;
+    private long id;
     private CoworkingSpaceType type;
     private double price;
     private AvailabilityStatus availabilityStatus;
   
     public long getID() {
-        return coworkingSpaceID;
+        return id;
     }
 
     public void setID(long coworkingSpaceID) {
-        this.coworkingSpaceID = coworkingSpaceID;
+        this.id = coworkingSpaceID;
     }
 
     public CoworkingSpaceType getType() {
@@ -39,9 +41,17 @@ public class CoworkingSpace {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CoworkingSpace that = (CoworkingSpace) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
     public String toString() {
         return "CoworkingSpace :" +
-                "id='" + coworkingSpaceID + '\'' +
+                "id='" + id + '\'' +
                 ", type='" + type + '\'' +
                 ", price=" + price +
                 ", availabilityStatus=" + availabilityStatus ;

@@ -13,6 +13,7 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
     private final CoworkingSpaceRepository coworkingSpaceRepository = new CoworkingSpaceRepository();
 
     public CoworkingSpaceServiceImpl() {
+        cacheServiceCoworkingSpace.removeAllCoworkingSpaces();
     }
 
     public CoworkingSpaceServiceImpl(List<CoworkingSpace> coworkingSpaces) {
