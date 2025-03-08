@@ -5,7 +5,9 @@ import org.reservationapplication.repository.ApplicationStateRepository;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 import org.reservationapplication.service.MenuService;
 import org.reservationapplication.service.ReservationServiceImpl;
+import org.reservationapplication.controller.MenuController;
 
+import static org.reservationapplication.service.Constants.*;
 import static org.reservationapplication.util.UserInputHandler.intSupplierCreator;
 
 
@@ -18,11 +20,7 @@ public class Menu {
 
     public void mainMenu(User user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
         while (true) {
-             int choice = intSupplierCreator.supplier("""
-                      1. Admin menu
-                      2. Customer menu
-                      3. Exit
-                      """).get();
+             int choice = intSupplierCreator.supplier(MAIN_MENU_PROMPT).get();
 
             switch (choice) {
                 case 1:
@@ -49,38 +47,31 @@ public class Menu {
     }
 
     public void adminMenu( User user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
-        MenuService menuService = new MenuService();
+        MenuController menuController = new MenuController(new MenuService(), coworkingSpaceService, reservationService);
         while (true) {
-            int choice = intSupplierCreator.supplier("""
-                    1. Add a new coworking space
-                    2. Remove a coworking space
-                    3. View all reservations
-                    4. View all coworking spaces
-                    5. Back to Main Menu
-                    """).get();
+            int choice = intSupplierCreator.supplier(ADMIN_MENU_PROMPT).get();
             switch (choice) {
                 case 1: {
-                    menuService.addCoworkingSpace(coworkingSpaceService);
+                    menuController.handleAddCoworkingSpace();
                     ApplicationStateRepository appState = new ApplicationStateRepository(user, coworkingSpaceService, reservationService);
                     appState.saveState();
                     break;
                 }
                 case 2: {
-                    menuService.removeCoworkingSpace(coworkingSpaceService);
+                    menuController.handleRemoveCoworkingSpace();
                     ApplicationStateRepository appState = new ApplicationStateRepository(user, coworkingSpaceService, reservationService);
                     appState.saveState();
                     break;
                 }
                 case 3: {
-                    menuService.viewAllReservations(reservationService);
+                    menuController.handleViewAllReservations();
                     break;
                 }
                 case 4: {
-                    menuService.viewAllCoworkingSpaces(coworkingSpaceService);
+                    menuController.handleViewAllCoworkingSpaces();
                     break;
                 }
                 case 5: {
-                    Loggers.USER_LOGGER.info("Exiting...");
                     return;
                 }
                 default: {
@@ -91,34 +82,28 @@ public class Menu {
     }
 
     public void customerMenu(Customer user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
-        MenuService menuService = new MenuService();
+        MenuController menuController = new MenuController(new MenuService(), coworkingSpaceService, reservationService);
         while (true) {
-            int choice = intSupplierCreator.supplier("""
-                    1. Browse available spaces
-                    2. Make a reservation
-                    3. Cancel reservation
-                    4. View my reservations
-                    5. Back to Main Menu
-                    """).get();
+            int choice = intSupplierCreator.supplier(CUSTOMER_MENU_PROMPT).get();
             switch (choice) {
                 case 1: {
-                    menuService.viewAvailableSpaces(coworkingSpaceService);
+                    menuController.handleViewAvailableSpaces();
                     break;
                 }
                 case 2: {
-                    menuService.makeReservation(user, coworkingSpaceService, reservationService);
+                    menuController.handleMakeReservation(user);
                     ApplicationStateRepository appState= new ApplicationStateRepository(user, coworkingSpaceService, reservationService);
                     appState.saveState();
                     break;
                 }
                 case 3:{
-                    menuService.cancelReservation(reservationService);
+                    menuController.handleCancelReservation();
                     ApplicationStateRepository appState= new ApplicationStateRepository(user, coworkingSpaceService, reservationService);
                     appState.saveState();
                     break;
                 }
                 case 4:{
-                    menuService.viewPersonalReservations(user, reservationService);
+                    menuController.handleViewPersonalReservations(user);
                     break;
                 }
                 case 5: {
