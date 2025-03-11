@@ -35,7 +35,6 @@ public abstract class JsonDataStorage<T> implements DataStorage<T> {
         File file = new File(fileName);
         if (!file.exists() || file.length() == 0) {
             Loggers.TECHNICAL_LOGGER.info("File {} not found or is empty, returning default value", fileName);
-            save(defaultValue());
             return defaultValue();
         }
         try {
