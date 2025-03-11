@@ -48,7 +48,6 @@ public class UserInputHandler {
 
     public  static final InputSupplierCreator<String, String> stringSupplierCreator = new InputSupplierCreator<>(Loggers.USER_LOGGER::info, () -> {
         String s = scanner.nextLine();
-        scanner.nextLine();
         return s;
     });
 

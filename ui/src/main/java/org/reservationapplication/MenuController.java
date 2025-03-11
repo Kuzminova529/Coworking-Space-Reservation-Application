@@ -15,7 +15,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.TreeSet;
 
-import static org.reservationapplication.service.Constants.*;
+import static org.reservationapplication.MenuConstants.*;
 import static org.reservationapplication.UserInputHandler.*;
 
 public class MenuController {

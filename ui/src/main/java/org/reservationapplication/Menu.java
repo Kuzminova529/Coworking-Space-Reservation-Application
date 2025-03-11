@@ -1,6 +1,5 @@
 package org.reservationapplication;
 
-import org.reservationapplication.Loggers;
 import org.reservationapplication.model.Admin;
 import org.reservationapplication.model.Customer;
 import org.reservationapplication.model.User;
@@ -8,9 +7,8 @@ import org.reservationapplication.repository.ApplicationStateRepository;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 import org.reservationapplication.service.MenuService;
 import org.reservationapplication.service.ReservationServiceImpl;
-import org.reservationapplication.MenuController;
 
-import static org.reservationapplication.service.Constants.*;
+import static org.reservationapplication.MenuConstants.*;
 import static org.reservationapplication.UserInputHandler.intSupplierCreator;
 
 
