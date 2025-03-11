@@ -1,1 +1,1 @@
-# Coworking-Space-Reservation-Application
+java -jar dist/coworking-fat-jar.jar
