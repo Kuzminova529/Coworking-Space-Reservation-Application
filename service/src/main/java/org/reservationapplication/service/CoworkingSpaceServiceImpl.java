@@ -9,17 +9,23 @@ import java.util.List;
 import java.util.Optional;
 
 public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
-    private final CacheServiceCoworkingSpace cacheServiceCoworkingSpace = new CacheServiceCoworkingSpace();
-    private final CoworkingSpaceRepository coworkingSpaceRepository = new CoworkingSpaceRepository();
+    private final CacheServiceCoworkingSpace cacheServiceCoworkingSpace;
+    private final CoworkingSpaceRepository coworkingSpaceRepository;
 
-    public CoworkingSpaceServiceImpl() {
+    public CoworkingSpaceServiceImpl(CacheServiceCoworkingSpace cacheServiceCoworkingSpace, CoworkingSpaceRepository coworkingSpaceRepository) {
+        this.cacheServiceCoworkingSpace = cacheServiceCoworkingSpace;
+        this.coworkingSpaceRepository = coworkingSpaceRepository;
         cacheServiceCoworkingSpace.removeAllCoworkingSpaces();
     }
 
-    public CoworkingSpaceServiceImpl(List<CoworkingSpace> coworkingSpaces) {
+    public CoworkingSpaceServiceImpl(List<CoworkingSpace> coworkingSpaces, CacheServiceCoworkingSpace cacheServiceCoworkingSpace, CoworkingSpaceRepository coworkingSpaceRepository) {
+        this.cacheServiceCoworkingSpace = cacheServiceCoworkingSpace;
+        this.coworkingSpaceRepository = coworkingSpaceRepository;
         cacheServiceCoworkingSpace.removeAllCoworkingSpaces();
-        for (CoworkingSpace cs : coworkingSpaces) {
+        if (coworkingSpaces != null) {
+            for (CoworkingSpace cs : coworkingSpaces) {
                 addCoworkingSpace(cs);
+            }
         }
     }
 
@@ -42,9 +48,11 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
     public List<CoworkingSpace> getAvailableCoworkingSpace() {
         List<CoworkingSpace> coworkingSpaces = cacheServiceCoworkingSpace.getAllCoworkingSpaces();
         List<CoworkingSpace> availableSpaces = new ArrayList<>();
-        for (CoworkingSpace cs : coworkingSpaces) {
-            if (cs.getAvailabilityStatus() == AvailabilityStatus.AVAILABLE) {
-                availableSpaces.add(cs);
+        if (coworkingSpaces != null) {
+            for (CoworkingSpace cs : coworkingSpaces) {
+                if (cs.getAvailabilityStatus() == AvailabilityStatus.AVAILABLE) {
+                    availableSpaces.add(cs);
+                }
             }
         }
         return availableSpaces;
