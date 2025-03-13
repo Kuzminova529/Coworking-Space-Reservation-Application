@@ -16,6 +16,8 @@ import java.util.TreeSet;
 
 public class MenuService {
 
+    public MenuService(){};
+
     public void addCoworkingSpace(CoworkingSpaceServiceImpl coworkingSpaceService, int typeChoice, double price, int availabilityChoice) {
         CoworkingSpace coworkingSpace = new CoworkingSpace();
         coworkingSpace.setID(CoworkingSpaceRepository.getNextID());

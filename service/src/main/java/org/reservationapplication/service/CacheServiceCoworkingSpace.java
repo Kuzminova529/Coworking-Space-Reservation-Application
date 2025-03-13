@@ -9,10 +9,19 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class CacheServiceCoworkingSpace {
-    private final CoworkingSpaceRepository repository = new CoworkingSpaceRepository();
+    private final CoworkingSpaceRepository repository;
     private final Cache<String, List<CoworkingSpace>> cache;
 
     public CacheServiceCoworkingSpace() {
+        this.repository = new CoworkingSpaceRepository();
+        this.cache = Caffeine.newBuilder()
+                .expireAfterWrite(10, TimeUnit.MINUTES) // Clears cache every 10mins
+                .maximumSize(100) // Coworking spaces limit
+                .build();
+    }
+
+    public CacheServiceCoworkingSpace(CoworkingSpaceRepository repository) {
+        this.repository = repository;
         this.cache = Caffeine.newBuilder()
                 .expireAfterWrite(10, TimeUnit.MINUTES) // Clears cache every 10mins
                 .maximumSize(100) // Coworking spaces limit
@@ -36,5 +45,9 @@ public class CacheServiceCoworkingSpace {
     public void removeAllCoworkingSpaces() {
         repository.deleteAll();
         cache.invalidateAll();
+    }
+
+    public Cache<String, List<CoworkingSpace>> getCache() {
+        return cache;
     }
 }

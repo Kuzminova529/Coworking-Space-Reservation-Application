@@ -65,6 +65,27 @@ public class CoworkingSpaceServiceImplTest {
     }
 
     @Test
+    void testAddCoworkingSpace() {
+        CoworkingSpace coworkingSpace = new CoworkingSpace();
+        coworkingSpace.setID(1L); // Устанавливаем ID
+
+        coworkingSpaceService.addCoworkingSpace(coworkingSpace);
+
+        // Check that the addCoworkingSpace method was called on cacheServiceCoworkingSpace with the correct object
+        verify(cacheServiceCoworkingSpace, times(1)).addCoworkingSpace(coworkingSpace);
+    }
+
+    @Test
+    void testRemoveCoworkingSpace() {
+        long coworkingSpaceId = 1L;
+
+        coworkingSpaceService.removeCoworkingSpace(coworkingSpaceId);
+
+        // Check that the removeCoworkingSpaceByID method was called with the correct id
+        verify(cacheServiceCoworkingSpace, times(1)).removeCoworkingSpaceByID(coworkingSpaceId);
+    }
+
+    @Test
     public void testGetAvailableCoworkingSpace() {
         CoworkingSpace space1 = new CoworkingSpace();
         space1.setID(1L);
@@ -100,8 +121,8 @@ public class CoworkingSpaceServiceImplTest {
 
         List<CoworkingSpace> availableSpaces = coworkingSpaceService.getAvailableCoworkingSpace();
 
-        assertNotNull(availableSpaces);//there must be list
-        assertTrue(availableSpaces.isEmpty());//but empty
+        assertNotNull(availableSpaces);
+        assertTrue(availableSpaces.isEmpty());
 
         verify(cacheServiceCoworkingSpace, times(1)).getAllCoworkingSpaces();
     }
