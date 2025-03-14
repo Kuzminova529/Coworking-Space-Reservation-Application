@@ -22,11 +22,14 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     public ReservationServiceImpl(TreeSet<Reservation> allReservation) {
-        this.allReservation = allReservation;
+        this.allReservation = new TreeSet<>(dateTimeComparator);
+        if (allReservation != null) {
+            this.allReservation = allReservation;
+        }
     }
 
     public TreeSet<Reservation> getAllReservation() {
-        return allReservation;
+        return allReservation != null ? allReservation : new TreeSet<>(dateTimeComparator);
     }
 
     public TreeSet<Reservation> getPersonalReservation(User user) {
@@ -83,7 +86,6 @@ public class ReservationServiceImpl implements ReservationService {
 
                     if (bookingDate.isBefore(today)) {
                         Loggers.TECHNICAL_LOGGER.warn("Attempted to register a booking with a past date: {}", bookingDate);
-                        Loggers.USER_LOGGER.warn("You cannot register a past date!");
 
                         throw new IllegalArgumentException("You cannot register a past date!");
                     }
