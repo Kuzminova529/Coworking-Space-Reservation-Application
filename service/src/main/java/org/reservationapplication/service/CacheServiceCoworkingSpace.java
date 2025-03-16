@@ -37,6 +37,10 @@ public class CacheServiceCoworkingSpace {
         cache.invalidate("coworkings");
     }
 
+    public void saveCoworkingSpaces(List<CoworkingSpace> coworkingSpace) {
+        repository.save(coworkingSpace);
+        cache.invalidate("coworkings");
+    }
     public void removeCoworkingSpaceByID(long id) {
         repository.deleteByID(id);
         cache.invalidate("coworkings");

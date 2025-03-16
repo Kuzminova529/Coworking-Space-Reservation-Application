@@ -7,10 +7,13 @@ import org.reservationapplication.repository.CoworkingSpaceRepository;
 import org.reservationapplication.service.CacheServiceCoworkingSpace;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 import org.reservationapplication.service.ReservationServiceImpl;
+import org.reservationapplication.sql.DatabaseMigration;
 
 
 public class Main {
     public static void main(String[] args) {
+        DatabaseMigration.migrate();
+
         Menu menu = new Menu();
 
         ApplicationStateRepository appStateRepo= new ApplicationStateRepository();

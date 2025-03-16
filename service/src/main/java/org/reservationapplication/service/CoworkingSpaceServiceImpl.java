@@ -1,5 +1,6 @@
 package org.reservationapplication.service;
 
+import org.checkerframework.checker.units.qual.C;
 import org.reservationapplication.model.AvailabilityStatus;
 import org.reservationapplication.model.CoworkingSpace;
 import org.reservationapplication.repository.CoworkingSpaceRepository;
@@ -23,9 +24,7 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
         this.coworkingSpaceRepository = coworkingSpaceRepository;
         cacheServiceCoworkingSpace.removeAllCoworkingSpaces();
         if (coworkingSpaces != null) {
-            for (CoworkingSpace cs : coworkingSpaces) {
-                addCoworkingSpace(cs);
-            }
+            saveCoworkingSpaces(coworkingSpaces);
         }
     }
 
@@ -39,6 +38,10 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
 
     public void addCoworkingSpace(CoworkingSpace coworkingSpace) {
         cacheServiceCoworkingSpace.addCoworkingSpace(coworkingSpace);
+    }
+
+    public void saveCoworkingSpaces(List<CoworkingSpace> coworkingSpaces) {
+        cacheServiceCoworkingSpace.saveCoworkingSpaces(coworkingSpaces);
     }
 
     public void removeCoworkingSpace(long id) {

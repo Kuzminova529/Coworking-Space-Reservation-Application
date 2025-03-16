@@ -1,8 +1,8 @@
 package org.reservationapplication.model;
 
 public enum AvailabilityStatus {
-    AVAILABLE("available"),
-    UNAVAILABLE("unavailable");
+    AVAILABLE("AVAILABLE"),
+    UNAVAILABLE("UNAVAILABLE");
 
     private String status;
 
