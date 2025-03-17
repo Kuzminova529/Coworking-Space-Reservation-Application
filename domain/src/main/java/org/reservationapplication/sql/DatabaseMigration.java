@@ -1,6 +1,7 @@
 package org.reservationapplication.sql;
 
 import org.flywaydb.core.Flyway;
+import org.reservationapplication.Loggers;
 
 public class DatabaseMigration {
     public static void migrate() {
@@ -14,6 +15,6 @@ public class DatabaseMigration {
         // Performing migrations
         flyway.migrate();
 
-        System.out.println("Migration completed successfully.");
+        Loggers.USER_LOGGER.info("Migration completed successfully.");
     }
 }
