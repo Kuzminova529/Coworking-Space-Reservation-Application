@@ -11,9 +11,9 @@ public class DatabaseConfig {
 
     static {
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:postgresql://localhost:5432/reservation_app_db");
-        config.setUsername("postgres");
-        config.setPassword("1234");
+        config.setJdbcUrl(DatabaseSettings.getUrl());
+        config.setUsername(DatabaseSettings.getUsername());
+        config.setPassword(DatabaseSettings.getPassword());
         config.setMaximumPoolSize(10); // Maximum number of connections in the pool
         dataSource = new HikariDataSource(config);
     }

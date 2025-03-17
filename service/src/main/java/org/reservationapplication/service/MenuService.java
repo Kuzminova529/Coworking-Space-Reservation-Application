@@ -82,8 +82,8 @@ public class MenuService {
         return reservationService.userAddReservation(coworkingSpaceID, reservationName, bookingDate, startDateTime, endDateTime, user, coworkingSpaceService, reservationService);
     }
 
-    public boolean cancelReservation(ReservationServiceImpl reservationService, long reservationId) {
-        return reservationService.removeReservationById(reservationId);
+    public void cancelReservation(ReservationServiceImpl reservationService, long reservationId) {
+        reservationService.removeReservationById(reservationId);
     }
 
     public TreeSet<Reservation> viewPersonalReservations(User user, ReservationServiceImpl reservationService) {

@@ -1,0 +1,136 @@
+package org.reservationapplication.repository;
+
+import org.reservationapplication.Loggers;
+import org.reservationapplication.model.Reservation;
+import org.reservationapplication.sql.DatabaseConfig;
+
+import java.sql.*;
+import java.util.Comparator;
+import java.util.TreeSet;
+
+public class ReservationRepository {
+    Comparator<Reservation> dateTimeComparator = Comparator.comparing(Reservation::getStartDateTime);
+    private static long nextId = 0L;
+
+    public static long getNextId() {
+        return nextId;
+    }
+
+    public void save(TreeSet<Reservation> reservations) {
+        String sql = "INSERT INTO reservations (id, coworking_space_id, customer_id, reservation_name, start_datetime, end_datetime) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection connection = DatabaseConfig.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            for (Reservation reservation : reservations) {
+                statement.setLong(1, reservation.getID());
+                statement.setLong(2, reservation.getCoworkingSpaceID());
+                statement.setLong(3, reservation.getCustomerID());
+                statement.setString(4, reservation.getReservationName());
+                statement.setTimestamp(5, Timestamp.valueOf(reservation.getStartDateTime()));
+                statement.setTimestamp(6, Timestamp.valueOf(reservation.getEndDateTime()));
+                statement.addBatch();
+            }
+            statement.executeBatch();
+        } catch (SQLException e) {
+            Loggers.USER_LOGGER.error("Something went wrong while saving reservations");
+            Loggers.TECHNICAL_LOGGER.error(e.getMessage());
+        }
+        updateID(reservations);
+    }
+
+    public TreeSet<Reservation> read() {
+        TreeSet<Reservation> reservations = new TreeSet<>(dateTimeComparator);
+        String sql = "SELECT * FROM reservations";
+        try (Connection connection = DatabaseConfig.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                Reservation reservation = new Reservation();
+                reservation.setID(resultSet.getLong("id"));
+                reservation.setCoworkingSpaceID(resultSet.getLong("coworking_space_id"));
+                reservation.setCustomerID(resultSet.getLong("customer_id"));
+                reservation.setReservationName(resultSet.getString("reservation_name"));
+                reservation.setStartDateTime(resultSet.getTimestamp("start_datetime").toLocalDateTime());
+                reservation.setEndDateTime(resultSet.getTimestamp("end_datetime").toLocalDateTime());
+                reservations.add(reservation);
+            }
+        } catch (SQLException e) {
+            Loggers.USER_LOGGER.error("Something went wrong while reading Reservations");
+            Loggers.TECHNICAL_LOGGER.error(e.getMessage());
+        }
+        return reservations;
+    }
+
+    public TreeSet<Reservation> readPersonalReservations(Long customerId) {
+        String sql = "SELECT * FROM reservations WHERE customer_id = ?";
+        TreeSet<Reservation> reservations = new TreeSet<>(dateTimeComparator);
+
+        try (Connection connection = DatabaseConfig.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setLong(1, customerId);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Reservation reservation = new Reservation();
+                reservation.setID(resultSet.getLong("id"));
+                reservation.setCoworkingSpaceID(resultSet.getLong("coworking_space_id"));
+                reservation.setCustomerID(resultSet.getLong("customer_id"));
+                reservation.setReservationName(resultSet.getString("reservation_name"));
+                reservation.setStartDateTime(resultSet.getTimestamp("start_datetime").toLocalDateTime());
+                reservation.setEndDateTime(resultSet.getTimestamp("end_datetime").toLocalDateTime());
+
+                reservations.add(reservation);
+            }
+        } catch (SQLException e) {
+            Loggers.USER_LOGGER.error("Something went wrong while finding reservation");
+            Loggers.TECHNICAL_LOGGER.error(e.getMessage());
+        }
+        return reservations;
+    }
+
+
+    public void add(Reservation reservation) {
+        String sql = "INSERT INTO reservations (id, coworking_space_id, customer_id, reservation_name, start_datetime, end_datetime) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection connection = DatabaseConfig.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setLong(1, reservation.getID());
+            statement.setLong(2, reservation.getCoworkingSpaceID());
+            statement.setLong(3, reservation.getCustomerID());
+            statement.setString(4, reservation.getReservationName());
+            statement.setTimestamp(5, Timestamp.valueOf(reservation.getStartDateTime()));
+            statement.setTimestamp(6, Timestamp.valueOf(reservation.getEndDateTime()));
+
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            Loggers.USER_LOGGER.error("Something went wrong while adding reservation");
+            Loggers.TECHNICAL_LOGGER.error(e.getMessage());
+        }
+    }
+
+    public void deleteByID(Long id) {
+        String sql = "DELETE FROM reservations WHERE id = ?";
+        try (Connection connection = DatabaseConfig.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setLong(1, id);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            Loggers.USER_LOGGER.error("Something went wrong while deleting reservation");
+            Loggers.TECHNICAL_LOGGER.error(e.getMessage());
+        }
+    }
+
+    public void deleteAll() {
+        String sql = "DELETE FROM reservations";
+        try (Connection connection = DatabaseConfig.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            Loggers.USER_LOGGER.error("Database connection error");
+            Loggers.TECHNICAL_LOGGER.error(e.getMessage());
+        }
+    }
+
+    private void updateID(TreeSet<Reservation> spaces) {
+        nextId = spaces.stream().mapToLong(Reservation::getID).max().orElse(0L) + 1;
+    }
+}

@@ -5,6 +5,7 @@ import org.reservationapplication.model.AvailabilityStatus;
 import org.reservationapplication.model.Customer;
 import org.reservationapplication.model.Reservation;
 import org.reservationapplication.model.User;
+import org.reservationapplication.repository.ReservationRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,59 +14,45 @@ import java.util.stream.Collectors;
 
 public class ReservationServiceImpl implements ReservationService {
     Comparator<Reservation> dateTimeComparator = Comparator.comparing(Reservation::getStartDateTime);
+    private ReservationRepository reservationRepository;
 
-    TreeSet<Reservation> allReservation;
 
-
-    public ReservationServiceImpl() {
-        this.allReservation = new TreeSet<>(dateTimeComparator);
+    public ReservationServiceImpl(ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
+        reservationRepository.deleteAll();
     }
 
-    public ReservationServiceImpl(TreeSet<Reservation> allReservation) {
-        this.allReservation = new TreeSet<>(dateTimeComparator);
-        if (allReservation != null) {
-            this.allReservation = allReservation;
+    public ReservationServiceImpl(TreeSet<Reservation> reservations, ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
+        reservationRepository.deleteAll();
+        if (reservations != null) {
+            reservationRepository.save(reservations);
         }
     }
 
     public TreeSet<Reservation> getAllReservation() {
-        return allReservation != null ? allReservation : new TreeSet<>(dateTimeComparator);
+        return reservationRepository.read();
     }
 
     public TreeSet<Reservation> getPersonalReservation(User user) {
-        TreeSet<Reservation> reservations = getAllReservation();
-        TreeSet<Reservation> personalReservations = new TreeSet<>(dateTimeComparator);
-        if (!reservations.isEmpty()) {
-            for (Reservation reservation : reservations) {
-                if (reservation.getCustomerID() == user.getId()) {
-                    personalReservations.add(reservation);
-                }
-            }
-        }
-            return personalReservations;
+        TreeSet<Reservation> personalReservations = reservationRepository.readPersonalReservations(user.getId());
+        return personalReservations;
     }
 
     public TreeSet<Reservation> getReservationsByCoworkingSpaceAndDate(long coworkingSpaceId, LocalDate date) {
-        return allReservation.stream()
+        TreeSet<Reservation> reservations = reservationRepository.read();
+        return reservations.stream()
                 .filter(r -> r.getCoworkingSpaceID() == coworkingSpaceId &&
                         r.getStartDateTime().toLocalDate().equals(date))
                 .collect(Collectors.toCollection(() -> new TreeSet<>(dateTimeComparator)));
     }
 
-    public boolean removeReservationById(long id) {
-        Iterator<Reservation> iterator = allReservation.iterator();
-        while (iterator.hasNext()) {
-            Reservation reservation = iterator.next();
-            if (reservation.getReservationID() == id) {
-                iterator.remove();
-                return true;
-            }
-        }
-        return false;
+    public void removeReservationById(long id) {
+        reservationRepository.deleteByID(id);
     }
 
     public void addReservation(Reservation reservation) {
-        allReservation.add(reservation);
+        reservationRepository.add(reservation);
     }
 
     public boolean userAddReservation(
@@ -121,6 +108,7 @@ public class ReservationServiceImpl implements ReservationService {
 
                     reservation.setStartDateTime(startDateTime);
                     reservation.setEndDateTime(endDateTime);
+                    reservation.setID(ReservationRepository.getNextId());
 
                     reservationService.addReservation(reservation);
 
