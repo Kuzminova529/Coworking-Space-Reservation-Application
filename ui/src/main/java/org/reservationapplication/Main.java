@@ -1,11 +1,10 @@
 package org.reservationapplication;
 
-import org.reservationapplication.model.Admin;
 import org.reservationapplication.model.ApplicationState;
 import org.reservationapplication.model.User;
 import org.reservationapplication.repository.ApplicationStateRepository;
-import org.reservationapplication.repository.CoworkingSpaceRepository;
-import org.reservationapplication.repository.ReservationRepository;
+import org.reservationapplication.repository.oldRepos.CoworkingSpaceRepository;
+import org.reservationapplication.repository.oldRepos.ReservationRepository;
 import org.reservationapplication.service.CacheServiceCoworkingSpace;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 import org.reservationapplication.service.ReservationServiceImpl;

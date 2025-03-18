@@ -5,7 +5,7 @@ import org.reservationapplication.model.AvailabilityStatus;
 import org.reservationapplication.model.Customer;
 import org.reservationapplication.model.Reservation;
 import org.reservationapplication.model.User;
-import org.reservationapplication.repository.ReservationRepository;
+import org.reservationapplication.repository.oldRepos.ReservationRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

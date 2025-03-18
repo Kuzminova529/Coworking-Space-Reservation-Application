@@ -8,7 +8,7 @@ public interface EntityRepository<T, K> {
 
     List<T> read();
 
-    void add(T item);
+    void create(T item);
 
     void deleteByID(K id);
 

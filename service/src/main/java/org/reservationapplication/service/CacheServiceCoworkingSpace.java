@@ -3,7 +3,7 @@ package org.reservationapplication.service;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.reservationapplication.model.CoworkingSpace;
-import org.reservationapplication.repository.CoworkingSpaceRepository;
+import org.reservationapplication.repository.oldRepos.CoworkingSpaceRepository;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +33,7 @@ public class CacheServiceCoworkingSpace {
     }
 
     public void addCoworkingSpace(CoworkingSpace coworkingSpace) {
-        repository.add(coworkingSpace);
+        repository.create(coworkingSpace);
         cache.invalidate("coworkings");
     }
 

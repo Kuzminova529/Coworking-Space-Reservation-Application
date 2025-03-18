@@ -6,7 +6,7 @@ import org.reservationapplication.model.AvailabilityStatus;
 import org.reservationapplication.model.Reservation;
 import org.reservationapplication.model.Customer;
 import org.reservationapplication.model.User;
-import org.reservationapplication.repository.CoworkingSpaceRepository;
+import org.reservationapplication.repository.oldRepos.CoworkingSpaceRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

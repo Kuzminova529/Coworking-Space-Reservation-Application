@@ -7,8 +7,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.Test;
 import org.reservationapplication.model.*;
-import org.reservationapplication.repository.CoworkingSpaceRepository;
-import org.reservationapplication.repository.ReservationRepository;
+import org.reservationapplication.repository.oldRepos.ReservationRepository;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 import org.reservationapplication.service.ReservationServiceImpl;
 

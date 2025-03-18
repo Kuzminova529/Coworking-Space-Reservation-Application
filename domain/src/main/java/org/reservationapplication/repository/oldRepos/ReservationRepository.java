@@ -1,4 +1,4 @@
-package org.reservationapplication.repository;
+package org.reservationapplication.repository.oldRepos;
 
 import org.reservationapplication.Loggers;
 import org.reservationapplication.model.Reservation;

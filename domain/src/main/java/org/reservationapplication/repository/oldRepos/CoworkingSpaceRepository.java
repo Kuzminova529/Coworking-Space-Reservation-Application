@@ -1,10 +1,11 @@
-package org.reservationapplication.repository;
+package org.reservationapplication.repository.oldRepos;
 
 import org.reservationapplication.Loggers;
 import org.reservationapplication.exeption.CoworkingSpaceNotFoundException;
 import org.reservationapplication.model.AvailabilityStatus;
 import org.reservationapplication.model.CoworkingSpace;
 import org.reservationapplication.model.CoworkingSpaceType;
+import org.reservationapplication.repository.EntityRepository;
 import org.reservationapplication.sql.DatabaseConfig;
 
 import java.sql.Connection;
@@ -66,7 +67,7 @@ public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace
     }
 
     @Override
-    public void add(CoworkingSpace coworkingSpace) {
+    public void create(CoworkingSpace coworkingSpace) {
         String sql = "INSERT INTO coworking_spaces (id, type, price, availability_status) VALUES (?, ?, ?, ?)";
         try (Connection connection = DatabaseConfig.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

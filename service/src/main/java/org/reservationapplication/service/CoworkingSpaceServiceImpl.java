@@ -1,9 +1,8 @@
 package org.reservationapplication.service;
 
-import org.checkerframework.checker.units.qual.C;
 import org.reservationapplication.model.AvailabilityStatus;
 import org.reservationapplication.model.CoworkingSpace;
-import org.reservationapplication.repository.CoworkingSpaceRepository;
+import org.reservationapplication.repository.oldRepos.CoworkingSpaceRepository;
 
 import java.util.ArrayList;
 import java.util.List;

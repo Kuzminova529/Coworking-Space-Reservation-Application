@@ -1,13 +1,26 @@
 package org.reservationapplication.model;
 
+import jakarta.persistence.*;
+
+
 import java.util.Objects;
 
+
+@Entity
+@Table(name = "coworking_spaces")
 public class CoworkingSpace {
-    private long id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private Long id;
+
     private CoworkingSpaceType type;
     private double price;
     private AvailabilityStatus availabilityStatus;
-  
+
+    public CoworkingSpace() {}
+
     public long getID() {
         return id;
     }
