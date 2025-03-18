@@ -17,11 +17,6 @@ import java.util.Optional;
 
 
 public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace, Long> {
-    private static long nextId = 0L;
-
-    public static long getNextID() {
-        return nextId;
-    }
 
     @Override
     public void save(List<CoworkingSpace> coworkingSpaces) {
@@ -40,7 +35,6 @@ public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace
             Loggers.USER_LOGGER.error("Something went wrong while saving CoworkingSpaces");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
         }
-        updateID(coworkingSpaces);
     }
 
     @Override
@@ -136,10 +130,6 @@ public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace
             Loggers.USER_LOGGER.error("Database connection error");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
         }
-    }
-
-    private void updateID(List<CoworkingSpace> spaces) {
-        nextId = spaces.stream().mapToLong(CoworkingSpace::getID).max().orElse(0L) + 1;
     }
 }
 
