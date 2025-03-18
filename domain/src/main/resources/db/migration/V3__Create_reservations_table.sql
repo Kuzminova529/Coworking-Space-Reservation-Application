@@ -1,5 +1,5 @@
 CREATE TABLE reservations (
-    id BIGINT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     coworking_space_id BIGINT NOT NULL,
     customer_id BIGINT NOT NULL,
     reservation_name VARCHAR(255) NOT NULL,

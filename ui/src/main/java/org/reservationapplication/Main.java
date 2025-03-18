@@ -1,6 +1,5 @@
 package org.reservationapplication;
 
-import org.reservationapplication.model.Admin;
 import org.reservationapplication.model.ApplicationState;
 import org.reservationapplication.model.User;
 import org.reservationapplication.repository.ApplicationStateRepository;

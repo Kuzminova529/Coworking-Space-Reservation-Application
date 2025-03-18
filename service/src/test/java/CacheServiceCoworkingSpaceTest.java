@@ -1,16 +1,13 @@
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.github.benmanes.caffeine.cache.Cache;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.reservationapplication.model.CoworkingSpace;
 import org.reservationapplication.repository.CoworkingSpaceRepository;
 import org.reservationapplication.service.CacheServiceCoworkingSpace;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 class CacheServiceCoworkingSpaceTest {
@@ -56,7 +53,7 @@ class CacheServiceCoworkingSpaceTest {
 
         cacheService.addCoworkingSpace(space);
 
-        verify(repository, times(1)).add(space);
+        verify(repository, times(1)).create(space);
         assertNull(cacheService.getCache().getIfPresent("coworkings"));
     }
 
@@ -66,7 +63,7 @@ class CacheServiceCoworkingSpaceTest {
 
         cacheService.removeCoworkingSpaceByID(id);
 
-        verify(repository, times(1)).deleteByID(id);
+        verify(repository, times(1)).makeUnavailable(id);
         assertNull(cacheService.getCache().getIfPresent("coworkings"));
     }
 

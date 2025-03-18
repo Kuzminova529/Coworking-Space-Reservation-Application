@@ -48,11 +48,11 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     public void removeReservationById(long id) {
-        reservationRepository.deleteByID(id);
+        reservationRepository.makeUnactive(id);
     }
 
     public void addReservation(Reservation reservation) {
-        reservationRepository.add(reservation);
+        reservationRepository.create(reservation);
     }
 
     public boolean userAddReservation(
@@ -108,7 +108,6 @@ public class ReservationServiceImpl implements ReservationService {
 
                     reservation.setStartDateTime(startDateTime);
                     reservation.setEndDateTime(endDateTime);
-                    reservation.setID(ReservationRepository.getNextId());
 
                     reservationService.addReservation(reservation);
 

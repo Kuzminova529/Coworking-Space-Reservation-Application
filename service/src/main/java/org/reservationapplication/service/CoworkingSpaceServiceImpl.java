@@ -1,6 +1,5 @@
 package org.reservationapplication.service;
 
-import org.checkerframework.checker.units.qual.C;
 import org.reservationapplication.model.AvailabilityStatus;
 import org.reservationapplication.model.CoworkingSpace;
 import org.reservationapplication.repository.CoworkingSpaceRepository;

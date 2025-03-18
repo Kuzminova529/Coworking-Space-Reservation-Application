@@ -1,6 +1,7 @@
 package org.reservationapplication.repository;
 
 import org.reservationapplication.Loggers;
+import org.reservationapplication.exeption.CoworkingSpaceNotFoundException;
 import org.reservationapplication.model.Reservation;
 import org.reservationapplication.sql.DatabaseConfig;
 
@@ -10,11 +11,6 @@ import java.util.TreeSet;
 
 public class ReservationRepository {
     Comparator<Reservation> dateTimeComparator = Comparator.comparing(Reservation::getStartDateTime);
-    private static long nextId = 0L;
-
-    public static long getNextId() {
-        return nextId;
-    }
 
     public void save(TreeSet<Reservation> reservations) {
         String sql = "INSERT INTO reservations (id, coworking_space_id, customer_id, reservation_name, start_datetime, end_datetime) VALUES (?, ?, ?, ?, ?, ?)";
@@ -34,7 +30,6 @@ public class ReservationRepository {
             Loggers.USER_LOGGER.error("Something went wrong while saving reservations");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
         }
-        updateID(reservations);
     }
 
     public TreeSet<Reservation> read() {
@@ -88,16 +83,15 @@ public class ReservationRepository {
     }
 
 
-    public void add(Reservation reservation) {
-        String sql = "INSERT INTO reservations (id, coworking_space_id, customer_id, reservation_name, start_datetime, end_datetime) VALUES (?, ?, ?, ?, ?, ?)";
+    public void create(Reservation reservation) {
+        String sql = "INSERT INTO reservations ( coworking_space_id, customer_id, reservation_name, start_datetime, end_datetime) VALUES ( ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConfig.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setLong(1, reservation.getID());
-            statement.setLong(2, reservation.getCoworkingSpaceID());
-            statement.setLong(3, reservation.getCustomerID());
-            statement.setString(4, reservation.getReservationName());
-            statement.setTimestamp(5, Timestamp.valueOf(reservation.getStartDateTime()));
-            statement.setTimestamp(6, Timestamp.valueOf(reservation.getEndDateTime()));
+            statement.setLong(1, reservation.getCoworkingSpaceID());
+            statement.setLong(2, reservation.getCustomerID());
+            statement.setString(3, reservation.getReservationName());
+            statement.setTimestamp(4, Timestamp.valueOf(reservation.getStartDateTime()));
+            statement.setTimestamp(5, Timestamp.valueOf(reservation.getEndDateTime()));
 
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -106,15 +100,19 @@ public class ReservationRepository {
         }
     }
 
-    public void deleteByID(Long id) {
-        String sql = "DELETE FROM reservations WHERE id = ?";
+    public void makeUnactive(Long id) {
+        String sql = "UPDATE reservations SET is_active = ? WHERE id = ?";
         try (Connection connection = DatabaseConfig.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setBoolean(1, false);
+            statement.setLong(2, id);
 
-            statement.setLong(1, id);
-            statement.executeUpdate();
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new CoworkingSpaceNotFoundException(id, 404);
+            }
         } catch (SQLException e) {
-            Loggers.USER_LOGGER.error("Something went wrong while deleting reservation");
+            Loggers.USER_LOGGER.error("Something went wrong while updating the status of reservation");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
         }
     }
@@ -128,9 +126,5 @@ public class ReservationRepository {
             Loggers.USER_LOGGER.error("Database connection error");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
         }
-    }
-
-    private void updateID(TreeSet<Reservation> spaces) {
-        nextId = spaces.stream().mapToLong(Reservation::getID).max().orElse(0L) + 1;
     }
 }

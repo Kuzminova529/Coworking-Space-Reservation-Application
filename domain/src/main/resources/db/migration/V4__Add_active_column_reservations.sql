@@ -1,0 +1,1 @@
+ALTER TABLE reservations ADD COLUMN is_active BOOLEAN DEFAULT TRUE;
