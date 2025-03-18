@@ -68,13 +68,12 @@ public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace
 
     @Override
     public void create(CoworkingSpace coworkingSpace) {
-        String sql = "INSERT INTO coworking_spaces (id, type, price, availability_status) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO coworking_spaces (type, price, availability_status) VALUES ( ?, ?, ?)";
         try (Connection connection = DatabaseConfig.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setLong(1, coworkingSpace.getID());
-            statement.setString(2, coworkingSpace.getType().toString());
-            statement.setDouble(3, coworkingSpace.getPrice());
-            statement.setString(4, coworkingSpace.getAvailabilityStatus().toString());
+            statement.setString(1, coworkingSpace.getType().toString());
+            statement.setDouble(2, coworkingSpace.getPrice());
+            statement.setString(3, coworkingSpace.getAvailabilityStatus().toString());
             statement.executeUpdate();
         } catch (SQLException e) {
             Loggers.USER_LOGGER.error("Something went wrong while adding CoworkingSpaces");
@@ -83,17 +82,19 @@ public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace
     }
 
     @Override
-    public void deleteByID(Long id) {
-        String sql = "DELETE FROM coworking_spaces WHERE id = ?";
+    public void makeUnavailable(Long id) {
+        String sql = "UPDATE coworking_spaces SET availability_status = ? WHERE id = ?";
         try (Connection connection = DatabaseConfig.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setLong(1, id);
+            statement.setString(1, "UNAVAILABLE");
+            statement.setLong(2, id);
+
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected == 0) {
-                throw new CoworkingSpaceNotFoundException(id);
+                throw new CoworkingSpaceNotFoundException(id, 404);
             }
         } catch (SQLException e) {
-            Loggers.USER_LOGGER.error("Something went wrong while deleting CoworkingSpaces");
+            Loggers.USER_LOGGER.error("Something went wrong while updating the status of CoworkingSpace");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
         }
     }

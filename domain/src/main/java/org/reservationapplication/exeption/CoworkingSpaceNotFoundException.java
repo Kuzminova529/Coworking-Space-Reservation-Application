@@ -1,7 +1,10 @@
 package org.reservationapplication.exeption;
 
 public class CoworkingSpaceNotFoundException extends RuntimeException {
-    public CoworkingSpaceNotFoundException(long id) {
+    private int errorCode;
+
+    public CoworkingSpaceNotFoundException(long id, int errorCode) {
         super("Coworking space with ID " + id + " not found.");
+        this.errorCode = errorCode;
     }
 }

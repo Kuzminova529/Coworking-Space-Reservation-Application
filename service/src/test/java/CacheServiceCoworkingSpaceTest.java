@@ -63,7 +63,7 @@ class CacheServiceCoworkingSpaceTest {
 
         cacheService.removeCoworkingSpaceByID(id);
 
-        verify(repository, times(1)).deleteByID(id);
+        verify(repository, times(1)).makeUnavailable(id);
         assertNull(cacheService.getCache().getIfPresent("coworkings"));
     }
 

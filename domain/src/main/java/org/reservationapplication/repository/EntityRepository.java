@@ -10,7 +10,7 @@ public interface EntityRepository<T, K> {
 
     void create(T item);
 
-    void deleteByID(K id);
+    void makeUnavailable(K id);
 
     void deleteAll();
 

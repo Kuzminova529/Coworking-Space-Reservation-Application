@@ -42,7 +42,7 @@ public class CacheServiceCoworkingSpace {
         cache.invalidate("coworkings");
     }
     public void removeCoworkingSpaceByID(long id) {
-        repository.deleteByID(id);
+        repository.makeUnavailable(id);
         cache.invalidate("coworkings");
     }
 

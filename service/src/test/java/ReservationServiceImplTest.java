@@ -162,11 +162,11 @@ public class ReservationServiceImplTest {
         reservation2.setEndDateTime(LocalDateTime.now().plusHours(2));
 
         long reservationId = 1L;
-        doNothing().when(reservationRepository).deleteByID(reservationId);
+        doNothing().when(reservationRepository).makeUnactive(reservationId);
 
         reservationService.removeReservationById(reservationId);
 
-        verify(reservationRepository, times(1)).deleteByID(reservationId);
+        verify(reservationRepository, times(1)).makeUnactive(reservationId);
     }
 
     @Test
@@ -179,7 +179,7 @@ public class ReservationServiceImplTest {
         reservation.setStartDateTime(LocalDateTime.now());
         reservation.setEndDateTime(LocalDateTime.now().plusHours(2));
 
-        doNothing().when(reservationRepository).add(any(Reservation.class));
+        doNothing().when(reservationRepository).create(any(Reservation.class));
         reservationService.addReservation(reservation);
 
         TreeSet<Reservation> reservations = new TreeSet<>();

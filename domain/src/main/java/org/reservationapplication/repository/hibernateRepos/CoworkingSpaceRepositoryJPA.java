@@ -62,7 +62,7 @@ public class CoworkingSpaceRepositoryJPA implements EntityRepository<CoworkingSp
     }
 
     @Override
-    public void deleteByID(Long id) {
+    public void makeUnavailable(Long id) {
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
