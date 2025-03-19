@@ -20,6 +20,6 @@ public interface ReservationService {
     public boolean userAddReservation(
             long id, String reservationName, LocalDate bookingDate,
             LocalDateTime startDateTime, LocalDateTime endDateTime,
-            Customer user, CoworkingSpaceServiceImpl coworkingSpaceService,
+            User user, CoworkingSpaceServiceImpl coworkingSpaceService,
             ReservationServiceImpl reservationService);
 }

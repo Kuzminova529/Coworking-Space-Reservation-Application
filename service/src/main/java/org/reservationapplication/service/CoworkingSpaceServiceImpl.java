@@ -1,8 +1,7 @@
 package org.reservationapplication.service;
 
-import org.reservationapplication.model.AvailabilityStatus;
 import org.reservationapplication.model.CoworkingSpace;
-import org.reservationapplication.repository.oldRepos.CoworkingSpaceRepository;
+import org.reservationapplication.repository.JPARepos.CoworkingSpaceRepositoryJPA;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,18 +9,16 @@ import java.util.Optional;
 
 public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
     private final CacheServiceCoworkingSpace cacheServiceCoworkingSpace;
-    private final CoworkingSpaceRepository coworkingSpaceRepository;
+    private final CoworkingSpaceRepositoryJPA coworkingSpaceRepository;
 
-    public CoworkingSpaceServiceImpl(CacheServiceCoworkingSpace cacheServiceCoworkingSpace, CoworkingSpaceRepository coworkingSpaceRepository) {
+    public CoworkingSpaceServiceImpl(CacheServiceCoworkingSpace cacheServiceCoworkingSpace, CoworkingSpaceRepositoryJPA coworkingSpaceRepository) {
         this.cacheServiceCoworkingSpace = cacheServiceCoworkingSpace;
         this.coworkingSpaceRepository = coworkingSpaceRepository;
-        cacheServiceCoworkingSpace.removeAllCoworkingSpaces();
     }
 
-    public CoworkingSpaceServiceImpl(List<CoworkingSpace> coworkingSpaces, CacheServiceCoworkingSpace cacheServiceCoworkingSpace, CoworkingSpaceRepository coworkingSpaceRepository) {
+    public CoworkingSpaceServiceImpl(List<CoworkingSpace> coworkingSpaces, CacheServiceCoworkingSpace cacheServiceCoworkingSpace, CoworkingSpaceRepositoryJPA coworkingSpaceRepository) {
         this.cacheServiceCoworkingSpace = cacheServiceCoworkingSpace;
         this.coworkingSpaceRepository = coworkingSpaceRepository;
-        cacheServiceCoworkingSpace.removeAllCoworkingSpaces();
         if (coworkingSpaces != null) {
             saveCoworkingSpaces(coworkingSpaces);
         }
@@ -52,7 +49,7 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
         List<CoworkingSpace> availableSpaces = new ArrayList<>();
         if (coworkingSpaces != null) {
             for (CoworkingSpace cs : coworkingSpaces) {
-                if (cs.getAvailabilityStatus() == AvailabilityStatus.AVAILABLE) {
+                if (cs.getAvailabilityStatus()) {
                     availableSpaces.add(cs);
                 }
             }

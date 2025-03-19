@@ -1,15 +1,46 @@
 package org.reservationapplication.model;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+@Entity
+@Table(name = "reservations")
 public class Reservation implements Comparable<Reservation>{
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private Long id;
+
+    @Column(name = "coworking_space_id", nullable = false)
     private Long coworkingSpaceID;
-    private Long customerID;
+
+    @Column(name = "user_id", nullable = false)
+    private Long userID;
+
+    @Column(name = "reservation_name", length = 255, nullable = false)
     private String reservationName;
+
+    @Column(name = "start_datetime", nullable = false)
     private LocalDateTime startDateTime;
+
+    @Column(name = "end_datetime", nullable = false)
     private LocalDateTime endDateTime;
+
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive;
+
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+    public Reservation(){}
 
     public Long getID() {
         return id;
@@ -26,12 +57,12 @@ public class Reservation implements Comparable<Reservation>{
         this.coworkingSpaceID = coworkingSpaceID;
     }
 
-    public Long getCustomerID() {
-        return customerID;
+    public Long getUserID() {
+        return userID;
     }
 
-    public void setCustomerID(long customerID) {
-        this.customerID = customerID;
+    public void setUserID(long customerID) {
+        this.userID = customerID;
     }
 
     public String getReservationName() {
@@ -67,7 +98,7 @@ public class Reservation implements Comparable<Reservation>{
         return "Reservation: " +
                 "reservationID='" + id + '\'' +
                 ", coworkingSpaceID='" + coworkingSpaceID + '\'' +
-                ", customerID='" + customerID + '\'' +
+                ", userID='" + userID + '\'' +
                 ", reservationName='" + reservationName + '\'' +
                 ", startReservationDateAndTime=" + formattedStartDateTime +
                 ", endReservationDateAndTime=" + formattedEndDateTime;

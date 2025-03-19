@@ -6,7 +6,6 @@ import org.reservationapplication.model.AvailabilityStatus;
 import org.reservationapplication.model.Reservation;
 import org.reservationapplication.model.Customer;
 import org.reservationapplication.model.User;
-import org.reservationapplication.repository.oldRepos.CoworkingSpaceRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,7 +19,6 @@ public class MenuService {
 
     public void addCoworkingSpace(CoworkingSpaceServiceImpl coworkingSpaceService, int typeChoice, double price, int availabilityChoice) {
         CoworkingSpace coworkingSpace = new CoworkingSpace();
-        coworkingSpace.setID(CoworkingSpaceRepository.getNextID());
 
         switch (typeChoice) {
             case 1:
@@ -40,10 +38,10 @@ public class MenuService {
 
         switch (availabilityChoice) {
             case 1:
-                coworkingSpace.setAvailabilityStatus(AvailabilityStatus.AVAILABLE);
+                coworkingSpace.setAvailabilityStatus(true);
                 break;
             case 2:
-                coworkingSpace.setAvailabilityStatus(AvailabilityStatus.UNAVAILABLE);
+                coworkingSpace.setAvailabilityStatus(false);
                 break;
             default:
                 throw new IllegalArgumentException("Invalid availability choice: " + availabilityChoice);
@@ -68,7 +66,7 @@ public class MenuService {
         return coworkingSpaceService.getAvailableCoworkingSpace();
     }
 
-    public boolean makeReservation(Customer user,
+    public boolean makeReservation(User user,
                                    CoworkingSpaceServiceImpl coworkingSpaceService,
                                    ReservationServiceImpl reservationService,
                                    long coworkingSpaceID,

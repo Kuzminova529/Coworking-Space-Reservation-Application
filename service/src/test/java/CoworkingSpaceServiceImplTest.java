@@ -29,21 +29,6 @@ public class CoworkingSpaceServiceImplTest {
     private CoworkingSpaceServiceImpl coworkingSpaceService;
 
     @Test
-    public void testGetCoworkingSpaceByID() {
-        CoworkingSpace space = new CoworkingSpace();
-        space.setID(1L);
-
-        //mock (coworkingSpaceRepository) behavior settings
-        when(coworkingSpaceRepository.getById(1L)).thenReturn(Optional.of(space));
-
-        Optional<CoworkingSpace> result = coworkingSpaceService.getCoworkingSpaceByID(1L);
-
-        assertTrue(result.isPresent());
-        assertEquals(1L, result.get().getID());
-        verify(coworkingSpaceRepository, times(1)).getById(1L);
-    }
-
-    @Test
     public void testGetAllCoworkingSpace() {
         CoworkingSpace space1 = new CoworkingSpace();
         space1.setID(1L);

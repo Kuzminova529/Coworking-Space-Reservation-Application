@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 import static org.reservationapplication.MenuConstants.*;
-import static org.reservationapplication.UserInputHandler.*;
+import static org.reservationapplication.util.UserInputHandler.*;
 
 public class MenuController {
 
@@ -92,7 +92,7 @@ public class MenuController {
         }
     }
 
-    public void handleMakeReservation(Customer user) {
+    public void handleMakeReservation(User user) {
         try {
             long coworkingSpaceID = longSupplierCreator.supplier(COWORKING_SPACE_ID_PROMPT).get();
             String reservationName = stringSupplierCreator.supplier(RESERVATION_NAME_PROMPT).get();

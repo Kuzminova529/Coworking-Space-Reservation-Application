@@ -7,6 +7,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.Test;
 import org.reservationapplication.model.*;
+import org.reservationapplication.repository.JPARepos.ReservationRepositoryJPA;
 import org.reservationapplication.repository.oldRepos.ReservationRepository;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 import org.reservationapplication.service.ReservationServiceImpl;
@@ -20,7 +21,7 @@ public class ReservationServiceImplTest {
 
 
     @Mock
-    private ReservationRepository reservationRepository;
+    private ReservationRepositoryJPA reservationRepository;
 
     @InjectMocks
     private ReservationServiceImpl reservationService;
@@ -29,13 +30,13 @@ public class ReservationServiceImplTest {
     public void testGetAllReservation() {
         Reservation reservation1 = new Reservation();
         reservation1.setCoworkingSpaceID(1L);
-        reservation1.setCustomerID(1L);
+        reservation1.setUserID(1L);
         reservation1.setStartDateTime(LocalDateTime.now().plusHours(1));
         reservation1.setEndDateTime(LocalDateTime.now().plusHours(2));
 
         Reservation reservation2 = new Reservation();
         reservation2.setCoworkingSpaceID(2L);
-        reservation2.setCustomerID(2L);
+        reservation2.setUserID(2L);
         reservation2.setStartDateTime(LocalDateTime.now().plusHours(3));
         reservation2.setEndDateTime(LocalDateTime.now().plusHours(4));
 
@@ -69,13 +70,13 @@ public class ReservationServiceImplTest {
         // Создаем резервации
         Reservation reservation1 = new Reservation();
         reservation1.setCoworkingSpaceID(1L);
-        reservation1.setCustomerID(1L);
+        reservation1.setUserID(1L);
         reservation1.setStartDateTime(LocalDateTime.now().plusHours(1));
         reservation1.setEndDateTime(LocalDateTime.now().plusHours(2));
 
         Reservation reservation2 = new Reservation();
         reservation2.setCoworkingSpaceID(2L);
-        reservation2.setCustomerID(2L);
+        reservation2.setUserID(2L);
         reservation2.setStartDateTime(LocalDateTime.now().plusHours(3));
         reservation2.setEndDateTime(LocalDateTime.now().plusHours(4));
 
@@ -101,7 +102,7 @@ public class ReservationServiceImplTest {
         // Создаем резервации
         Reservation reservation1 = new Reservation();
         reservation1.setCoworkingSpaceID(1L);
-        reservation1.setCustomerID(1L);
+        reservation1.setUserID(1L);
         reservation1.setStartDateTime(LocalDateTime.now().plusHours(1));
         reservation1.setEndDateTime(LocalDateTime.now().plusHours(2));
         User user = new Customer();
@@ -151,22 +152,22 @@ public class ReservationServiceImplTest {
         // Creating test reservations
         Reservation reservation1 = new Reservation();
         reservation1.setCoworkingSpaceID(1L);
-        reservation1.setCustomerID(1L);
+        reservation1.setUserID(1L);
         reservation1.setStartDateTime(LocalDateTime.now());
         reservation1.setEndDateTime(LocalDateTime.now().plusHours(2));
 
         Reservation reservation2 = new Reservation();
         reservation2.setCoworkingSpaceID(2L);
-        reservation2.setCustomerID(2L);
+        reservation2.setUserID(2L);
         reservation2.setStartDateTime(LocalDateTime.now());
         reservation2.setEndDateTime(LocalDateTime.now().plusHours(2));
 
         long reservationId = 1L;
-        doNothing().when(reservationRepository).makeUnactive(reservationId);
+        doNothing().when(reservationRepository).makeInactive(reservationId);
 
         reservationService.removeReservationById(reservationId);
 
-        verify(reservationRepository, times(1)).makeUnactive(reservationId);
+        verify(reservationRepository, times(1)).makeInactive(reservationId);
     }
 
     @Test
@@ -175,7 +176,7 @@ public class ReservationServiceImplTest {
 
         Reservation reservation = new Reservation();
         reservation.setCoworkingSpaceID(1L);
-        reservation.setCustomerID(1L);
+        reservation.setUserID(1L);
         reservation.setStartDateTime(LocalDateTime.now());
         reservation.setEndDateTime(LocalDateTime.now().plusHours(2));
 

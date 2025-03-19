@@ -10,7 +10,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>util</module>
         <module>logger</module>
         <module>domain</module>
         <module>service</module>

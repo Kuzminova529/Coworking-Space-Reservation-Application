@@ -1,11 +1,9 @@
 package org.reservationapplication.service;
 
 import org.reservationapplication.Loggers;
-import org.reservationapplication.model.AvailabilityStatus;
-import org.reservationapplication.model.Customer;
 import org.reservationapplication.model.Reservation;
 import org.reservationapplication.model.User;
-import org.reservationapplication.repository.oldRepos.ReservationRepository;
+import org.reservationapplication.repository.JPARepos.ReservationRepositoryJPA;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,17 +12,15 @@ import java.util.stream.Collectors;
 
 public class ReservationServiceImpl implements ReservationService {
     Comparator<Reservation> dateTimeComparator = Comparator.comparing(Reservation::getStartDateTime);
-    private ReservationRepository reservationRepository;
+    private ReservationRepositoryJPA reservationRepository;
 
 
-    public ReservationServiceImpl(ReservationRepository reservationRepository) {
+    public ReservationServiceImpl(ReservationRepositoryJPA reservationRepository) {
         this.reservationRepository = reservationRepository;
-        reservationRepository.deleteAll();
     }
 
-    public ReservationServiceImpl(TreeSet<Reservation> reservations, ReservationRepository reservationRepository) {
+    public ReservationServiceImpl(TreeSet<Reservation> reservations, ReservationRepositoryJPA reservationRepository) {
         this.reservationRepository = reservationRepository;
-        reservationRepository.deleteAll();
         if (reservations != null) {
             reservationRepository.save(reservations);
         }
@@ -48,7 +44,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     public void removeReservationById(long id) {
-        reservationRepository.makeUnactive(id);
+        reservationRepository.makeInactive(id);
     }
 
     public void addReservation(Reservation reservation) {
@@ -58,14 +54,14 @@ public class ReservationServiceImpl implements ReservationService {
     public boolean userAddReservation(
             long id, String reservationName, LocalDate bookingDate,
             LocalDateTime startDateTime, LocalDateTime endDateTime,
-            Customer user, CoworkingSpaceServiceImpl coworkingSpaceService,
+            User user, CoworkingSpaceServiceImpl coworkingSpaceService,
             ReservationServiceImpl reservationService) {
 
             if(coworkingSpaceService.getCoworkingSpaceByID(id).isPresent()) {
-                if (coworkingSpaceService.getCoworkingSpaceByID(id).get().getAvailabilityStatus() == AvailabilityStatus.AVAILABLE) {
+                if (coworkingSpaceService.getCoworkingSpaceByID(id).get().getAvailabilityStatus()) {
                     Reservation reservation = new Reservation();
                     reservation.setCoworkingSpaceID(id);
-                    reservation.setCustomerID(user.getId());
+                    reservation.setUserID(user.getId());
                     reservation.setReservationName(reservationName);
 
 
@@ -108,6 +104,8 @@ public class ReservationServiceImpl implements ReservationService {
 
                     reservation.setStartDateTime(startDateTime);
                     reservation.setEndDateTime(endDateTime);
+
+                    reservation.setActive(true);
 
                     reservationService.addReservation(reservation);
 
