@@ -4,23 +4,21 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Reservation implements Comparable<Reservation>{
-    private static long nextId = 0L;
-    private final long reservationID;
-    private long coworkingSpaceID;
-    private long customerID;
+    private Long id;
+    private Long coworkingSpaceID;
+    private Long customerID;
     private String reservationName;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
 
-    public Reservation() {
-        this.reservationID = nextId++;
+    public Long getID() {
+        return id;
     }
 
-    public long getReservationID() {
-        return reservationID;
+    public void setID(long id) {
+        this.id = id;
     }
-
-    public long getCoworkingSpaceID() {
+    public Long getCoworkingSpaceID() {
         return coworkingSpaceID;
     }
 
@@ -28,7 +26,7 @@ public class Reservation implements Comparable<Reservation>{
         this.coworkingSpaceID = coworkingSpaceID;
     }
 
-    public long getCustomerID() {
+    public Long getCustomerID() {
         return customerID;
     }
 
@@ -67,7 +65,7 @@ public class Reservation implements Comparable<Reservation>{
         String formattedStartDateTime = startDateTime.format(formatter);
         String formattedEndDateTime = endDateTime.format(formatter);
         return "Reservation: " +
-                "reservationID='" + reservationID + '\'' +
+                "reservationID='" + id + '\'' +
                 ", coworkingSpaceID='" + coworkingSpaceID + '\'' +
                 ", customerID='" + customerID + '\'' +
                 ", reservationName='" + reservationName + '\'' +

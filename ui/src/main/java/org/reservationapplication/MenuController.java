@@ -128,14 +128,7 @@ public class MenuController {
     public void handleCancelReservation() {
         try {
             long reservationId = longSupplierCreator.supplier(RESERVATION_ID_PROMPT).get();
-            boolean success = menuService.cancelReservation(reservationService, reservationId);
-            if (success) {
-                Loggers.USER_LOGGER.info("Reservation cancelled successfully.");
-                Loggers.TECHNICAL_LOGGER.info("Reservation with ID {} cancelled successfully.", reservationId);
-            } else {
-                Loggers.USER_LOGGER.warn("Reservation with ID " + reservationId + " not found.");
-                Loggers.TECHNICAL_LOGGER.warn("Attempted to cancel non-existent reservation with ID {}.", reservationId);
-            }
+            menuService.cancelReservation(reservationService, reservationId);
         } catch (Exception e) {
             Loggers.USER_LOGGER.error("Error cancelling reservation: " + e.getMessage());
             Loggers.TECHNICAL_LOGGER.error("Exception in handleCancelReservation", e);

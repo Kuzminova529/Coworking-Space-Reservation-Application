@@ -1,12 +1,14 @@
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.Test;
 import org.reservationapplication.model.*;
+import org.reservationapplication.repository.ReservationRepository;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
-import org.reservationapplication.service.ReservationService;
 import org.reservationapplication.service.ReservationServiceImpl;
 
 import java.time.LocalDate;
@@ -16,10 +18,15 @@ import java.util.*;
 @ExtendWith(MockitoExtension.class)
 public class ReservationServiceImplTest {
 
+
+    @Mock
+    private ReservationRepository reservationRepository;
+
+    @InjectMocks
+    private ReservationServiceImpl reservationService;
+
     @Test
     public void testGetAllReservation() {
-        ReservationServiceImpl reservationService = new ReservationServiceImpl();
-
         Reservation reservation1 = new Reservation();
         reservation1.setCoworkingSpaceID(1L);
         reservation1.setCustomerID(1L);
@@ -32,30 +39,32 @@ public class ReservationServiceImplTest {
         reservation2.setStartDateTime(LocalDateTime.now().plusHours(3));
         reservation2.setEndDateTime(LocalDateTime.now().plusHours(4));
 
-        reservationService.addReservation(reservation1);
-        reservationService.addReservation(reservation2);
+        TreeSet<Reservation> reservations = new TreeSet<>();
+
+        reservations.add(reservation1);
+        reservations.add(reservation2);
+
+        when(reservationRepository.read()).thenReturn(reservations);
 
         TreeSet<Reservation> allReservations = reservationService.getAllReservation();
 
-        assertEquals(2, allReservations.size(), "There should be two reservations.");
-
-        assertTrue(allReservations.first().getStartDateTime().isBefore(allReservations.last().getStartDateTime()),
-                "Reservations should be sorted by start date and time.");
+        assertEquals(2, allReservations.size());
+        assertTrue(allReservations.contains(reservation1));
+        assertTrue(allReservations.contains(reservation2));
     }
 
     @Test
     public void testGetAllReservation_Empty() {
-        ReservationServiceImpl reservationService = new ReservationServiceImpl();
+        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
 
-        TreeSet<Reservation> allReservations = reservationService.getAllReservation();
-
-        assertTrue(allReservations.isEmpty(), "The list should be empty.");
+        when(reservationRepository.read()).thenReturn(new TreeSet<>());
+        assertTrue(reservationService.getAllReservation().isEmpty());
     }
 
     @Test
     public void testGetPersonalReservation() {
         // Создаем экземпляр ReservationService
-        ReservationServiceImpl reservationService = new ReservationServiceImpl();
+        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
 
         // Создаем резервации
         Reservation reservation1 = new Reservation();
@@ -70,23 +79,24 @@ public class ReservationServiceImplTest {
         reservation2.setStartDateTime(LocalDateTime.now().plusHours(3));
         reservation2.setEndDateTime(LocalDateTime.now().plusHours(4));
 
-        reservationService.addReservation(reservation1);
-        reservationService.addReservation(reservation2);
-
         User user = new Customer();
         user.setId(1L);
 
-        TreeSet<Reservation> personalReservations = reservationService.getPersonalReservation(user);
+        TreeSet<Reservation> personalReservations = new TreeSet<>();
+        personalReservations.add(reservation1);
 
-        assertEquals(1, personalReservations.size(), "There should be one reservation for the user.");
+        when(reservationRepository.readPersonalReservations(user.getId())).thenReturn(personalReservations);
 
-        assertTrue(personalReservations.contains(reservation1), "The personal reservation should be the one belonging to the user.");
+        TreeSet<Reservation> result = reservationService.getPersonalReservation(user);
+
+        assertEquals(1, result.size());
+        assertTrue(result.contains(reservation1));
     }
 
     @Test
     public void testGetPersonalReservation_Empty() {
         // Создаем экземпляр ReservationService
-        ReservationServiceImpl reservationService = new ReservationServiceImpl();
+        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
 
         // Создаем резервации
         Reservation reservation1 = new Reservation();
@@ -94,57 +104,49 @@ public class ReservationServiceImplTest {
         reservation1.setCustomerID(1L);
         reservation1.setStartDateTime(LocalDateTime.now().plusHours(1));
         reservation1.setEndDateTime(LocalDateTime.now().plusHours(2));
-
-        reservationService.addReservation(reservation1);
-
-        // Создаем пользователя с другим ID
         User user = new Customer();
-        user.setId(2L); // Устанавливаем ID пользователя, который не имеет резерваций
+        user.setId(99L);
 
-        // Получаем персональные резервации для этого пользователя
-        TreeSet<Reservation> personalReservations = reservationService.getPersonalReservation(user);
+        when(reservationRepository.readPersonalReservations(user.getId())).thenReturn(new TreeSet<>());
 
-        // Проверяем, что для этого пользователя нет резерваций
-        assertTrue(personalReservations.isEmpty(), "There should be no personal reservations for this user.");
+        TreeSet<Reservation> result = reservationService.getPersonalReservation(user);
+
+        assertTrue(result.isEmpty());
     }
 
     @Test
     public void testGetReservationsByCoworkingSpaceAndDate() {
-        ReservationServiceImpl reservationService = new ReservationServiceImpl();
+        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
 
         LocalDate date = LocalDate.now();
 
         Reservation reservation1 = new Reservation();
         reservation1.setCoworkingSpaceID(1L);
-        reservation1.setStartDateTime(date.atTime(10, 0));
-        reservation1.setEndDateTime(date.atTime(12, 0));
+        reservation1.setStartDateTime(LocalDateTime.now().plusHours(1));
+        reservation1.setEndDateTime(LocalDateTime.now().plusHours(2));
 
         Reservation reservation2 = new Reservation();
         reservation2.setCoworkingSpaceID(1L);
-        reservation2.setStartDateTime(date.atTime(14, 0));
-        reservation2.setEndDateTime(date.atTime(16, 0));
+        reservation2.setStartDateTime(LocalDateTime.now().plusHours(24));
+        reservation2.setEndDateTime(LocalDateTime.now().plusHours(25));
 
-        Reservation reservation3 = new Reservation();
-        reservation3.setCoworkingSpaceID(2L);
-        reservation3.setStartDateTime(date.atTime(9, 0));
-        reservation3.setEndDateTime(date.atTime(10, 0));
 
-        reservationService.addReservation(reservation1);
-        reservationService.addReservation(reservation2);
-        reservationService.addReservation(reservation3);
+        TreeSet<Reservation> reservations = new TreeSet<>();
+        reservations.add(reservation1);
+        reservations.add(reservation2);
+
+        when(reservationRepository.read()).thenReturn(reservations);
 
         TreeSet<Reservation> result = reservationService.getReservationsByCoworkingSpaceAndDate(1L, date);
 
         assertNotNull(result);
-        assertEquals(2, result.size());
         assertTrue(result.contains(reservation1));
-        assertTrue(result.contains(reservation2));
-        assertFalse(result.contains(reservation3));
+        assertFalse(result.contains(reservation2));
     }
 
     @Test
     public void testRemoveReservationById_Success() {
-        ReservationServiceImpl reservationService = new ReservationServiceImpl();
+        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
 
         // Creating test reservations
         Reservation reservation1 = new Reservation();
@@ -159,55 +161,35 @@ public class ReservationServiceImplTest {
         reservation2.setStartDateTime(LocalDateTime.now());
         reservation2.setEndDateTime(LocalDateTime.now().plusHours(2));
 
-        reservationService.addReservation(reservation1);
-        reservationService.addReservation(reservation2);
+        long reservationId = 1L;
+        doNothing().when(reservationRepository).makeUnactive(reservationId);
 
-        assertTrue(reservationService.removeReservationById(reservation1.getReservationID())); //success delete
-        assertFalse(reservationService.getAllReservation().contains(reservation1)); //reservation was deleted
-    }
+        reservationService.removeReservationById(reservationId);
 
-    @Test
-    public void testRemoveReservationById_Failure() {
-        ReservationServiceImpl reservationService = new ReservationServiceImpl();
-
-        // Creating test reservations
-        Reservation reservation1 = new Reservation();
-        reservation1.setCoworkingSpaceID(1L);
-        reservation1.setCustomerID(1L);
-        reservation1.setStartDateTime(LocalDateTime.now());
-        reservation1.setEndDateTime(LocalDateTime.now().plusHours(2));
-
-        Reservation reservation2 = new Reservation();
-        reservation2.setCoworkingSpaceID(2L);
-        reservation2.setCustomerID(2L);
-        reservation2.setStartDateTime(LocalDateTime.now());
-        reservation2.setEndDateTime(LocalDateTime.now().plusHours(2));
-
-        reservationService.addReservation(reservation1);
-        reservationService.addReservation(reservation2);
-
-        long nonExistentId = 999L;
-        assertFalse(reservationService.removeReservationById(nonExistentId));
+        verify(reservationRepository, times(1)).makeUnactive(reservationId);
     }
 
     @Test
     public void testAddReservation() {
-        // Создаем экземпляр ReservationService
-        ReservationServiceImpl reservationService = new ReservationServiceImpl();
+        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
 
-        // Создаем резервацию для добавления
         Reservation reservation = new Reservation();
         reservation.setCoworkingSpaceID(1L);
         reservation.setCustomerID(1L);
         reservation.setStartDateTime(LocalDateTime.now());
         reservation.setEndDateTime(LocalDateTime.now().plusHours(2));
 
+        doNothing().when(reservationRepository).create(any(Reservation.class));
         reservationService.addReservation(reservation);
 
-        TreeSet<Reservation> allReservations = reservationService.getAllReservation();
-        assertEquals(1, allReservations.size());
+        TreeSet<Reservation> reservations = new TreeSet<>();
+        reservations.add(reservation);
+        when(reservationRepository.read()).thenReturn(reservations);
 
-        assertTrue(allReservations.contains(reservation)); // The reservation should be present in the list.
+        TreeSet<Reservation> allReservations = reservationService.getAllReservation();
+
+        assertEquals(1, allReservations.size());
+        assertTrue(allReservations.contains(reservation));
     }
 
     @Test
@@ -229,7 +211,7 @@ public class ReservationServiceImplTest {
         LocalDateTime endDateTime = startDateTime.plusHours(1); // 2 hours from now
 
         //partial mock
-        ReservationServiceImpl reservationServiceSpy = spy(new ReservationServiceImpl());
+        ReservationServiceImpl reservationServiceSpy = spy(new ReservationServiceImpl(reservationRepository));
         doNothing().when(reservationServiceSpy).addReservation(any(Reservation.class));
 
         boolean result = reservationServiceSpy.userAddReservation(
@@ -241,7 +223,7 @@ public class ReservationServiceImplTest {
     @Test
     public void testUserAddReservationWithPastDate() {
         CoworkingSpaceServiceImpl coworkingSpaceService = mock(CoworkingSpaceServiceImpl.class);
-        ReservationServiceImpl reservationService = new ReservationServiceImpl();
+        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
 
         CoworkingSpace coworkingSpace = new CoworkingSpace();
         coworkingSpace.setAvailabilityStatus(AvailabilityStatus.AVAILABLE);

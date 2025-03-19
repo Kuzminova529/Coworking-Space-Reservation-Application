@@ -13,7 +13,7 @@ public interface ReservationService {
 
     public void addReservation(Reservation reservation);
 
-    public boolean removeReservationById(long id);
+    public void removeReservationById(long id);
 
     public TreeSet<Reservation> getPersonalReservation(User user);
 

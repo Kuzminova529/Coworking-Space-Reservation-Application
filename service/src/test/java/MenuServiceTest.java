@@ -131,20 +131,4 @@ public class MenuServiceTest {
         assertTrue(result); // Checking that the booking was successful
         verify(reservationService).userAddReservation(anyLong(), anyString(), any(), any(), any(), any(), any(), any());
     }
-    @Test
-    public void testCancelReservation() {
-        ReservationServiceImpl reservationService = mock(ReservationServiceImpl.class);
-        MenuService menuService = new MenuService();
-
-        long reservationId = 1L;
-
-        // If removeReservationById is called return true
-        when(reservationService.removeReservationById(reservationId)).thenReturn(true);
-
-        boolean result = menuService.cancelReservation(reservationService, reservationId);
-
-        assertTrue(result); // Checking that cancel was successful
-        verify(reservationService).removeReservationById(reservationId);
-    }
-
 }

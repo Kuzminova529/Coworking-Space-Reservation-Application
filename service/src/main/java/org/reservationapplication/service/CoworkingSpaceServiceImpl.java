@@ -23,9 +23,7 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
         this.coworkingSpaceRepository = coworkingSpaceRepository;
         cacheServiceCoworkingSpace.removeAllCoworkingSpaces();
         if (coworkingSpaces != null) {
-            for (CoworkingSpace cs : coworkingSpaces) {
-                addCoworkingSpace(cs);
-            }
+            saveCoworkingSpaces(coworkingSpaces);
         }
     }
 
@@ -39,6 +37,10 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
 
     public void addCoworkingSpace(CoworkingSpace coworkingSpace) {
         cacheServiceCoworkingSpace.addCoworkingSpace(coworkingSpace);
+    }
+
+    public void saveCoworkingSpaces(List<CoworkingSpace> coworkingSpaces) {
+        cacheServiceCoworkingSpace.saveCoworkingSpaces(coworkingSpaces);
     }
 
     public void removeCoworkingSpace(long id) {

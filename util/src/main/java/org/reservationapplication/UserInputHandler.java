@@ -16,6 +16,7 @@ public class UserInputHandler {
             } catch (InputMismatchException e) {
                 Loggers.TECHNICAL_LOGGER.error("Invalid choice ", e);
                 Loggers.USER_LOGGER.warn("Invalid choice, please enter number.");
+                scanner.nextLine();
             }
         }
     });
@@ -29,6 +30,7 @@ public class UserInputHandler {
             } catch (InputMismatchException e) {
                 Loggers.TECHNICAL_LOGGER.error("Invalid choice ", e);
                 Loggers.USER_LOGGER.warn("Invalid choice, please enter number.");
+                scanner.nextLine();
             }
         }
     });
@@ -42,6 +44,7 @@ public class UserInputHandler {
             } catch (InputMismatchException e) {
                 Loggers.TECHNICAL_LOGGER.error("Invalid choice ", e);
                 Loggers.USER_LOGGER.warn("Invalid choice, please enter number.");
+                scanner.nextLine();
             }
         }
     });
