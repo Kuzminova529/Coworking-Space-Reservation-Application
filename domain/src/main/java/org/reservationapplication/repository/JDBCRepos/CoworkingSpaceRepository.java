@@ -34,7 +34,7 @@ public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace
         try (Connection connection = config.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             for (CoworkingSpace space : coworkingSpaces) {
-                statement.setLong(1, space.getID());
+                statement.setLong(1, space.getId());
                 statement.setString(2, space.getType().toString());
                 statement.setDouble(3, space.getPrice());
                 statement.setString(4, space.getActive().toString());
@@ -56,7 +56,7 @@ public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace
              ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
                 CoworkingSpace space = new CoworkingSpace();
-                space.setID(resultSet.getLong("id"));
+                space.setId(resultSet.getLong("id"));
                 space.setType(CoworkingSpaceType.valueOf(resultSet.getString("type")));
                 space.setPrice(resultSet.getDouble("price"));
                 space.setActive(Boolean.valueOf("availability_status"));
@@ -115,7 +115,7 @@ public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     CoworkingSpace space = new CoworkingSpace();
-                    space.setID(resultSet.getLong("id"));
+                    space.setId(resultSet.getLong("id"));
                     space.setType(CoworkingSpaceType.valueOf(resultSet.getString("type")));
                     space.setPrice(resultSet.getDouble("price"));
                     space.setActive(Boolean.valueOf("availability_status"));
