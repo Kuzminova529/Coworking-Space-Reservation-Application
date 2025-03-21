@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import org.hibernate.JDBCException;
 import org.reservationapplication.Loggers;
 import org.reservationapplication.model.Reservation;
+import org.reservationapplication.repository.EntityRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeSet;
+import java.util.Optional;
 
-public class ReservationRepositoryJPA {
+public class ReservationRepositoryJPA implements EntityRepository<Reservation, Long> {
 
     private EntityManagerFactory emf;
 
@@ -17,7 +19,8 @@ public class ReservationRepositoryJPA {
         this.emf = Persistence.createEntityManagerFactory("my-persistence-unit");
     }
 
-    public void save(TreeSet<Reservation> reservations) {
+    @Override
+    public void save(List<Reservation> reservations) {
         EntityManager entityManager = emf.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         try {
@@ -54,16 +57,16 @@ public class ReservationRepositoryJPA {
         }
     }
 
-    public TreeSet<Reservation> read() {
+    @Override
+    public List<Reservation> read() {
         EntityManager entityManager = emf.createEntityManager();
         try {
-            List<Reservation> list = entityManager.createQuery("from Reservation", Reservation.class)
+            return entityManager.createQuery("from Reservation", Reservation.class)
                     .getResultList();
-            return new TreeSet<>(list);
         } catch (Exception e) {
             Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred: {}", e.getMessage());
             Loggers.USER_LOGGER.error("Something went wrong, please try again later.");
-            return new TreeSet<>();
+            return new ArrayList<>();
         }
         finally {
             if (entityManager.isOpen()) {
@@ -72,7 +75,7 @@ public class ReservationRepositoryJPA {
         }
     }
 
-    public TreeSet<Reservation> readPersonalReservations(Long userID) {
+    public List<Reservation> readPersonalReservations(Long userID) {
         EntityManager entityManager = emf.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         try {
@@ -90,14 +93,14 @@ public class ReservationRepositoryJPA {
                     .getResultList();
 
             transaction.commit();
-            return new TreeSet<>(reservations);
+            return reservations;
         } catch (Exception e) {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
             Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred: {}", e.getMessage());
             Loggers.USER_LOGGER.error("Something went wrong, please try again later.");
-            return new TreeSet<>();
+            return new ArrayList<>();
         }
         finally {
             if (entityManager.isOpen()) {
@@ -106,7 +109,7 @@ public class ReservationRepositoryJPA {
         }
     }
 
-
+    @Override
     public void create(Reservation reservation) {
         EntityManager entityManager = emf.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
@@ -118,7 +121,6 @@ public class ReservationRepositoryJPA {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
-            e.printStackTrace();
             Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred while persisting reservation: {}", e.getMessage());
             Loggers.USER_LOGGER.error("Something went wrong while saving your reservation. Please try again later.");
         }
@@ -127,10 +129,26 @@ public class ReservationRepositoryJPA {
                 entityManager.close();
             }
         }
-
     }
 
-    public void makeInactive(Long userID) {
+    @Override
+    public Optional<Reservation> getById(Long id) {
+        EntityManager entityManager = emf.createEntityManager();
+        try(entityManager) {
+            Reservation reservation = entityManager.createQuery(
+                            "FROM Reservation c WHERE c.id = :id", Reservation.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
+
+            return Optional.ofNullable(reservation);
+        } catch (Exception e) {
+            Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred while opening Hibernate session: {}", e.getMessage());
+            Loggers.USER_LOGGER.error("Something went wrong. Please try again later.");
+            return Optional.empty();
+        }
+    }
+
+    public void updateReservationStatus(Long userID) {
         EntityManager entityManager = emf.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         try {

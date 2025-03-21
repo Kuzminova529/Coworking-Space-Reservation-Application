@@ -2,42 +2,22 @@ package org.reservationapplication.model;
 
 import jakarta.persistence.*;
 
-
-import java.util.Objects;
-
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "coworking_spaces")
-@NamedQuery(name = "CoworkingSpace.findByID", query = "FROM CoworkingSpace WHERE id = :id")
-@NamedQuery(
-        name = "CoworkingSpace.makeUnavailable",
-        query = "UPDATE CoworkingSpace c SET c.isAvailable = :status WHERE c.id = :id"
-)
-public class CoworkingSpace {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private Long id;
-
+public class CoworkingSpace extends EntityModel{
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
     private CoworkingSpaceType type;
 
     private double price;
 
-    @Column(name = "availability_status")
-    private Boolean isAvailable;
+    @OneToMany(mappedBy = "coworkingSpace")
+    private List<Reservation> reservations = new ArrayList<>();
 
     public CoworkingSpace() {}
-
-    public long getID() {
-        return id;
-    }
-
-    public void setID(long coworkingSpaceID) {
-        this.id = coworkingSpaceID;
-    }
 
     public CoworkingSpaceType getType() {
         return type;
@@ -55,29 +35,19 @@ public class CoworkingSpace {
         this.price = price;
     }
 
-    public Boolean getAvailabilityStatus() {
-        return isAvailable;
+    public List<Reservation> getReservations() {
+        return reservations;
     }
 
-    public void setAvailabilityStatus(Boolean availabilityStatus) {
-        this.isAvailable = availabilityStatus;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CoworkingSpace that = (CoworkingSpace) o;
-        return Objects.equals(id, that.id);
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
     }
 
     @Override
     public String toString() {
         return "CoworkingSpace :" +
-                "id='" + id + '\'' +
+                "id='" + super.getId() + '\'' +
                 ", type='" + type + '\'' +
-                ", price=" + price +
-                ", availabilityStatus=" + isAvailable ;
+                ", price=" + price;
     }
-
 }

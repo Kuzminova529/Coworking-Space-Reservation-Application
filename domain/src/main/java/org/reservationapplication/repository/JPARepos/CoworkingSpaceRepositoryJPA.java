@@ -87,13 +87,13 @@ public class CoworkingSpaceRepositoryJPA implements EntityRepository<CoworkingSp
         }
     }
 
-    public void makeUnavailable(Long id) {
+    public void updateCoworkingStatus(Long id) {
         EntityManager entityManager = emf.createEntityManager();
         try (entityManager) {
             EntityTransaction transaction = entityManager.getTransaction();
             try {
                 transaction.begin();
-                String jpql = "UPDATE CoworkingSpace r SET r.isAvailable = false WHERE r.id = :id";
+                String jpql = "UPDATE CoworkingSpace r SET r.isActive = false WHERE r.id = :id";
                 entityManager.createQuery(jpql)
                         .setParameter("id", id)
                         .executeUpdate();
@@ -126,6 +126,17 @@ public class CoworkingSpaceRepositoryJPA implements EntityRepository<CoworkingSp
             Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred while opening Hibernate session: {}", e.getMessage());
             Loggers.USER_LOGGER.error("Something went wrong. Please try again later.");
             return Optional.empty();
+        }
+    }
+
+    public CoworkingSpace getCoworkingSpaceWithReservations(Long coworkingSpaceId) {
+        try (EntityManager em = emf.createEntityManager()) {
+            return em.createQuery(
+                    "SELECT c FROM CoworkingSpace c LEFT JOIN FETCH c.reservations WHERE c.id = :id",
+                    CoworkingSpace.class
+            ).setParameter("id", coworkingSpaceId).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
         }
     }
 }

@@ -49,11 +49,13 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
         List<CoworkingSpace> availableSpaces = new ArrayList<>();
         if (coworkingSpaces != null) {
             for (CoworkingSpace cs : coworkingSpaces) {
-                if (cs.getAvailabilityStatus()) {
+                if (cs.getActive()) {
                     availableSpaces.add(cs);
                 }
             }
         }
         return availableSpaces;
     }
+
+
 }

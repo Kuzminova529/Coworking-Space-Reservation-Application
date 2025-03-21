@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.Test;
 import org.reservationapplication.model.*;
 import org.reservationapplication.repository.JPARepos.ReservationRepositoryJPA;
-import org.reservationapplication.repository.oldRepos.ReservationRepository;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 import org.reservationapplication.service.ReservationServiceImpl;
 
@@ -163,11 +162,11 @@ public class ReservationServiceImplTest {
         reservation2.setEndDateTime(LocalDateTime.now().plusHours(2));
 
         long reservationId = 1L;
-        doNothing().when(reservationRepository).makeInactive(reservationId);
+        doNothing().when(reservationRepository).updateReservationStatus(reservationId);
 
         reservationService.removeReservationById(reservationId);
 
-        verify(reservationRepository, times(1)).makeInactive(reservationId);
+        verify(reservationRepository, times(1)).updateReservationStatus(reservationId);
     }
 
     @Test
@@ -200,7 +199,7 @@ public class ReservationServiceImplTest {
         ReservationServiceImpl reservationService = mock(ReservationServiceImpl.class);
 
         CoworkingSpace coworkingSpace = new CoworkingSpace();
-        coworkingSpace.setAvailabilityStatus(AvailabilityStatus.AVAILABLE);
+        coworkingSpace.setActive(AvailabilityStatus.AVAILABLE);
         when(coworkingSpaceService.getCoworkingSpaceByID(1L)).thenReturn(Optional.of(coworkingSpace));
 
         Customer user = new Customer();
@@ -227,7 +226,7 @@ public class ReservationServiceImplTest {
         ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
 
         CoworkingSpace coworkingSpace = new CoworkingSpace();
-        coworkingSpace.setAvailabilityStatus(AvailabilityStatus.AVAILABLE);
+        coworkingSpace.setActive(AvailabilityStatus.AVAILABLE);
         when(coworkingSpaceService.getCoworkingSpaceByID(1L)).thenReturn(Optional.of(coworkingSpace));
 
         Customer user = new Customer();

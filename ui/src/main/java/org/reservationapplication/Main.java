@@ -1,7 +1,5 @@
 package org.reservationapplication;
 
-import org.reservationapplication.model.Customer;
-import org.reservationapplication.model.User;
 import org.reservationapplication.repository.JPARepos.CoworkingSpaceRepositoryJPA;
 import org.reservationapplication.repository.JPARepos.ReservationRepositoryJPA;
 import org.reservationapplication.repository.JPARepos.UserRepositoryJPA;
@@ -16,15 +14,14 @@ public class Main {
     public static void main(String[] args) {
         DatabaseMigration.migrate();
 
-        Menu menu = new Menu();;
+        Menu menu = new Menu();
 
-        User user = new Customer();
         CacheServiceCoworkingSpace cacheServiceCoworkingSpace = new CacheServiceCoworkingSpace();
-        CoworkingSpaceRepositoryJPA coworkingSpaceRepo = new CoworkingSpaceRepositoryJPA();
-        CoworkingSpaceServiceImpl coworkingSpaceService = new CoworkingSpaceServiceImpl(cacheServiceCoworkingSpace, coworkingSpaceRepo);
+        CoworkingSpaceRepositoryJPA coworkingSpaceRepository = new CoworkingSpaceRepositoryJPA();
+        CoworkingSpaceServiceImpl coworkingSpaceService = new CoworkingSpaceServiceImpl(cacheServiceCoworkingSpace, coworkingSpaceRepository);
 
         ReservationRepositoryJPA reservationRepository = new ReservationRepositoryJPA();
-        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
+        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository, coworkingSpaceRepository);
 
         UserRepositoryJPA userRepository = new UserRepositoryJPA();
         UserService userService = new UserService(userRepository);

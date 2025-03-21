@@ -1,7 +1,5 @@
 package org.reservationapplication.repository;
 
-import org.reservationapplication.model.CoworkingSpace;
-
 import java.util.List;
 import java.util.Optional;
 

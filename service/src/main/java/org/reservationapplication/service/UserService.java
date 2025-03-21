@@ -1,6 +1,5 @@
 package org.reservationapplication.service;
 
-import org.reservationapplication.model.Admin;
 import org.reservationapplication.model.User;
 import org.reservationapplication.repository.JPARepos.UserRepositoryJPA;
 

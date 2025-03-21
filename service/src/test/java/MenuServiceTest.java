@@ -40,7 +40,7 @@ public class MenuServiceTest {
         assertNotNull(capturedSpace);
         assertEquals(CoworkingSpaceType.OPENSPACE, capturedSpace.getType());
         assertEquals(500.0, capturedSpace.getPrice());
-        assertEquals(AvailabilityStatus.AVAILABLE, capturedSpace.getAvailabilityStatus());
+        assertEquals(AvailabilityStatus.AVAILABLE, capturedSpace.getActive());
     }
 
     @Test

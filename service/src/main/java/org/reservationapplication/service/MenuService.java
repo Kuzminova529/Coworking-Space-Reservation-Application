@@ -2,9 +2,7 @@ package org.reservationapplication.service;
 
 import org.reservationapplication.model.CoworkingSpace;
 import org.reservationapplication.model.CoworkingSpaceType;
-import org.reservationapplication.model.AvailabilityStatus;
 import org.reservationapplication.model.Reservation;
-import org.reservationapplication.model.Customer;
 import org.reservationapplication.model.User;
 
 import java.time.LocalDate;
@@ -17,7 +15,7 @@ public class MenuService {
 
     public MenuService(){};
 
-    public void addCoworkingSpace(CoworkingSpaceServiceImpl coworkingSpaceService, int typeChoice, double price, int availabilityChoice) {
+    public void addCoworkingSpace(CoworkingSpaceServiceImpl coworkingSpaceService, int typeChoice, double price) {
         CoworkingSpace coworkingSpace = new CoworkingSpace();
 
         switch (typeChoice) {
@@ -36,16 +34,7 @@ public class MenuService {
 
         coworkingSpace.setPrice(price);
 
-        switch (availabilityChoice) {
-            case 1:
-                coworkingSpace.setAvailabilityStatus(true);
-                break;
-            case 2:
-                coworkingSpace.setAvailabilityStatus(false);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid availability choice: " + availabilityChoice);
-        }
+        coworkingSpace.setActive(true);
 
         coworkingSpaceService.addCoworkingSpace(coworkingSpace);
     }

@@ -1,8 +1,12 @@
 package org.reservationapplication.service;
 
 import org.reservationapplication.Loggers;
+import org.reservationapplication.exeption.CoworkingSpaceNotFoundException;
+import org.reservationapplication.model.CoworkingSpace;
 import org.reservationapplication.model.Reservation;
 import org.reservationapplication.model.User;
+import org.reservationapplication.repository.JDBCRepos.CoworkingSpaceRepository;
+import org.reservationapplication.repository.JPARepos.CoworkingSpaceRepositoryJPA;
 import org.reservationapplication.repository.JPARepos.ReservationRepositoryJPA;
 
 import java.time.LocalDate;
@@ -11,19 +15,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ReservationServiceImpl implements ReservationService {
-    Comparator<Reservation> dateTimeComparator = Comparator.comparing(Reservation::getStartDateTime);
     private ReservationRepositoryJPA reservationRepository;
+    private CoworkingSpaceRepositoryJPA coworkingSpaceRepository;
 
 
-    public ReservationServiceImpl(ReservationRepositoryJPA reservationRepository) {
+    public ReservationServiceImpl(ReservationRepositoryJPA reservationRepository, CoworkingSpaceRepositoryJPA coworkingSpaceRepository) {
         this.reservationRepository = reservationRepository;
-    }
-
-    public ReservationServiceImpl(TreeSet<Reservation> reservations, ReservationRepositoryJPA reservationRepository) {
-        this.reservationRepository = reservationRepository;
-        if (reservations != null) {
-            reservationRepository.save(reservations);
-        }
+        this.coworkingSpaceRepository = coworkingSpaceRepository;
     }
 
     public TreeSet<Reservation> getAllReservation() {
@@ -31,87 +29,81 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     public TreeSet<Reservation> getPersonalReservation(User user) {
-        TreeSet<Reservation> personalReservations = reservationRepository.readPersonalReservations(user.getId());
-        return personalReservations;
-    }
-
-    public TreeSet<Reservation> getReservationsByCoworkingSpaceAndDate(long coworkingSpaceId, LocalDate date) {
-        TreeSet<Reservation> reservations = reservationRepository.read();
-        return reservations.stream()
-                .filter(r -> r.getCoworkingSpaceID() == coworkingSpaceId &&
-                        r.getStartDateTime().toLocalDate().equals(date))
-                .collect(Collectors.toCollection(() -> new TreeSet<>(dateTimeComparator)));
+        return reservationRepository.readPersonalReservations(user.getId());
     }
 
     public void removeReservationById(long id) {
-        reservationRepository.makeInactive(id);
+        reservationRepository.updateReservationStatus(id);
     }
 
     public void addReservation(Reservation reservation) {
         reservationRepository.create(reservation);
     }
 
+    public boolean isTimeSlotAvailable(Long coworkingSpaceId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        CoworkingSpace coworkingSpace = coworkingSpaceRepository.getCoworkingSpaceWithReservations(coworkingSpaceId);
+        if (coworkingSpace == null) {
+            throw new CoworkingSpaceNotFoundException(coworkingSpaceId,404);
+        }
+
+        for (Reservation reservation : coworkingSpace.getReservations()) {
+            if ((startDateTime.isBefore(reservation.getEndDateTime()) && endDateTime.isAfter(reservation.getStartDateTime())) ||
+                    (startDateTime.equals(reservation.getStartDateTime()) || endDateTime.equals(reservation.getEndDateTime()))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean userAddReservation(
-            long id, String reservationName, LocalDate bookingDate,
+            long coworkingID, String reservationName, LocalDate bookingDate,
             LocalDateTime startDateTime, LocalDateTime endDateTime,
             User user, CoworkingSpaceServiceImpl coworkingSpaceService,
             ReservationServiceImpl reservationService) {
 
-            if(coworkingSpaceService.getCoworkingSpaceByID(id).isPresent()) {
-                if (coworkingSpaceService.getCoworkingSpaceByID(id).get().getAvailabilityStatus()) {
-                    Reservation reservation = new Reservation();
-                    reservation.setCoworkingSpaceID(id);
-                    reservation.setUserID(user.getId());
-                    reservation.setReservationName(reservationName);
+        Optional<CoworkingSpace> optionalCoworkingSpace = coworkingSpaceService.getCoworkingSpaceByID(coworkingID);
+
+        if (optionalCoworkingSpace.isEmpty()) {
+            throw new IllegalArgumentException("Invalid id of coworkingSpace");
+        }
+
+        CoworkingSpace coworkingSpace = optionalCoworkingSpace.get();
+
+        if (!coworkingSpace.getActive()) {
+            throw new IllegalArgumentException("This coworkingSpace is not active");
+        }
 
 
-                    LocalDate today = LocalDate.now();
+        Reservation reservation = new Reservation();
+        reservation.setCoworkingSpace(coworkingSpace);
+        reservation.setUserID(user.getId());
+        reservation.setReservationName(reservationName);
 
-                    if (bookingDate.isBefore(today)) {
-                        Loggers.TECHNICAL_LOGGER.warn("Attempted to register a booking with a past date: {}", bookingDate);
+        LocalDate today = LocalDate.now();
 
-                        throw new IllegalArgumentException("You cannot register a past date!");
-                    }
-                    if (!startDateTime.isBefore(endDateTime)) {
-                        Loggers.TECHNICAL_LOGGER.warn("Reservation start time {} is not before end time {}", startDateTime, endDateTime);
-                        Loggers.USER_LOGGER.warn("The reservation start time must be before the end time!");
+        if (bookingDate.isBefore(today)) {
+            Loggers.TECHNICAL_LOGGER.warn("Attempted to register a booking with a past date: {}", bookingDate);
 
-                        throw new IllegalArgumentException("The reservation start time must be before the end time!");
-                    }
+            throw new IllegalArgumentException("You cannot register a past date!");
+        }
+        if (!startDateTime.isBefore(endDateTime)) {
+            Loggers.TECHNICAL_LOGGER.warn("Reservation start time {} is not before end time {}", startDateTime, endDateTime);
+            Loggers.USER_LOGGER.warn("The reservation start time must be before the end time!");
 
-                    TreeSet<Reservation> existingReservations = reservationService.getReservationsByCoworkingSpaceAndDate(id, bookingDate);
+            throw new IllegalArgumentException("The reservation start time must be before the end time!");
+        }
 
-                    for (Reservation existing : existingReservations) {
+        if (!isTimeSlotAvailable(coworkingID ,startDateTime, endDateTime)) {
+            throw new IllegalArgumentException("This reservation time is booked");
+        }
 
-                        LocalDateTime existingStart = existing.getStartDateTime();
-                        LocalDateTime existingEnd = existing.getEndDateTime();
 
-                        // The exact same time
-                        if (startDateTime.equals(existingStart) && endDateTime.equals(existingEnd)) {
-                            Loggers.TECHNICAL_LOGGER.warn("Reservation start time {} and end time {} equals already booked reservation {} and {}", startDateTime, endDateTime, existingStart, existingEnd);
-                            Loggers.USER_LOGGER.warn("The reservation time is already booked");
+        reservation.setStartDateTime(startDateTime);
+        reservation.setEndDateTime(endDateTime);
 
-                            throw new IllegalArgumentException("This exact time slot is already booked!");
-                        }
+        reservation.setActive(true);
 
-                        // Intersection of time
-                        if (startDateTime.isBefore(existingEnd) && endDateTime.isAfter(existingStart)) {
-                            Loggers.TECHNICAL_LOGGER.warn("Reservation start time {} and end time {} intersect with already booked reservation {} and {}", startDateTime, endDateTime, existingStart, existingEnd);
-                            Loggers.USER_LOGGER.warn("The reservation time intersect with is already booked reservation");
-                            throw new IllegalArgumentException("This time slot is already booked!");
-                        }
-                    }
-
-                    reservation.setStartDateTime(startDateTime);
-                    reservation.setEndDateTime(endDateTime);
-
-                    reservation.setActive(true);
-
-                    reservationService.addReservation(reservation);
-
-                    return true;
-                }
-            }
-        return false;
+        reservationService.addReservation(reservation);
+        return true;
     }
 }

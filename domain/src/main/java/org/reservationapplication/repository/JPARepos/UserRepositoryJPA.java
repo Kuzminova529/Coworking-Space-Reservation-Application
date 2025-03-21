@@ -6,11 +6,9 @@ import org.reservationapplication.Loggers;
 import org.reservationapplication.model.User;
 import org.reservationapplication.repository.EntityRepository;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.TreeSet;
 
 public class UserRepositoryJPA implements EntityRepository<User, Long> {
     private EntityManagerFactory emf;
