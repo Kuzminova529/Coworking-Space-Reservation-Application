@@ -2,7 +2,6 @@ package org.reservationapplication;
 
 import org.reservationapplication.model.CoworkingSpace;
 import org.reservationapplication.model.Reservation;
-import org.reservationapplication.model.Customer;
 import org.reservationapplication.model.User;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 import org.reservationapplication.service.MenuService;
@@ -16,7 +15,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 import static org.reservationapplication.MenuConstants.*;
-import static org.reservationapplication.UserInputHandler.*;
+import static org.reservationapplication.util.UserInputHandler.*;
 
 public class MenuController {
 
@@ -36,9 +35,8 @@ public class MenuController {
         try {
             int typeChoice = intSupplierCreator.supplier(COWORKING_SPACE_TYPE_PROMPT).get();
             double price = doubleSupplierCreator.supplier(COWORKING_SPACE_PRICE_PROMPT).get();
-            int availabilityChoice = intSupplierCreator.supplier(COWORKING_SPACE_AVAILABILITY_STATUS_PROMPT).get();
 
-            menuService.addCoworkingSpace(coworkingSpaceService, typeChoice, price, availabilityChoice);
+            menuService.addCoworkingSpace(coworkingSpaceService, typeChoice, price);
             Loggers.USER_LOGGER.info("Coworking space added successfully.");
         } catch (IllegalArgumentException e) {
             Loggers.USER_LOGGER.warn("Error adding coworking space: " + e.getMessage());
@@ -92,7 +90,7 @@ public class MenuController {
         }
     }
 
-    public void handleMakeReservation(Customer user) {
+    public void handleMakeReservation(User user) {
         try {
             long coworkingSpaceID = longSupplierCreator.supplier(COWORKING_SPACE_ID_PROMPT).get();
             String reservationName = stringSupplierCreator.supplier(RESERVATION_NAME_PROMPT).get();

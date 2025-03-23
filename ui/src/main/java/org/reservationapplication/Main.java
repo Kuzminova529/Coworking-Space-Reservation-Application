@@ -1,13 +1,12 @@
 package org.reservationapplication;
 
-import org.reservationapplication.model.ApplicationState;
-import org.reservationapplication.model.User;
-import org.reservationapplication.repository.ApplicationStateRepository;
-import org.reservationapplication.repository.CoworkingSpaceRepository;
-import org.reservationapplication.repository.ReservationRepository;
+import org.reservationapplication.repository.JPARepos.CoworkingSpaceRepositoryJPA;
+import org.reservationapplication.repository.JPARepos.ReservationRepositoryJPA;
+import org.reservationapplication.repository.JPARepos.UserRepositoryJPA;
 import org.reservationapplication.service.CacheServiceCoworkingSpace;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 import org.reservationapplication.service.ReservationServiceImpl;
+import org.reservationapplication.service.UserService;
 import org.reservationapplication.sql.DatabaseMigration;
 
 
@@ -17,17 +16,16 @@ public class Main {
 
         Menu menu = new Menu();
 
-        ApplicationStateRepository appStateRepo= new ApplicationStateRepository();
-        ApplicationState appState = appStateRepo.readState();
-
-        User user = appState.getCurrentUser();
         CacheServiceCoworkingSpace cacheServiceCoworkingSpace = new CacheServiceCoworkingSpace();
-        CoworkingSpaceRepository coworkingSpaceRepo = new CoworkingSpaceRepository();
-        CoworkingSpaceServiceImpl coworkingSpaceService = new CoworkingSpaceServiceImpl(appState.getCoworkingSpaces(), cacheServiceCoworkingSpace, coworkingSpaceRepo);
+        CoworkingSpaceRepositoryJPA coworkingSpaceRepository = new CoworkingSpaceRepositoryJPA();
+        CoworkingSpaceServiceImpl coworkingSpaceService = new CoworkingSpaceServiceImpl(cacheServiceCoworkingSpace, coworkingSpaceRepository);
 
-        ReservationRepository reservationRepository = new ReservationRepository();
-        ReservationServiceImpl reservationService = new ReservationServiceImpl(appState.getReservations(), reservationRepository);
+        ReservationRepositoryJPA reservationRepository = new ReservationRepositoryJPA();
+        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository, coworkingSpaceRepository);
 
-        menu.welcomeMenu(user, coworkingSpaceService, reservationService);
+        UserRepositoryJPA userRepository = new UserRepositoryJPA();
+        UserService userService = new UserService(userRepository);
+
+        menu.welcomeMenu(userService, coworkingSpaceService, reservationService);
     }
 }

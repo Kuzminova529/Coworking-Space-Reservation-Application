@@ -5,6 +5,12 @@
         <File name="TechnicalLog" fileName="logs/technical.log">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"/>
         </File>
+
+        <!-- Appender for SQL queries from Hibernate -->
+        <File name="HibernateSQLLog" fileName="logs/hibernate-queries.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"/>
+        </File>
+
         <!-- Appender for user messages -->
         <Console name="UserOutputConsole" target="SYSTEM_OUT">
             <PatternLayout pattern="* %msg%n"/>
@@ -15,9 +21,15 @@
         <Root level="info">
             <AppenderRef ref="TechnicalLog"/>
         </Root>
+
         <!-- Logger for user messages -->
         <Logger name="UserLogger" level="info" additivity="false">
             <AppenderRef ref="UserOutputConsole"/>
+        </Logger>
+
+        <!-- Logger for SQL queries from Hibernate -->
+        <Logger name="org.hibernate.SQL" level="debug" additivity="false">
+            <AppenderRef ref="HibernateSQLLog"/>
         </Logger>
     </Loggers>
 </Configuration>

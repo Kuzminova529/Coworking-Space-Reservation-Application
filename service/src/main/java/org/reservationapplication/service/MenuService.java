@@ -2,11 +2,8 @@ package org.reservationapplication.service;
 
 import org.reservationapplication.model.CoworkingSpace;
 import org.reservationapplication.model.CoworkingSpaceType;
-import org.reservationapplication.model.AvailabilityStatus;
 import org.reservationapplication.model.Reservation;
-import org.reservationapplication.model.Customer;
 import org.reservationapplication.model.User;
-import org.reservationapplication.repository.CoworkingSpaceRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,7 +15,7 @@ public class MenuService {
 
     public MenuService(){};
 
-    public void addCoworkingSpace(CoworkingSpaceServiceImpl coworkingSpaceService, int typeChoice, double price, int availabilityChoice) {
+    public void addCoworkingSpace(CoworkingSpaceServiceImpl coworkingSpaceService, int typeChoice, double price) {
         CoworkingSpace coworkingSpace = new CoworkingSpace();
 
         switch (typeChoice) {
@@ -37,16 +34,7 @@ public class MenuService {
 
         coworkingSpace.setPrice(price);
 
-        switch (availabilityChoice) {
-            case 1:
-                coworkingSpace.setAvailabilityStatus(AvailabilityStatus.AVAILABLE);
-                break;
-            case 2:
-                coworkingSpace.setAvailabilityStatus(AvailabilityStatus.UNAVAILABLE);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid availability choice: " + availabilityChoice);
-        }
+        coworkingSpace.setActive(true);
 
         coworkingSpaceService.addCoworkingSpace(coworkingSpace);
     }
@@ -67,7 +55,7 @@ public class MenuService {
         return coworkingSpaceService.getAvailableCoworkingSpace();
     }
 
-    public boolean makeReservation(Customer user,
+    public boolean makeReservation(User user,
                                    CoworkingSpaceServiceImpl coworkingSpaceService,
                                    ReservationServiceImpl reservationService,
                                    long coworkingSpaceID,

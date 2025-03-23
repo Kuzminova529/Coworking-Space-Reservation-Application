@@ -3,46 +3,65 @@ package org.reservationapplication;
 import org.reservationapplication.model.Admin;
 import org.reservationapplication.model.Customer;
 import org.reservationapplication.model.User;
-import org.reservationapplication.repository.ApplicationStateRepository;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 import org.reservationapplication.service.MenuService;
 import org.reservationapplication.service.ReservationServiceImpl;
+import org.reservationapplication.service.UserService;
+
+import java.util.Optional;
 
 import static org.reservationapplication.MenuConstants.*;
-import static org.reservationapplication.UserInputHandler.intSupplierCreator;
+import static org.reservationapplication.util.UserInputHandler.intSupplierCreator;
+import static org.reservationapplication.util.UserInputHandler.longSupplierCreator;
 
 
 public class Menu {
-
-    public void welcomeMenu(User user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
+    public void welcomeMenu(UserService userService, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
         Loggers.USER_LOGGER.info("Welcome to Reservation Application");
-        mainMenu(user, coworkingSpaceService, reservationService);
+        userMenu(userService, coworkingSpaceService, reservationService);
     }
 
-    public void mainMenu(User user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
-        while (true) {
-            int choice = intSupplierCreator.supplier(MAIN_MENU_PROMPT).get();
-
+    public void userMenu(UserService userService, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
+        int choice = intSupplierCreator.supplier("Do you have an account?\n1.YES\n2.NO").get();
+        while (true){
             switch (choice) {
-                case 1:
-                    if ((user instanceof Admin)) {
+                case 1: {
+                    long id = longSupplierCreator.supplier("Enter your id").get();
+                    Optional<User> optUser = userService.findUserByID(id);
+                    if (optUser.isPresent()) {
+                        User user = optUser.get();
+                        if (user instanceof Admin) {
                         adminMenu(user, coworkingSpaceService, reservationService);
+                        }
+                        else {
+                            customerMenu(user, coworkingSpaceService, reservationService);
+                        }
                     } else {
-                        Loggers.USER_LOGGER.warn("You are not an admin. Choose another option");
+                        Loggers.USER_LOGGER.warn("User not found, please sign up");
+                        return;
                     }
                     break;
-                case 2:
-                    if (user instanceof Customer) {
-                        customerMenu((Customer) user, coworkingSpaceService, reservationService);
-                    } else {
-                        Loggers.USER_LOGGER.warn("You are not a customer. Choose another option");
+                }
+                case 2: {
+                    int roleAns = intSupplierCreator.supplier("Who are you?\n1.Admin\n2.Customer").get();
+                    switch (roleAns) {
+                        case 1:
+                            User admin = new Admin();
+                            userService.createUser(admin);
+                            adminMenu(admin, coworkingSpaceService, reservationService);
+                            break;
+                        case 2:
+                            User customer = new Customer();
+                            userService.createUser(customer);
+                            customerMenu(customer, coworkingSpaceService, reservationService);
+                            break;
+                        default:
+                            Loggers.USER_LOGGER.warn("Invalid choice, please try again.(1-2)");
+                            break;
                     }
-                    break;
-                case 3:
-                    Loggers.USER_LOGGER.info("Exiting...");
-                    return;
+                }
                 default:
-                    Loggers.USER_LOGGER.warn("Invalid choice, please try again.(1-3)");
+                    Loggers.USER_LOGGER.warn("Invalid choice, please try again.(1-2)");
             }
         }
     }
@@ -54,14 +73,10 @@ public class Menu {
             switch (choice) {
                 case 1: {
                     menuController.handleAddCoworkingSpace();
-                    ApplicationStateRepository appState = new ApplicationStateRepository(user, coworkingSpaceService.getAllCoworkingSpace(), reservationService.getAllReservation());
-                    appState.saveState();
                     break;
                 }
                 case 2: {
                     menuController.handleRemoveCoworkingSpace();
-                    ApplicationStateRepository appState = new ApplicationStateRepository(user, coworkingSpaceService.getAllCoworkingSpace(), reservationService.getAllReservation());
-                    appState.saveState();
                     break;
                 }
                 case 3: {
@@ -73,7 +88,7 @@ public class Menu {
                     break;
                 }
                 case 5: {
-                    return;
+                    System.exit(0);
                 }
                 default: {
                     Loggers.USER_LOGGER.warn("Invalid choice, please try again.");
@@ -82,7 +97,7 @@ public class Menu {
         }
     }
 
-    public void customerMenu(Customer user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
+    public void customerMenu(User user, CoworkingSpaceServiceImpl coworkingSpaceService, ReservationServiceImpl reservationService) {
         MenuController menuController = new MenuController(new MenuService(), coworkingSpaceService, reservationService);
         while (true) {
             int choice = intSupplierCreator.supplier(CUSTOMER_MENU_PROMPT).get();
@@ -93,14 +108,10 @@ public class Menu {
                 }
                 case 2: {
                     menuController.handleMakeReservation(user);
-                    ApplicationStateRepository appState = new ApplicationStateRepository(user, coworkingSpaceService.getAllCoworkingSpace(), reservationService.getAllReservation());
-                    appState.saveState();
                     break;
                 }
                 case 3:{
                     menuController.handleCancelReservation();
-                    ApplicationStateRepository appState = new ApplicationStateRepository(user, coworkingSpaceService.getAllCoworkingSpace(), reservationService.getAllReservation());
-                    appState.saveState();
                     break;
                 }
                 case 4:{
@@ -108,7 +119,7 @@ public class Menu {
                     break;
                 }
                 case 5: {
-                    return;
+                    System.exit(0);
                 }
                 default: {
                     Loggers.USER_LOGGER.warn("Invalid choice, please try again.(1-5)");

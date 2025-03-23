@@ -1,4 +1,4 @@
-package org.reservationapplication.repository;
+package org.reservationapplication.repository.JDBCRepos;
 
 import org.reservationapplication.Loggers;
 import org.reservationapplication.exeption.CoworkingSpaceNotFoundException;
@@ -10,16 +10,25 @@ import java.util.Comparator;
 import java.util.TreeSet;
 
 public class ReservationRepository {
-    Comparator<Reservation> dateTimeComparator = Comparator.comparing(Reservation::getStartDateTime);
+    private Comparator<Reservation> dateTimeComparator = Comparator.comparing(Reservation::getStartDateTime);
+    private DatabaseConfig config;
+
+    public ReservationRepository(DatabaseConfig config) {
+        this.config = config;
+    }
+
+    public ReservationRepository(){
+        config = new DatabaseConfig();
+    }
 
     public void save(TreeSet<Reservation> reservations) {
-        String sql = "INSERT INTO reservations (id, coworking_space_id, customer_id, reservation_name, start_datetime, end_datetime) VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection connection = DatabaseConfig.getConnection();
+        String sql = "INSERT INTO reservations (id, coworking_space_id, user_id, reservation_name, start_datetime, end_datetime) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection connection = config.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             for (Reservation reservation : reservations) {
-                statement.setLong(1, reservation.getID());
-                statement.setLong(2, reservation.getCoworkingSpaceID());
-                statement.setLong(3, reservation.getCustomerID());
+                statement.setLong(1, reservation.getId());
+                statement.setLong(2, reservation.getCoworkingSpace().getId());
+                statement.setLong(3, reservation.getUserID());
                 statement.setString(4, reservation.getReservationName());
                 statement.setTimestamp(5, Timestamp.valueOf(reservation.getStartDateTime()));
                 statement.setTimestamp(6, Timestamp.valueOf(reservation.getEndDateTime()));
@@ -35,14 +44,14 @@ public class ReservationRepository {
     public TreeSet<Reservation> read() {
         TreeSet<Reservation> reservations = new TreeSet<>(dateTimeComparator);
         String sql = "SELECT * FROM reservations";
-        try (Connection connection = DatabaseConfig.getConnection();
+        try (Connection connection = config.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
                 Reservation reservation = new Reservation();
-                reservation.setID(resultSet.getLong("id"));
-                reservation.setCoworkingSpaceID(resultSet.getLong("coworking_space_id"));
-                reservation.setCustomerID(resultSet.getLong("customer_id"));
+                reservation.setId(resultSet.getLong("id"));
+                reservation.getCoworkingSpace().setId(resultSet.getLong("coworking_space_id"));
+                reservation.setUserID(resultSet.getLong("user_id"));
                 reservation.setReservationName(resultSet.getString("reservation_name"));
                 reservation.setStartDateTime(resultSet.getTimestamp("start_datetime").toLocalDateTime());
                 reservation.setEndDateTime(resultSet.getTimestamp("end_datetime").toLocalDateTime());
@@ -55,20 +64,20 @@ public class ReservationRepository {
         return reservations;
     }
 
-    public TreeSet<Reservation> readPersonalReservations(Long customerId) {
-        String sql = "SELECT * FROM reservations WHERE customer_id = ?";
+    public TreeSet<Reservation> readPersonalReservations(Long userId) {
+        String sql = "SELECT * FROM reservations WHERE user_id = ?";
         TreeSet<Reservation> reservations = new TreeSet<>(dateTimeComparator);
 
-        try (Connection connection = DatabaseConfig.getConnection();
+        try (Connection connection = config.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setLong(1, customerId);
+            statement.setLong(1, userId);
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
                 Reservation reservation = new Reservation();
-                reservation.setID(resultSet.getLong("id"));
-                reservation.setCoworkingSpaceID(resultSet.getLong("coworking_space_id"));
-                reservation.setCustomerID(resultSet.getLong("customer_id"));
+                reservation.setId(resultSet.getLong("id"));
+                reservation.getCoworkingSpace().setId(resultSet.getLong("coworking_space_id"));
+                reservation.setUserID(resultSet.getLong("user_id"));
                 reservation.setReservationName(resultSet.getString("reservation_name"));
                 reservation.setStartDateTime(resultSet.getTimestamp("start_datetime").toLocalDateTime());
                 reservation.setEndDateTime(resultSet.getTimestamp("end_datetime").toLocalDateTime());
@@ -84,11 +93,11 @@ public class ReservationRepository {
 
 
     public void create(Reservation reservation) {
-        String sql = "INSERT INTO reservations ( coworking_space_id, customer_id, reservation_name, start_datetime, end_datetime) VALUES ( ?, ?, ?, ?, ?)";
-        try (Connection connection = DatabaseConfig.getConnection();
+        String sql = "INSERT INTO reservations ( coworking_space_id, user_id, reservation_name, start_datetime, end_datetime) VALUES ( ?, ?, ?, ?, ?)";
+        try (Connection connection = config.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setLong(1, reservation.getCoworkingSpaceID());
-            statement.setLong(2, reservation.getCustomerID());
+            statement.setLong(1, reservation.getCoworkingSpace().getId());
+            statement.setLong(2, reservation.getUserID());
             statement.setString(3, reservation.getReservationName());
             statement.setTimestamp(4, Timestamp.valueOf(reservation.getStartDateTime()));
             statement.setTimestamp(5, Timestamp.valueOf(reservation.getEndDateTime()));
@@ -100,9 +109,9 @@ public class ReservationRepository {
         }
     }
 
-    public void makeUnactive(Long id) {
+    public void makeInactive(Long id) {
         String sql = "UPDATE reservations SET is_active = ? WHERE id = ?";
-        try (Connection connection = DatabaseConfig.getConnection();
+        try (Connection connection = config.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setBoolean(1, false);
             statement.setLong(2, id);
@@ -119,7 +128,7 @@ public class ReservationRepository {
 
     public void deleteAll() {
         String sql = "DELETE FROM reservations";
-        try (Connection connection = DatabaseConfig.getConnection();
+        try (Connection connection = config.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.executeUpdate();
         } catch (SQLException e) {

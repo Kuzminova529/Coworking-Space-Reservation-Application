@@ -1,5 +1,7 @@
-package org.reservationapplication;
+package org.reservationapplication.util;
 
+
+import org.reservationapplication.Loggers;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;

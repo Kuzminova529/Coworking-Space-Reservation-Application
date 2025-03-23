@@ -4,7 +4,7 @@ import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.reservationapplication.model.CoworkingSpace;
-import org.reservationapplication.repository.CoworkingSpaceRepository;
+import org.reservationapplication.repository.JPARepos.CoworkingSpaceRepositoryJPA;
 import org.reservationapplication.service.CacheServiceCoworkingSpace;
 
 import java.util.Arrays;
@@ -12,12 +12,12 @@ import java.util.List;
 
 class CacheServiceCoworkingSpaceTest {
 
-    private CoworkingSpaceRepository repository;
+    private CoworkingSpaceRepositoryJPA repository;
     private CacheServiceCoworkingSpace cacheService;
 
     @BeforeEach
     void setUp() {
-        repository = mock(CoworkingSpaceRepository.class);
+        repository = mock(CoworkingSpaceRepositoryJPA.class);
         cacheService = new CacheServiceCoworkingSpace(repository);
     }
 
@@ -63,7 +63,7 @@ class CacheServiceCoworkingSpaceTest {
 
         cacheService.removeCoworkingSpaceByID(id);
 
-        verify(repository, times(1)).makeUnavailable(id);
+        verify(repository, times(1)).updateCoworkingStatus(id);
         assertNull(cacheService.getCache().getIfPresent("coworkings"));
     }
 

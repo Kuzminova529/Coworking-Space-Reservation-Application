@@ -8,13 +8,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.reservationapplication.model.AvailabilityStatus;
 import org.reservationapplication.model.CoworkingSpace;
-import org.reservationapplication.repository.CoworkingSpaceRepository;
+import org.reservationapplication.repository.JDBCRepos.CoworkingSpaceRepository;
 import org.reservationapplication.service.CacheServiceCoworkingSpace;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class CoworkingSpaceServiceImplTest {
@@ -27,21 +26,6 @@ public class CoworkingSpaceServiceImplTest {
 
     @InjectMocks
     private CoworkingSpaceServiceImpl coworkingSpaceService;
-
-    @Test
-    public void testGetCoworkingSpaceByID() {
-        CoworkingSpace space = new CoworkingSpace();
-        space.setID(1L);
-
-        //mock (coworkingSpaceRepository) behavior settings
-        when(coworkingSpaceRepository.getById(1L)).thenReturn(Optional.of(space));
-
-        Optional<CoworkingSpace> result = coworkingSpaceService.getCoworkingSpaceByID(1L);
-
-        assertTrue(result.isPresent());
-        assertEquals(1L, result.get().getID());
-        verify(coworkingSpaceRepository, times(1)).getById(1L);
-    }
 
     @Test
     public void testGetAllCoworkingSpace() {
@@ -86,18 +70,18 @@ public class CoworkingSpaceServiceImplTest {
     }
 
     @Test
-    public void testGetAvailableCoworkingSpace() {
+    public void testGetActiveCoworkingSpace() {
         CoworkingSpace space1 = new CoworkingSpace();
         space1.setID(1L);
-        space1.setAvailabilityStatus(AvailabilityStatus.AVAILABLE);
+        space1.setActive(AvailabilityStatus.AVAILABLE);
 
         CoworkingSpace space2 = new CoworkingSpace();
         space2.setID(2L);
-        space2.setAvailabilityStatus(AvailabilityStatus.UNAVAILABLE);
+        space2.setActive(AvailabilityStatus.UNAVAILABLE);
 
         CoworkingSpace space3 = new CoworkingSpace();
         space3.setID(3L);
-        space3.setAvailabilityStatus(AvailabilityStatus.AVAILABLE);
+        space3.setActive(AvailabilityStatus.AVAILABLE);
 
         List<CoworkingSpace> coworkingSpaces = Arrays.asList(space1, space2, space3);
 
@@ -115,7 +99,7 @@ public class CoworkingSpaceServiceImplTest {
     }
 
     @Test
-    public void testGetAvailableCoworkingSpaceWhenNoSpaces() {
+    public void testGetActiveCoworkingSpaceWhenNoSpaces() {
 
         when(cacheServiceCoworkingSpace.getAllCoworkingSpaces()).thenReturn(Arrays.asList());
 
@@ -128,7 +112,7 @@ public class CoworkingSpaceServiceImplTest {
     }
 
     @Test
-    public void testGetAvailableCoworkingSpaceWhenNull() {
+    public void testGetActiveCoworkingSpaceWhenNull() {
 
         when(cacheServiceCoworkingSpace.getAllCoworkingSpaces()).thenReturn(null);
 

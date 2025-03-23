@@ -1,41 +1,53 @@
 package org.reservationapplication.model;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import jakarta.persistence.*;
 
-public class Reservation implements Comparable<Reservation>{
-    private Long id;
-    private Long coworkingSpaceID;
-    private Long customerID;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "reservations")
+public class Reservation extends BaseEntity {
+
+    @ManyToOne
+    @JoinColumn(name = "coworking_space_id", nullable = false)
+    private CoworkingSpace coworkingSpace;
+
+    @Column(name = "user_id", nullable = false)
+    private Long userID;
+
+    @Column(name = "reservation_name", length = 255, nullable = false)
     private String reservationName;
+
+    @Column(name = "start_datetime", nullable = false)
     private LocalDateTime startDateTime;
+
+    @Column(name = "end_datetime", nullable = false)
     private LocalDateTime endDateTime;
 
-    public Long getID() {
-        return id;
+    public Reservation(){}
+
+    public Long getUserID() {
+        return userID;
     }
 
-    public void setID(long id) {
-        this.id = id;
-    }
-    public Long getCoworkingSpaceID() {
-        return coworkingSpaceID;
-    }
-
-    public void setCoworkingSpaceID(long coworkingSpaceID) {
-        this.coworkingSpaceID = coworkingSpaceID;
-    }
-
-    public Long getCustomerID() {
-        return customerID;
-    }
-
-    public void setCustomerID(long customerID) {
-        this.customerID = customerID;
+    public void setUserID(long customerID) {
+        this.userID = customerID;
     }
 
     public String getReservationName() {
         return reservationName;
+    }
+
+    public void setUserID(Long userID) {
+        this.userID = userID;
+    }
+
+    public CoworkingSpace getCoworkingSpace() {
+        return coworkingSpace;
+    }
+
+    public void setCoworkingSpace(CoworkingSpace coworkingSpace) {
+        this.coworkingSpace = coworkingSpace;
     }
 
     public void setReservationName(String reservationName) {
@@ -60,21 +72,13 @@ public class Reservation implements Comparable<Reservation>{
 
     @Override
     public String toString() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
-
-        String formattedStartDateTime = startDateTime.format(formatter);
-        String formattedEndDateTime = endDateTime.format(formatter);
-        return "Reservation: " +
-                "reservationID='" + id + '\'' +
-                ", coworkingSpaceID='" + coworkingSpaceID + '\'' +
-                ", customerID='" + customerID + '\'' +
+        return "Reservation{" +
+                "id=" + super.getId() +
+                ", coworkingSpace=" + coworkingSpace +
+                ", userID=" + userID +
                 ", reservationName='" + reservationName + '\'' +
-                ", startReservationDateAndTime=" + formattedStartDateTime +
-                ", endReservationDateAndTime=" + formattedEndDateTime;
+                ", startDateTime=" + startDateTime +
+                ", endDateTime=" + endDateTime + '}';
     }
 
-    @Override
-    public int compareTo(Reservation other) {
-        return this.startDateTime.compareTo(other.startDateTime);
-    }
 }

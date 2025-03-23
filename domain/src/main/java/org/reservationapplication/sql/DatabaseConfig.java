@@ -18,7 +18,7 @@ public class DatabaseConfig {
         dataSource = new HikariDataSource(config);
     }
 
-    public static Connection getConnection() throws SQLException {
+    public Connection getConnection() throws SQLException {
         return dataSource.getConnection();
     }
 }

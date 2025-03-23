@@ -3,24 +3,24 @@ package org.reservationapplication.service;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.reservationapplication.model.CoworkingSpace;
-import org.reservationapplication.repository.CoworkingSpaceRepository;
+import org.reservationapplication.repository.JPARepos.CoworkingSpaceRepositoryJPA;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class CacheServiceCoworkingSpace {
-    private final CoworkingSpaceRepository repository;
+    private final CoworkingSpaceRepositoryJPA repository;
     private final Cache<String, List<CoworkingSpace>> cache;
 
     public CacheServiceCoworkingSpace() {
-        this.repository = new CoworkingSpaceRepository();
+        this.repository = new CoworkingSpaceRepositoryJPA();
         this.cache = Caffeine.newBuilder()
                 .expireAfterWrite(10, TimeUnit.MINUTES) // Clears cache every 10mins
                 .maximumSize(100) // Coworking spaces limit
                 .build();
     }
 
-    public CacheServiceCoworkingSpace(CoworkingSpaceRepository repository) {
+    public CacheServiceCoworkingSpace(CoworkingSpaceRepositoryJPA repository) {
         this.repository = repository;
         this.cache = Caffeine.newBuilder()
                 .expireAfterWrite(10, TimeUnit.MINUTES) // Clears cache every 10mins
@@ -42,12 +42,11 @@ public class CacheServiceCoworkingSpace {
         cache.invalidate("coworkings");
     }
     public void removeCoworkingSpaceByID(long id) {
-        repository.makeUnavailable(id);
+        repository.updateCoworkingStatus(id);
         cache.invalidate("coworkings");
     }
 
     public void removeAllCoworkingSpaces() {
-        repository.deleteAll();
         cache.invalidateAll();
     }
 

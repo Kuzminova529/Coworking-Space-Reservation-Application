@@ -1,6 +1,7 @@
 package org.reservationapplication.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface EntityRepository<T, K> {
 
@@ -10,8 +11,7 @@ public interface EntityRepository<T, K> {
 
     void create(T item);
 
-    void makeUnavailable(K id);
+    Optional<T> getById(K id);
 
-    void deleteAll();
 
 }

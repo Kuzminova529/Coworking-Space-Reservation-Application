@@ -1,10 +1,10 @@
-package org.reservationapplication.repository;
+package org.reservationapplication.repository.JDBCRepos;
 
 import org.reservationapplication.Loggers;
 import org.reservationapplication.exeption.CoworkingSpaceNotFoundException;
-import org.reservationapplication.model.AvailabilityStatus;
 import org.reservationapplication.model.CoworkingSpace;
 import org.reservationapplication.model.CoworkingSpaceType;
+import org.reservationapplication.repository.EntityRepository;
 import org.reservationapplication.sql.DatabaseConfig;
 
 import java.sql.Connection;
@@ -18,16 +18,26 @@ import java.util.Optional;
 
 public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace, Long> {
 
+    private DatabaseConfig config;
+
+    public CoworkingSpaceRepository(DatabaseConfig config) {
+        this.config = config;
+    }
+
+    public CoworkingSpaceRepository(){
+        config = new DatabaseConfig();
+    }
+
     @Override
     public void save(List<CoworkingSpace> coworkingSpaces) {
         String sql = "INSERT INTO coworking_spaces (id, type, price, availability_status) VALUES (?, ?, ?, ?)";
-        try (Connection connection = DatabaseConfig.getConnection();
+        try (Connection connection = config.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             for (CoworkingSpace space : coworkingSpaces) {
-                statement.setLong(1, space.getID());
+                statement.setLong(1, space.getId());
                 statement.setString(2, space.getType().toString());
                 statement.setDouble(3, space.getPrice());
-                statement.setString(4, space.getAvailabilityStatus().toString());
+                statement.setString(4, space.getActive().toString());
                 statement.addBatch();
             }
             statement.executeBatch();
@@ -41,15 +51,15 @@ public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace
     public List<CoworkingSpace> read() {
         List<CoworkingSpace> spaces = new ArrayList<>();
         String sql = "SELECT * FROM coworking_spaces";
-        try (Connection connection = DatabaseConfig.getConnection();
+        try (Connection connection = config.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
                 CoworkingSpace space = new CoworkingSpace();
-                space.setID(resultSet.getLong("id"));
+                space.setId(resultSet.getLong("id"));
                 space.setType(CoworkingSpaceType.valueOf(resultSet.getString("type")));
                 space.setPrice(resultSet.getDouble("price"));
-                space.setAvailabilityStatus(AvailabilityStatus.valueOf(resultSet.getString("availability_status")));
+                space.setActive(Boolean.valueOf("availability_status"));
                 spaces.add(space);
             }
         } catch (SQLException e) {
@@ -62,11 +72,11 @@ public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace
     @Override
     public void create(CoworkingSpace coworkingSpace) {
         String sql = "INSERT INTO coworking_spaces (type, price, availability_status) VALUES ( ?, ?, ?)";
-        try (Connection connection = DatabaseConfig.getConnection();
+        try (Connection connection = config.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, coworkingSpace.getType().toString());
             statement.setDouble(2, coworkingSpace.getPrice());
-            statement.setString(3, coworkingSpace.getAvailabilityStatus().toString());
+            statement.setBoolean(3, coworkingSpace.getActive());
             statement.executeUpdate();
         } catch (SQLException e) {
             Loggers.USER_LOGGER.error("Something went wrong while adding CoworkingSpaces");
@@ -74,12 +84,13 @@ public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace
         }
     }
 
-    @Override
-    public void makeUnavailable(Long id) {
+    public void updateCoworkingStatus(Long id) {
         String sql = "UPDATE coworking_spaces SET availability_status = ? WHERE id = ?";
-        try (Connection connection = DatabaseConfig.getConnection();
+
+        try (Connection connection = config.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, "UNAVAILABLE");
+
+            statement.setBoolean(1, false);
             statement.setLong(2, id);
 
             int rowsAffected = statement.executeUpdate();
@@ -87,14 +98,16 @@ public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace
                 throw new CoworkingSpaceNotFoundException(id, 404);
             }
         } catch (SQLException e) {
-            Loggers.USER_LOGGER.error("Something went wrong while updating the status of CoworkingSpace");
-            Loggers.TECHNICAL_LOGGER.error(e.getMessage());
+            Loggers.USER_LOGGER.error("Something went wrong while updating the status of CoworkingSpace.");
+            Loggers.TECHNICAL_LOGGER.error("Database error:", e);
         }
     }
 
+
+    @Override
     public Optional<CoworkingSpace> getById(Long id) {
         String sql = "SELECT * FROM coworking_spaces WHERE id = ?";
-        try (Connection connection = DatabaseConfig.getConnection();
+        try (Connection connection = config.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setLong(1, id);
@@ -102,10 +115,10 @@ public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     CoworkingSpace space = new CoworkingSpace();
-                    space.setID(resultSet.getLong("id"));
+                    space.setId(resultSet.getLong("id"));
                     space.setType(CoworkingSpaceType.valueOf(resultSet.getString("type")));
                     space.setPrice(resultSet.getDouble("price"));
-                    space.setAvailabilityStatus(AvailabilityStatus.valueOf(resultSet.getString("availability_status")));
+                    space.setActive(Boolean.valueOf("availability_status"));
 
                     return Optional.of(space);
                 }
@@ -123,7 +136,7 @@ public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace
 
     public void deleteAll() {
         String sql = "DELETE FROM coworking_spaces";
-        try (Connection connection = DatabaseConfig.getConnection();
+        try (Connection connection = config.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.executeUpdate();
         } catch (SQLException e) {
