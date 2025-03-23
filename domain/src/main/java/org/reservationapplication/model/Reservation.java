@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reservations")
-public class Reservation extends EntityModel {
+public class Reservation extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "coworking_space_id", nullable = false)

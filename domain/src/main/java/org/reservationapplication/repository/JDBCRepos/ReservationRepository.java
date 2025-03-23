@@ -10,8 +10,8 @@ import java.util.Comparator;
 import java.util.TreeSet;
 
 public class ReservationRepository {
-    Comparator<Reservation> dateTimeComparator = Comparator.comparing(Reservation::getStartDateTime);
-    DatabaseConfig config;
+    private Comparator<Reservation> dateTimeComparator = Comparator.comparing(Reservation::getStartDateTime);
+    private DatabaseConfig config;
 
     public ReservationRepository(DatabaseConfig config) {
         this.config = config;
@@ -26,8 +26,8 @@ public class ReservationRepository {
         try (Connection connection = config.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             for (Reservation reservation : reservations) {
-                statement.setLong(1, reservation.getID());
-                statement.setLong(2, reservation.getCoworkingSpace().getID());
+                statement.setLong(1, reservation.getId());
+                statement.setLong(2, reservation.getCoworkingSpace().getId());
                 statement.setLong(3, reservation.getUserID());
                 statement.setString(4, reservation.getReservationName());
                 statement.setTimestamp(5, Timestamp.valueOf(reservation.getStartDateTime()));
@@ -49,8 +49,8 @@ public class ReservationRepository {
              ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
                 Reservation reservation = new Reservation();
-                reservation.setID(resultSet.getLong("id"));
-                reservation.getCoworkingSpace().setID(resultSet.getLong("coworking_space_id"));
+                reservation.setId(resultSet.getLong("id"));
+                reservation.getCoworkingSpace().setId(resultSet.getLong("coworking_space_id"));
                 reservation.setUserID(resultSet.getLong("user_id"));
                 reservation.setReservationName(resultSet.getString("reservation_name"));
                 reservation.setStartDateTime(resultSet.getTimestamp("start_datetime").toLocalDateTime());
@@ -75,8 +75,8 @@ public class ReservationRepository {
 
             while (resultSet.next()) {
                 Reservation reservation = new Reservation();
-                reservation.setID(resultSet.getLong("id"));
-                reservation.getCoworkingSpace().setID(resultSet.getLong("coworking_space_id"));
+                reservation.setId(resultSet.getLong("id"));
+                reservation.getCoworkingSpace().setId(resultSet.getLong("coworking_space_id"));
                 reservation.setUserID(resultSet.getLong("user_id"));
                 reservation.setReservationName(resultSet.getString("reservation_name"));
                 reservation.setStartDateTime(resultSet.getTimestamp("start_datetime").toLocalDateTime());
@@ -96,7 +96,7 @@ public class ReservationRepository {
         String sql = "INSERT INTO reservations ( coworking_space_id, user_id, reservation_name, start_datetime, end_datetime) VALUES ( ?, ?, ?, ?, ?)";
         try (Connection connection = config.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setLong(1, reservation.getCoworkingSpace().getID());
+            statement.setLong(1, reservation.getCoworkingSpace().getId());
             statement.setLong(2, reservation.getUserID());
             statement.setString(3, reservation.getReservationName());
             statement.setTimestamp(4, Timestamp.valueOf(reservation.getStartDateTime()));

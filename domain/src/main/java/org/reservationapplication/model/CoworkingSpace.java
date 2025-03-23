@@ -7,7 +7,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "coworking_spaces")
-public class CoworkingSpace extends EntityModel{
+public class CoworkingSpace extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
     private CoworkingSpaceType type;

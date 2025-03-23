@@ -1,7 +1,5 @@
 package org.reservationapplication.model;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
 
 /* @JsonTypeInfo(
@@ -18,5 +16,5 @@ import jakarta.persistence.*;
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "role_type", discriminatorType = DiscriminatorType.STRING)
-public abstract class User extends EntityModel {
+public abstract class User extends BaseEntity {
 }

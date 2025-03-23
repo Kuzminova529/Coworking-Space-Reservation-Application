@@ -18,7 +18,7 @@ import java.util.Optional;
 
 public class CoworkingSpaceRepository implements EntityRepository<CoworkingSpace, Long> {
 
-    DatabaseConfig config;
+    private DatabaseConfig config;
 
     public CoworkingSpaceRepository(DatabaseConfig config) {
         this.config = config;

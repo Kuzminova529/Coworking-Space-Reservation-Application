@@ -3,7 +3,7 @@ package org.reservationapplication.model;
 import jakarta.persistence.*;
 
 @MappedSuperclass
-public abstract class EntityModel {
+public abstract class BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
