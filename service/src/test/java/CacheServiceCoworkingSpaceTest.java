@@ -3,9 +3,9 @@ import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.reservationapplication.model.CoworkingSpace;
-import org.reservationapplication.repository.JPARepos.CoworkingSpaceRepositoryJPA;
-import org.reservationapplication.service.CacheServiceCoworkingSpace;
+import org.domain.model.CoworkingSpace;
+import org.domain.repository.JPARepos.CoworkingSpaceRepositoryJPA;
+import org.service.CacheServiceCoworkingSpace;
 
 import java.util.Arrays;
 import java.util.List;

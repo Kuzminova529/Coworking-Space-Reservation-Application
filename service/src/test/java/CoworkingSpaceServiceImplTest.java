@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.reservationapplication.model.AvailabilityStatus;
-import org.reservationapplication.model.CoworkingSpace;
-import org.reservationapplication.repository.JDBCRepos.CoworkingSpaceRepository;
-import org.reservationapplication.service.CacheServiceCoworkingSpace;
-import org.reservationapplication.service.CoworkingSpaceServiceImpl;
+import org.domain.model.CoworkingSpace;
+import org.domain.repository.JDBCRepos.CoworkingSpaceRepository;
+import org.service.CacheServiceCoworkingSpace;
+import org.service.CoworkingSpaceServiceImpl;
 
 import java.util.Arrays;
 import java.util.List;

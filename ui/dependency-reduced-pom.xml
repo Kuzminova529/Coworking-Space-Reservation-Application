@@ -21,7 +21,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>org.reservationapplication.Main</mainClass>
+                  <mainClass>org.ui.Main</mainClass>
                 </transformer>
               </transformers>
               <outputDirectory>${project.basedir}/../dist</outputDirectory>

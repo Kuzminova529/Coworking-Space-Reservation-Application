@@ -1,15 +1,18 @@
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import org.domain.model.CoworkingSpace;
+import org.domain.model.Customer;
+import org.domain.model.Reservation;
+import org.domain.model.User;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.Test;
-import org.reservationapplication.model.*;
-import org.reservationapplication.repository.JPARepos.ReservationRepositoryJPA;
-import org.reservationapplication.service.CoworkingSpaceServiceImpl;
-import org.reservationapplication.service.ReservationServiceImpl;
+import org.domain.repository.JPARepos.ReservationRepositoryJPA;
+import org.service.CoworkingSpaceServiceImpl;
+import org.service.ReservationServiceImpl;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
