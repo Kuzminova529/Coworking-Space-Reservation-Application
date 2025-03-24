@@ -78,7 +78,9 @@ public class Reservation extends BaseEntity {
                 ", userID=" + userID +
                 ", reservationName='" + reservationName + '\'' +
                 ", startDateTime=" + startDateTime +
-                ", endDateTime=" + endDateTime + '}';
+                ", endDateTime=" + endDateTime +
+                "is_actve="+super.getActive() +
+                '}';
     }
 
 }

@@ -59,8 +59,8 @@ public class MenuController {
     }
 
 
-    public void handleViewAllReservations() {
-        List<Reservation> reservations = menuService.viewAllReservations(reservationService);
+    public void handleGetAllReservations() {
+        List<Reservation> reservations = menuService.getAllReservations(reservationService);
         if (reservations != null && !reservations.isEmpty()) {
             for (Reservation reservation : reservations) {
                 Loggers.USER_LOGGER.info(reservation.toString());
@@ -70,8 +70,8 @@ public class MenuController {
         }
     }
 
-    public void handleViewAllCoworkingSpaces() {
-        List<CoworkingSpace> spaces = menuService.viewAllCoworkingSpaces(coworkingSpaceService);
+    public void handleGetAllCoworkingSpaces() {
+        List<CoworkingSpace> spaces = menuService.getAllCoworkingSpaces(coworkingSpaceService);
         if (spaces != null && !spaces.isEmpty()) {
             for (CoworkingSpace space : spaces) {
                 Loggers.USER_LOGGER.info(space.toString());
@@ -82,7 +82,7 @@ public class MenuController {
     }
 
     public void handleViewAvailableSpaces() {
-        List<CoworkingSpace> spaces = menuService.viewAvailableSpaces(coworkingSpaceService);
+        List<CoworkingSpace> spaces = menuService.getAvailableSpaces(coworkingSpaceService);
         if (spaces != null && !spaces.isEmpty()) {
             for (CoworkingSpace space : spaces) {
                 Loggers.USER_LOGGER.info(space.toString());

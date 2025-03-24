@@ -93,11 +93,11 @@ public class Menu {
                     break;
                 }
                 case 3: {
-                    menuController.handleViewAllReservations();
+                    menuController.handleGetAllReservations();
                     break;
                 }
                 case 4: {
-                    menuController.handleViewAllCoworkingSpaces();
+                    menuController.handleGetAllCoworkingSpaces();
                     break;
                 }
                 case 5: {

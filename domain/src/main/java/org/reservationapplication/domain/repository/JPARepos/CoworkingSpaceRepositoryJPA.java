@@ -29,7 +29,7 @@ public class CoworkingSpaceRepositoryJPA implements CoworkingSpaceRepository {
             transaction.begin();
 
             for (CoworkingSpace space : coworkingSpaces) {
-                entityManager.merge(space);
+                entityManager.persist(space);
             }
 
             transaction.commit();
@@ -121,7 +121,7 @@ public class CoworkingSpaceRepositoryJPA implements CoworkingSpaceRepository {
         EntityManager entityManager = emf.createEntityManager();
         try(entityManager) {
             CoworkingSpace coworkingSpace = entityManager.createQuery(
-                            "FROM CoworkingSpace c WHERE c.id = :id", CoworkingSpace.class)
+                            "SELECT c FROM CoworkingSpace c WHERE c.id = :id", CoworkingSpace.class)
                     .setParameter("id", id)
                     .getSingleResult();
 

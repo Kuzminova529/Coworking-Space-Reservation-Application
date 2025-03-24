@@ -1,20 +1,18 @@
 package org.reservationapplication.domain.sql;
 
 import org.flywaydb.core.Flyway;
-import org.reservationapplication.logger.Loggers;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-public class DatabaseMigration {
-    public static void migrate() {
+@Configuration
+public class FlywayConfig {
 
-        // Flyway Configuration
+    @Bean
+    public Flyway flyway() {
         Flyway flyway = Flyway.configure()
                 .dataSource(DatabaseSettings.getUrl(), DatabaseSettings.getUsername(), DatabaseSettings.getPassword())
                 .locations("classpath:db/migration")
                 .load();
-
-        // Performing migrations
-        flyway.migrate();
-
-        Loggers.USER_LOGGER.info("Migration completed successfully.");
+        return flyway;
     }
 }

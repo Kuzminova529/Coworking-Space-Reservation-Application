@@ -80,7 +80,7 @@ public class MenuServiceTest {
     }
 
     @Test
-    public void testViewAllCoworkingSpaces() {
+    public void testGetAllCoworkingSpaces() {
         CoworkingSpaceServiceImpl coworkingSpaceService = mock(CoworkingSpaceServiceImpl.class);
         MenuService menuService = new MenuService();
 
@@ -90,7 +90,7 @@ public class MenuServiceTest {
         List<CoworkingSpace> list = Arrays.asList(space1, space2);
         when(coworkingSpaceService.getAllCoworkingSpace()).thenReturn(list);
 
-        List<CoworkingSpace> result = menuService.viewAllCoworkingSpaces(coworkingSpaceService);
+        List<CoworkingSpace> result = menuService.getAllCoworkingSpaces(coworkingSpaceService);
 
         assertNotNull(result);
         assertEquals(2, result.size());

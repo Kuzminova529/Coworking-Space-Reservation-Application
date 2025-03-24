@@ -46,8 +46,10 @@ public class CoworkingSpace extends BaseEntity {
     @Override
     public String toString() {
         return "CoworkingSpace :" +
-                "id='" + super.getId() + '\'' +
-                ", type='" + type + '\'' +
-                ", price=" + price;
+                "id=" + super.getId() + '\'' +
+                ", type=" + type + '\'' +
+                ", price=" + price + '\'' +
+                ", active=" + super.getActive() +
+                '}';
     }
 }

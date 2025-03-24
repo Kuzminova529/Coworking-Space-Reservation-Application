@@ -53,7 +53,7 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
         cacheServiceCoworkingSpace.removeCoworkingSpaceByID(id);
     }
 
-    public List<CoworkingSpace> getAvailableCoworkingSpace() {
+    public List<CoworkingSpace> getActiveCoworkingSpace() {
         List<CoworkingSpace> coworkingSpaces = cacheServiceCoworkingSpace.getAllCoworkingSpaces();
         List<CoworkingSpace> availableSpaces = new ArrayList<>();
         if (coworkingSpaces != null) {

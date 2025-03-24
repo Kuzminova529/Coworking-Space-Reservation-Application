@@ -33,7 +33,7 @@ public class ReservationRepositoryJPA implements ReservationRepository {
             transaction.begin();
 
             for (Reservation reservation : reservations) {
-                entityManager.merge(reservation);
+                entityManager.persist(reservation);
             }
 
             transaction.commit();

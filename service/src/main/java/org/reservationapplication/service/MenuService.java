@@ -44,16 +44,16 @@ public class MenuService {
         coworkingSpaceService.removeCoworkingSpace(id);
     }
 
-    public List<Reservation> viewAllReservations(ReservationService reservationService) {
+    public List<Reservation> getAllReservations(ReservationService reservationService) {
         return reservationService.getAllReservation();
     }
 
-    public List<CoworkingSpace> viewAllCoworkingSpaces(CoworkingSpaceService coworkingSpaceService) {
+    public List<CoworkingSpace> getAllCoworkingSpaces(CoworkingSpaceService coworkingSpaceService) {
         return coworkingSpaceService.getAllCoworkingSpace();
     }
 
-    public List<CoworkingSpace> viewAvailableSpaces(CoworkingSpaceService coworkingSpaceService) {
-        return coworkingSpaceService.getAvailableCoworkingSpace();
+    public List<CoworkingSpace> getAvailableSpaces(CoworkingSpaceService coworkingSpaceService) {
+        return coworkingSpaceService.getActiveCoworkingSpace();
     }
 
     public boolean makeReservation(User user,

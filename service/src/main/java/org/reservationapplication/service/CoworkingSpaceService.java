@@ -14,7 +14,7 @@ public interface CoworkingSpaceService {
 
     void removeCoworkingSpace(long id);
 
-    List<CoworkingSpace> getAvailableCoworkingSpace();
+    List<CoworkingSpace> getActiveCoworkingSpace();
 
     Optional<CoworkingSpace> getCoworkingSpaceByID(long coworkingID);
 
