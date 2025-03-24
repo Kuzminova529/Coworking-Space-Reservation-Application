@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
-@Repository
+@Repository("jpaCoworkingSpaceRepository")
 public class CoworkingSpaceRepositoryJPA implements CoworkingSpaceRepository {
 
     private EntityManagerFactory emf;

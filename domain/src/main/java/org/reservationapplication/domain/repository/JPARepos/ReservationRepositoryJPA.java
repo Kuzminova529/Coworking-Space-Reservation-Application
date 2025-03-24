@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+@Repository("jpaReservationRepository")
 public class ReservationRepositoryJPA implements ReservationRepository {
 
     private final EntityManagerFactory emf;

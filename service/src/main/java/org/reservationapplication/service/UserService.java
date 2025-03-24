@@ -4,6 +4,7 @@ import org.reservationapplication.domain.model.User;
 import org.reservationapplication.domain.repository.EntityRepository;
 import org.reservationapplication.domain.repository.JPARepos.UserRepositoryJPA;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public class UserService {
     private EntityRepository<User, Long> userRepository;
 
     @Autowired
-    public UserService(EntityRepository<User, Long> userRepository) {
+    public UserService(@Qualifier("jpaUserRepository") EntityRepository<User, Long> userRepository) {
         this.userRepository = userRepository;
     }
 

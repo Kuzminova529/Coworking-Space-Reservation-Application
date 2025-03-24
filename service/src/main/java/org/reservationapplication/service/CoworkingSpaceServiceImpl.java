@@ -6,6 +6,7 @@ import org.reservationapplication.domain.model.CoworkingSpace;
 import org.reservationapplication.domain.model.Reservation;
 import org.reservationapplication.domain.repository.CoworkingSpaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,7 +20,7 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
     private final CoworkingSpaceRepository coworkingSpaceRepository;
 
     @Autowired
-    public CoworkingSpaceServiceImpl(CacheServiceCoworkingSpace cacheServiceCoworkingSpace, CoworkingSpaceRepository coworkingSpaceRepository) {
+    public CoworkingSpaceServiceImpl(CacheServiceCoworkingSpace cacheServiceCoworkingSpace, @Qualifier("jpaCoworkingSpaceRepository") CoworkingSpaceRepository coworkingSpaceRepository) {
         this.cacheServiceCoworkingSpace = cacheServiceCoworkingSpace;
         this.coworkingSpaceRepository = coworkingSpaceRepository;
     }
