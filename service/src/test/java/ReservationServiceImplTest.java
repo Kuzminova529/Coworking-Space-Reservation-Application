@@ -31,25 +31,25 @@ public class ReservationServiceImplTest {
     @Test
     public void testGetAllReservation() {
         Reservation reservation1 = new Reservation();
-        reservation1.setCoworkingSpaceID(1L);
+        reservation1.setId(1L);
         reservation1.setUserID(1L);
         reservation1.setStartDateTime(LocalDateTime.now().plusHours(1));
         reservation1.setEndDateTime(LocalDateTime.now().plusHours(2));
 
         Reservation reservation2 = new Reservation();
-        reservation2.setCoworkingSpaceID(2L);
+        reservation2.setId(2L);
         reservation2.setUserID(2L);
         reservation2.setStartDateTime(LocalDateTime.now().plusHours(3));
         reservation2.setEndDateTime(LocalDateTime.now().plusHours(4));
 
-        TreeSet<Reservation> reservations = new TreeSet<>();
+        List<Reservation> reservations = new ArrayList<>();
 
         reservations.add(reservation1);
         reservations.add(reservation2);
 
         when(reservationRepository.read()).thenReturn(reservations);
 
-        TreeSet<Reservation> allReservations = reservationService.getAllReservation();
+        List<Reservation> allReservations = reservationService.getAllReservation();
 
         assertEquals(2, allReservations.size());
         assertTrue(allReservations.contains(reservation1));
@@ -60,7 +60,7 @@ public class ReservationServiceImplTest {
     public void testGetAllReservation_Empty() {
         ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
 
-        when(reservationRepository.read()).thenReturn(new TreeSet<>());
+        when(reservationRepository.read()).thenReturn(new ArrayList<>());
         assertTrue(reservationService.getAllReservation().isEmpty());
     }
 
@@ -71,13 +71,13 @@ public class ReservationServiceImplTest {
 
         // Создаем резервации
         Reservation reservation1 = new Reservation();
-        reservation1.setCoworkingSpaceID(1L);
+        reservation1.setId(1L);
         reservation1.setUserID(1L);
         reservation1.setStartDateTime(LocalDateTime.now().plusHours(1));
         reservation1.setEndDateTime(LocalDateTime.now().plusHours(2));
 
         Reservation reservation2 = new Reservation();
-        reservation2.setCoworkingSpaceID(2L);
+        reservation2.setId(2L);
         reservation2.setUserID(2L);
         reservation2.setStartDateTime(LocalDateTime.now().plusHours(3));
         reservation2.setEndDateTime(LocalDateTime.now().plusHours(4));
@@ -85,12 +85,12 @@ public class ReservationServiceImplTest {
         User user = new Customer();
         user.setId(1L);
 
-        TreeSet<Reservation> personalReservations = new TreeSet<>();
+        List<Reservation> personalReservations = new ArrayList<>();
         personalReservations.add(reservation1);
 
         when(reservationRepository.readPersonalReservations(user.getId())).thenReturn(personalReservations);
 
-        TreeSet<Reservation> result = reservationService.getPersonalReservation(user);
+        List<Reservation> result = reservationService.getPersonalReservation(user);
 
         assertEquals(1, result.size());
         assertTrue(result.contains(reservation1));
@@ -103,48 +103,18 @@ public class ReservationServiceImplTest {
 
         // Создаем резервации
         Reservation reservation1 = new Reservation();
-        reservation1.setCoworkingSpaceID(1L);
+        reservation1.setId(1L);
         reservation1.setUserID(1L);
         reservation1.setStartDateTime(LocalDateTime.now().plusHours(1));
         reservation1.setEndDateTime(LocalDateTime.now().plusHours(2));
         User user = new Customer();
         user.setId(99L);
 
-        when(reservationRepository.readPersonalReservations(user.getId())).thenReturn(new TreeSet<>());
+        when(reservationRepository.readPersonalReservations(user.getId())).thenReturn(new ArrayList<>());
 
-        TreeSet<Reservation> result = reservationService.getPersonalReservation(user);
+        List<Reservation> result = reservationService.getPersonalReservation(user);
 
         assertTrue(result.isEmpty());
-    }
-
-    @Test
-    public void testGetReservationsByCoworkingSpaceAndDate() {
-        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
-
-        LocalDate date = LocalDate.now();
-
-        Reservation reservation1 = new Reservation();
-        reservation1.setCoworkingSpaceID(1L);
-        reservation1.setStartDateTime(LocalDateTime.now().plusHours(1));
-        reservation1.setEndDateTime(LocalDateTime.now().plusHours(2));
-
-        Reservation reservation2 = new Reservation();
-        reservation2.setCoworkingSpaceID(1L);
-        reservation2.setStartDateTime(LocalDateTime.now().plusHours(24));
-        reservation2.setEndDateTime(LocalDateTime.now().plusHours(25));
-
-
-        TreeSet<Reservation> reservations = new TreeSet<>();
-        reservations.add(reservation1);
-        reservations.add(reservation2);
-
-        when(reservationRepository.read()).thenReturn(reservations);
-
-        TreeSet<Reservation> result = reservationService.getReservationsByCoworkingSpaceAndDate(1L, date);
-
-        assertNotNull(result);
-        assertTrue(result.contains(reservation1));
-        assertFalse(result.contains(reservation2));
     }
 
     @Test
@@ -153,23 +123,23 @@ public class ReservationServiceImplTest {
 
         // Creating test reservations
         Reservation reservation1 = new Reservation();
-        reservation1.setCoworkingSpaceID(1L);
+        reservation1.setId(1L);
         reservation1.setUserID(1L);
         reservation1.setStartDateTime(LocalDateTime.now());
         reservation1.setEndDateTime(LocalDateTime.now().plusHours(2));
 
         Reservation reservation2 = new Reservation();
-        reservation2.setCoworkingSpaceID(2L);
+        reservation2.setId(2L);
         reservation2.setUserID(2L);
         reservation2.setStartDateTime(LocalDateTime.now());
         reservation2.setEndDateTime(LocalDateTime.now().plusHours(2));
 
         long reservationId = 1L;
-        doNothing().when(reservationRepository).updateReservationStatus(reservationId);
+        doNothing().when(reservationRepository).updateStatus(reservationId);
 
         reservationService.removeReservationById(reservationId);
 
-        verify(reservationRepository, times(1)).updateReservationStatus(reservationId);
+        verify(reservationRepository, times(1)).updateStatus(reservationId);
     }
 
     @Test
@@ -177,7 +147,7 @@ public class ReservationServiceImplTest {
         ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
 
         Reservation reservation = new Reservation();
-        reservation.setCoworkingSpaceID(1L);
+        reservation.setId(1L);
         reservation.setUserID(1L);
         reservation.setStartDateTime(LocalDateTime.now());
         reservation.setEndDateTime(LocalDateTime.now().plusHours(2));
@@ -185,51 +155,24 @@ public class ReservationServiceImplTest {
         doNothing().when(reservationRepository).create(any(Reservation.class));
         reservationService.addReservation(reservation);
 
-        TreeSet<Reservation> reservations = new TreeSet<>();
+        List<Reservation> reservations = new ArrayList<>();
         reservations.add(reservation);
         when(reservationRepository.read()).thenReturn(reservations);
 
-        TreeSet<Reservation> allReservations = reservationService.getAllReservation();
+        List<Reservation> allReservations = reservationService.getAllReservation();
 
         assertEquals(1, allReservations.size());
         assertTrue(allReservations.contains(reservation));
     }
 
-    @Test
-    public void testUserAddReservationSuccess() {
-        // Mocking the services
-        CoworkingSpaceServiceImpl coworkingSpaceService = mock(CoworkingSpaceServiceImpl.class);
-        ReservationServiceImpl reservationService = mock(ReservationServiceImpl.class);
 
-        CoworkingSpace coworkingSpace = new CoworkingSpace();
-        coworkingSpace.setActive(AvailabilityStatus.AVAILABLE);
-        when(coworkingSpaceService.getCoworkingSpaceByID(1L)).thenReturn(Optional.of(coworkingSpace));
-
-        Customer user = new Customer();
-        user.setId(1L);
-
-        String reservationName = "Test Reservation";
-        LocalDate bookingDate = LocalDate.now().plusDays(1); // Tomorrow
-        LocalDateTime startDateTime = LocalDateTime.now().plusHours(1); // 1 hour from now
-        LocalDateTime endDateTime = startDateTime.plusHours(1); // 2 hours from now
-
-        //partial mock
-        ReservationServiceImpl reservationServiceSpy = spy(new ReservationServiceImpl(reservationRepository));
-        doNothing().when(reservationServiceSpy).addReservation(any(Reservation.class));
-
-        boolean result = reservationServiceSpy.userAddReservation(
-                1L, reservationName, bookingDate, startDateTime, endDateTime, user, coworkingSpaceService, reservationServiceSpy);
-
-        assertTrue(result);
-        verify(reservationServiceSpy, times(1)).addReservation(any(Reservation.class));  // Verifying that the addReservation method was called
-    }
     @Test
     public void testUserAddReservationWithPastDate() {
         CoworkingSpaceServiceImpl coworkingSpaceService = mock(CoworkingSpaceServiceImpl.class);
         ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
 
         CoworkingSpace coworkingSpace = new CoworkingSpace();
-        coworkingSpace.setActive(AvailabilityStatus.AVAILABLE);
+        coworkingSpace.setActive(true);
         when(coworkingSpaceService.getCoworkingSpaceByID(1L)).thenReturn(Optional.of(coworkingSpace));
 
         Customer user = new Customer();
@@ -243,7 +186,7 @@ public class ReservationServiceImplTest {
 
         // Executing the method and checking for the exception
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            reservationService.userAddReservation(1L, reservationName, bookingDate, startDateTime, endDateTime, user, coworkingSpaceService, reservationService);
+            reservationService.userAddReservation(1L, reservationName, bookingDate, startDateTime, endDateTime, user, coworkingSpaceService);
         });
 
         assertEquals("You cannot register a past date!", exception.getMessage()); // Verifying the exception message

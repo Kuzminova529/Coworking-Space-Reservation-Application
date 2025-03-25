@@ -10,7 +10,7 @@ public interface CoworkingSpaceService {
 
     List<CoworkingSpace> getAllCoworkingSpace();
 
-    void addCoworkingSpace(CoworkingSpace coworkingSpace);
+    void addCoworkingSpace(int typeChoice, double price);
 
     void removeCoworkingSpace(long id);
 

@@ -13,6 +13,7 @@ public class FlywayConfig {
                 .dataSource(DatabaseSettings.getUrl(), DatabaseSettings.getUsername(), DatabaseSettings.getPassword())
                 .locations("classpath:db/migration")
                 .load();
+        flyway.migrate();
         return flyway;
     }
 }

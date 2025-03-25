@@ -1,5 +1,6 @@
 package org.reservationapplication.ui;
 
+import org.reservationapplication.domain.exeption.BusinessException;
 import org.reservationapplication.domain.model.CoworkingSpace;
 import org.reservationapplication.domain.model.Reservation;
 import org.reservationapplication.domain.model.User;
@@ -13,6 +14,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.time.LocalDateTime;
 
 import static org.reservationapplication.domain.util.UserInputHandler.*;
 import static org.reservationapplication.ui.MenuConstants.*;
@@ -20,15 +22,11 @@ import static org.reservationapplication.ui.MenuConstants.*;
 @Component
 public class MenuController {
 
-    private final MenuService menuService;
     private final CoworkingSpaceService coworkingSpaceService;
     private final ReservationService reservationService;
 
     @Autowired
-    public MenuController(MenuService menuService,
-                          CoworkingSpaceService coworkingSpaceService,
-                          ReservationService reservationService) {
-        this.menuService = menuService;
+    public MenuController(CoworkingSpaceService coworkingSpaceService, ReservationService reservationService) {
         this.coworkingSpaceService = coworkingSpaceService;
         this.reservationService = reservationService;
     }
@@ -38,11 +36,13 @@ public class MenuController {
             int typeChoice = intSupplierCreator.supplier(COWORKING_SPACE_TYPE_PROMPT).get();
             double price = doubleSupplierCreator.supplier(COWORKING_SPACE_PRICE_PROMPT).get();
 
-            menuService.addCoworkingSpace(coworkingSpaceService, typeChoice, price);
+            coworkingSpaceService.addCoworkingSpace(typeChoice, price);
             Loggers.USER_LOGGER.info("Coworking space added successfully.");
         } catch (IllegalArgumentException e) {
-            Loggers.USER_LOGGER.warn("Error adding coworking space: " + e.getMessage());
+            Loggers.USER_LOGGER.warn("Error adding coworking space");
             Loggers.TECHNICAL_LOGGER.error("Error in handleAddCoworkingSpace", e);
+        } catch (BusinessException e) {
+            Loggers.USER_LOGGER.warn("Error adding coworking space");
         }
     }
 
@@ -50,45 +50,57 @@ public class MenuController {
     public void handleRemoveCoworkingSpace() {
         try {
             long id = longSupplierCreator.supplier(COWORKING_SPACE_ID_PROMPT).get();
-            menuService.removeCoworkingSpace(coworkingSpaceService, id);
+            coworkingSpaceService.removeCoworkingSpace(id);
             Loggers.USER_LOGGER.info("Coworking space removed successfully.");
-        } catch (Exception e) {
-            Loggers.USER_LOGGER.warn("Error removing coworking space: " + e.getMessage());
+        } catch (BusinessException e) {
+            Loggers.USER_LOGGER.warn("Error removing coworking space");
             Loggers.TECHNICAL_LOGGER.error("Error in handleRemoveCoworkingSpace", e);
         }
     }
 
 
     public void handleGetAllReservations() {
-        List<Reservation> reservations = menuService.getAllReservations(reservationService);
-        if (reservations != null && !reservations.isEmpty()) {
-            for (Reservation reservation : reservations) {
-                Loggers.USER_LOGGER.info(reservation.toString());
+        try {
+            List<Reservation> reservations = reservationService.getAllReservation();
+            if (reservations != null && !reservations.isEmpty()) {
+                for (Reservation reservation : reservations) {
+                    Loggers.USER_LOGGER.info(reservation.toString());
+                }
+            } else {
+                Loggers.USER_LOGGER.warn("No reservations found.");
             }
-        } else {
-            Loggers.USER_LOGGER.warn("No reservations found.");
+        } catch (BusinessException e) {
+            Loggers.USER_LOGGER.warn("Error retrieving all reservations");
         }
     }
 
     public void handleGetAllCoworkingSpaces() {
-        List<CoworkingSpace> spaces = menuService.getAllCoworkingSpaces(coworkingSpaceService);
-        if (spaces != null && !spaces.isEmpty()) {
-            for (CoworkingSpace space : spaces) {
-                Loggers.USER_LOGGER.info(space.toString());
+        try {
+            List<CoworkingSpace> spaces = coworkingSpaceService.getAllCoworkingSpace();
+            if (spaces != null && !spaces.isEmpty()) {
+                for (CoworkingSpace space : spaces) {
+                    Loggers.USER_LOGGER.info(space.toString());
+                }
+            } else {
+                Loggers.USER_LOGGER.warn("No coworking spaces found.");
             }
-        } else {
-            Loggers.USER_LOGGER.warn("No coworking spaces found.");
+        } catch (BusinessException e) {
+            Loggers.USER_LOGGER.warn("Error retrieving all coworking spaces");
         }
     }
 
-    public void handleViewAvailableSpaces() {
-        List<CoworkingSpace> spaces = menuService.getAvailableSpaces(coworkingSpaceService);
-        if (spaces != null && !spaces.isEmpty()) {
-            for (CoworkingSpace space : spaces) {
-                Loggers.USER_LOGGER.info(space.toString());
+    public void handleGetActiveSpaces() {
+        try {
+            List<CoworkingSpace> spaces = coworkingSpaceService.getActiveCoworkingSpace();
+            if (spaces != null && !spaces.isEmpty()) {
+                for (CoworkingSpace space : spaces) {
+                    Loggers.USER_LOGGER.info(space.toString());
+                }
+            } else {
+                Loggers.USER_LOGGER.warn("No available coworking spaces found.");
             }
-        } else {
-            Loggers.USER_LOGGER.warn("No available coworking spaces found.");
+        } catch (BusinessException e) {
+            Loggers.USER_LOGGER.warn("Error retrieving all coworking spaces");
         }
     }
 
@@ -107,8 +119,11 @@ public class MenuController {
             LocalTime startTime = LocalTime.parse(startTimeInput, timeFormatter);
             LocalTime endTime = LocalTime.parse(endTimeInput, timeFormatter);
 
-            boolean success = menuService.makeReservation(user, coworkingSpaceService, reservationService,
-                    coworkingSpaceID, reservationName, bookingDate, startTime, endTime);
+            LocalDateTime startDateTime = LocalDateTime.of(bookingDate, startTime);
+            LocalDateTime endDateTime = LocalDateTime.of(bookingDate, endTime);
+
+            boolean success = reservationService.userAddReservation(coworkingSpaceID, reservationName,
+                    bookingDate, startDateTime, endDateTime, user, coworkingSpaceService);
 
             if (success) {
                 Loggers.USER_LOGGER.info("Reservation added successfully.");
@@ -120,30 +135,37 @@ public class MenuController {
             Loggers.USER_LOGGER.error("Invalid date or time format. Please try again.");
             Loggers.TECHNICAL_LOGGER.error("DateTimeParseException in handleMakeReservation", e);
         } catch (IllegalArgumentException e) {
-            Loggers.USER_LOGGER.error("Invalid input: " + e.getMessage());
+            Loggers.USER_LOGGER.error("Invalid input");
             Loggers.TECHNICAL_LOGGER.error("IllegalArgumentException in handleMakeReservation", e);
+        } catch (BusinessException e){
+            Loggers.USER_LOGGER.error("Error while creating reservation");
+
         }
     }
 
     public void handleCancelReservation() {
         try {
             long reservationId = longSupplierCreator.supplier(RESERVATION_ID_PROMPT).get();
-            menuService.cancelReservation(reservationService, reservationId);
-        } catch (Exception e) {
-            Loggers.USER_LOGGER.error("Error cancelling reservation: " + e.getMessage());
+            reservationService.removeReservationById(reservationId);
+        } catch (BusinessException e) {
+            Loggers.USER_LOGGER.error("Error cancelling reservation");
             Loggers.TECHNICAL_LOGGER.error("Exception in handleCancelReservation", e);
         }
     }
 
 
     public void handleViewPersonalReservations(User user) {
-        List<Reservation> reservations = menuService.viewPersonalReservations(user, reservationService);
-        if (reservations != null && !reservations.isEmpty()) {
-            for (Reservation reservation : reservations) {
-                Loggers.USER_LOGGER.info(reservation.toString());
+        try {
+            List<Reservation> reservations = reservationService.getPersonalReservation(user);
+            if (reservations != null && !reservations.isEmpty()) {
+                for (Reservation reservation : reservations) {
+                    Loggers.USER_LOGGER.info(reservation.toString());
+                }
+            } else {
+                Loggers.USER_LOGGER.warn("No personal reservations found.");
             }
-        } else {
-            Loggers.USER_LOGGER.warn("No personal reservations found.");
+        } catch (BusinessException e) {
+            Loggers.USER_LOGGER.warn("Error retrieving personal reservations");
         }
     }
 }

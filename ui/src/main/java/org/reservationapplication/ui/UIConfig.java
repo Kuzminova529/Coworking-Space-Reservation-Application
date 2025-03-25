@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration
-@ComponentScan(basePackages = "org.reservationapplication.ui")
+@ComponentScan(basePackages = "org.reservationapplication")
 @Import(ServiceConfig.class)
 public class UIConfig {
 }

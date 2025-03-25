@@ -115,7 +115,7 @@ public class Menu {
             int choice = intSupplierCreator.supplier(CUSTOMER_MENU_PROMPT).get();
             switch (choice) {
                 case 1: {
-                    menuController.handleViewAvailableSpaces();
+                    menuController.handleGetActiveSpaces();
                     break;
                 }
                 case 2: {

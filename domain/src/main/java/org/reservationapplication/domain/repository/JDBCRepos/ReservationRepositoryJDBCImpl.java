@@ -1,5 +1,6 @@
 package org.reservationapplication.domain.repository.JDBCRepos;
 
+import org.reservationapplication.domain.exeption.DatabaseErrorCode;
 import org.reservationapplication.domain.exeption.DatabaseException;
 import org.reservationapplication.logger.Loggers;
 import org.reservationapplication.domain.model.Reservation;
@@ -34,9 +35,8 @@ public class ReservationRepositoryJDBCImpl extends ReservationRepositoryJDBC {
             }
             statement.executeBatch();
         } catch (SQLException e) {
-            Loggers.USER_LOGGER.error("Something went wrong while saving reservations");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DatabaseException(500);
+            throw new DatabaseException("Failed to save CoworkingSpaces", e, DatabaseErrorCode.QUERY_FAILED);
         }
     }
 
@@ -58,9 +58,8 @@ public class ReservationRepositoryJDBCImpl extends ReservationRepositoryJDBC {
                 reservations.add(reservation);
             }
         } catch (SQLException e) {
-            Loggers.USER_LOGGER.error("Something went wrong while reading Reservations");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DatabaseException(500);
+            throw new DatabaseException("Something went wrong while reading Reservations", e, DatabaseErrorCode.QUERY_FAILED);
         }
         return reservations;
     }
@@ -87,9 +86,8 @@ public class ReservationRepositoryJDBCImpl extends ReservationRepositoryJDBC {
                 reservations.add(reservation);
             }
         } catch (SQLException e) {
-            Loggers.USER_LOGGER.error("Something went wrong while finding reservation");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DatabaseException(500);
+            throw new DatabaseException("Something went wrong while reading Reservations", e, DatabaseErrorCode.QUERY_FAILED);
         }
         return reservations;
     }
@@ -107,9 +105,8 @@ public class ReservationRepositoryJDBCImpl extends ReservationRepositoryJDBC {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            Loggers.USER_LOGGER.error("Something went wrong while adding reservation");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DatabaseException(500);
+            throw new DatabaseException("Something went wrong while crating Reservation", e, DatabaseErrorCode.QUERY_FAILED);
         }
     }
 
@@ -120,22 +117,28 @@ public class ReservationRepositoryJDBCImpl extends ReservationRepositoryJDBC {
         try (Connection connection = config.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setLong(1, id);
-            ResultSet resultSet = statement.executeQuery();
 
-            Reservation reservation = new Reservation();
-            reservation.setId(resultSet.getLong("id"));
-            reservation.getCoworkingSpace().setId(resultSet.getLong("coworking_space_id"));
-            reservation.setUserID(resultSet.getLong("user_id"));
-            reservation.setReservationName(resultSet.getString("reservation_name"));
-            reservation.setStartDateTime(resultSet.getTimestamp("start_datetime").toLocalDateTime());
-            reservation.setEndDateTime(resultSet.getTimestamp("end_datetime").toLocalDateTime());
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    Reservation reservation = new Reservation();
+                    reservation.setId(resultSet.getLong("id"));
+                    reservation.getCoworkingSpace().setId(resultSet.getLong("coworking_space_id"));
+                    reservation.setUserID(resultSet.getLong("user_id"));
+                    reservation.setReservationName(resultSet.getString("reservation_name"));
+                    reservation.setStartDateTime(resultSet.getTimestamp("start_datetime").toLocalDateTime());
+                    reservation.setEndDateTime(resultSet.getTimestamp("end_datetime").toLocalDateTime());
 
-            return Optional.ofNullable(reservation);
+                    return Optional.ofNullable(reservation);
+                }
+            } catch (SQLException e) {
+                Loggers.TECHNICAL_LOGGER.error(e.getMessage());
+                throw new DatabaseException("SQL error occurred while fetching resrvation by ID", e, DatabaseErrorCode.QUERY_FAILED);
+            }
         } catch (SQLException e) {
-            Loggers.USER_LOGGER.error("Something went wrong while finding reservation");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DatabaseException(500);
+            throw new DatabaseException("Database connection error", e, DatabaseErrorCode.CONNECTION_FAILED);
         }
+        return Optional.empty();
     }
 
     @Override
@@ -147,9 +150,8 @@ public class ReservationRepositoryJDBCImpl extends ReservationRepositoryJDBC {
             statement.setLong(2, id);
 
         } catch (SQLException e) {
-            Loggers.USER_LOGGER.error("Something went wrong while updating the status of reservation");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DatabaseException(500);
+            throw new DatabaseException("Failed to update reservation", e, DatabaseErrorCode.QUERY_FAILED);
         }
     }
 }
