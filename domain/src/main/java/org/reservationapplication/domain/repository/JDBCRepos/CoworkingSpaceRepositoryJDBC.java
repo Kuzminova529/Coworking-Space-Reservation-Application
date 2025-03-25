@@ -11,10 +11,6 @@ public abstract class CoworkingSpaceRepositoryJDBC implements CoworkingSpaceRepo
         this.config = config;
     }
 
-    public CoworkingSpaceRepositoryJDBC() {
-        this.config = new DatabaseConfigJDBC();
-    }
-
     public DatabaseConfigJDBC getConfig() {
         return config;
     }

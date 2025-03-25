@@ -142,7 +142,7 @@ public class ReservationRepositoryJPA implements ReservationRepository {
         EntityManager entityManager = emf.createEntityManager();
         try(entityManager) {
             Reservation reservation = entityManager.createQuery(
-                            "FROM Reservation c WHERE c.id = :id", Reservation.class)
+                            "FROM Reservation c WHERE c.id = :id AND c.isActive = true", Reservation.class)
                     .setParameter("id", id)
                     .getSingleResult();
 

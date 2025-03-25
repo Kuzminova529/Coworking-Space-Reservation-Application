@@ -1,5 +1,6 @@
 package org.reservationapplication.domain.repository.JDBCRepos;
 
+import org.reservationapplication.domain.exeption.DatabaseException;
 import org.reservationapplication.domain.model.Reservation;
 import org.reservationapplication.domain.repository.CoworkingSpaceRepository;
 import org.reservationapplication.logger.Loggers;
@@ -22,9 +23,6 @@ import java.util.Optional;
 @Repository("jdbcCoworkingSpaceRepository")
 public class CoworkingSpaceRepositoryJDBCImpl extends CoworkingSpaceRepositoryJDBC {
 
-    public CoworkingSpaceRepositoryJDBCImpl(){
-        super();
-    }
     @Autowired
     public CoworkingSpaceRepositoryJDBCImpl(DatabaseConfigJDBC databaseConfigJDBC) {
         super(databaseConfigJDBC);
@@ -46,6 +44,7 @@ public class CoworkingSpaceRepositoryJDBCImpl extends CoworkingSpaceRepositoryJD
         } catch (SQLException e) {
             Loggers.USER_LOGGER.error("Something went wrong while saving CoworkingSpaces");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
+            throw new DatabaseException(500);
         }
     }
 
@@ -67,6 +66,7 @@ public class CoworkingSpaceRepositoryJDBCImpl extends CoworkingSpaceRepositoryJD
         } catch (SQLException e) {
             Loggers.USER_LOGGER.error("Something went wrong while reading CoworkingSpaces");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
+            throw new DatabaseException(500);
         }
         return spaces;
     }
@@ -83,6 +83,7 @@ public class CoworkingSpaceRepositoryJDBCImpl extends CoworkingSpaceRepositoryJD
         } catch (SQLException e) {
             Loggers.USER_LOGGER.error("Something went wrong while adding CoworkingSpaces");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
+            throw new DatabaseException(500);
         }
     }
 
@@ -111,14 +112,16 @@ public class CoworkingSpaceRepositoryJDBCImpl extends CoworkingSpaceRepositoryJD
 
         } catch (SQLException e) {
             Loggers.USER_LOGGER.error("Database connection error");
-            Loggers.TECHNICAL_LOGGER.error(e.getMessage());        }
+            Loggers.TECHNICAL_LOGGER.error(e.getMessage());
+            throw new DatabaseException(500);
+        }
 
         return Optional.empty();
     }
 
     @Override
     public void updateStatus(Long id) {
-        String sql = "UPDATE coworking_spaces SET is_active = ? WHERE id = ?";
+        String sql = "UPDATE coworking_spaces SET is_active = ? WHERE id = ? and is_active = true";
 
         try (Connection connection = config.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -128,7 +131,8 @@ public class CoworkingSpaceRepositoryJDBCImpl extends CoworkingSpaceRepositoryJD
 
         } catch (SQLException e) {
             Loggers.USER_LOGGER.error("Something went wrong while updating the status of CoworkingSpace.");
-            Loggers.TECHNICAL_LOGGER.error("Database error:", e);
+            Loggers.TECHNICAL_LOGGER.error(e.getMessage());
+            throw new DatabaseException(500);
         }
     }
     @Override
@@ -169,7 +173,7 @@ public class CoworkingSpaceRepositoryJDBCImpl extends CoworkingSpaceRepositoryJD
 
         } catch (SQLException e) {
             Loggers.TECHNICAL_LOGGER.error("Error retrieving coworking space with reservations", e);
-            return null;
+            throw new DatabaseException(500);
         }
     }
 }

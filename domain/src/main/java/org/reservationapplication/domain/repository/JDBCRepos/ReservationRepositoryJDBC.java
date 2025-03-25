@@ -10,10 +10,6 @@ public abstract class ReservationRepositoryJDBC implements ReservationRepository
         this.config = config;
     }
 
-    public ReservationRepositoryJDBC() {
-        this.config = new DatabaseConfigJDBC();
-    }
-
     public DatabaseConfigJDBC getConfig() {
         return config;
     }

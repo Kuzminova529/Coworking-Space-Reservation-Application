@@ -1,5 +1,6 @@
 package org.reservationapplication.domain.repository.JDBCRepos;
 
+import org.reservationapplication.domain.exeption.DatabaseException;
 import org.reservationapplication.logger.Loggers;
 import org.reservationapplication.domain.model.Reservation;
 import org.reservationapplication.domain.sql.DatabaseConfigJDBC;
@@ -15,10 +16,6 @@ public class ReservationRepositoryJDBCImpl extends ReservationRepositoryJDBC {
     @Autowired
     public ReservationRepositoryJDBCImpl(DatabaseConfigJDBC config) {
         super(config);
-    }
-
-    public ReservationRepositoryJDBCImpl() {
-        super();
     }
 
     @Override
@@ -39,6 +36,7 @@ public class ReservationRepositoryJDBCImpl extends ReservationRepositoryJDBC {
         } catch (SQLException e) {
             Loggers.USER_LOGGER.error("Something went wrong while saving reservations");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
+            throw new DatabaseException(500);
         }
     }
 
@@ -62,6 +60,7 @@ public class ReservationRepositoryJDBCImpl extends ReservationRepositoryJDBC {
         } catch (SQLException e) {
             Loggers.USER_LOGGER.error("Something went wrong while reading Reservations");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
+            throw new DatabaseException(500);
         }
         return reservations;
     }
@@ -90,6 +89,7 @@ public class ReservationRepositoryJDBCImpl extends ReservationRepositoryJDBC {
         } catch (SQLException e) {
             Loggers.USER_LOGGER.error("Something went wrong while finding reservation");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
+            throw new DatabaseException(500);
         }
         return reservations;
     }
@@ -109,12 +109,13 @@ public class ReservationRepositoryJDBCImpl extends ReservationRepositoryJDBC {
         } catch (SQLException e) {
             Loggers.USER_LOGGER.error("Something went wrong while adding reservation");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
+            throw new DatabaseException(500);
         }
     }
 
     @Override
     public Optional<Reservation> getById(Long id) {
-        String sql = "SELECT * FROM reservations WHERE id = ?";
+        String sql = "SELECT * FROM reservations WHERE id = ? and is_active = true";
 
         try (Connection connection = config.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -133,8 +134,8 @@ public class ReservationRepositoryJDBCImpl extends ReservationRepositoryJDBC {
         } catch (SQLException e) {
             Loggers.USER_LOGGER.error("Something went wrong while finding reservation");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
+            throw new DatabaseException(500);
         }
-        return Optional.empty();
     }
 
     @Override
@@ -148,7 +149,7 @@ public class ReservationRepositoryJDBCImpl extends ReservationRepositoryJDBC {
         } catch (SQLException e) {
             Loggers.USER_LOGGER.error("Something went wrong while updating the status of reservation");
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
+            throw new DatabaseException(500);
         }
     }
-
 }

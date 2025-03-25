@@ -121,7 +121,7 @@ public class CoworkingSpaceRepositoryJPA implements CoworkingSpaceRepository {
         EntityManager entityManager = emf.createEntityManager();
         try(entityManager) {
             CoworkingSpace coworkingSpace = entityManager.createQuery(
-                            "SELECT c FROM CoworkingSpace c WHERE c.id = :id", CoworkingSpace.class)
+                            "SELECT c FROM CoworkingSpace c WHERE c.id = :id and c.isActive = true", CoworkingSpace.class)
                     .setParameter("id", id)
                     .getSingleResult();
 
