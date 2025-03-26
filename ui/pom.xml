@@ -40,6 +40,11 @@
             <artifactId>flyway-core</artifactId>
             <version>9.2.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.3.30</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -57,7 +62,7 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>org.reservationapplication.Main</mainClass>
+                                    <mainClass>org.reservationapplication.ui.Main</mainClass>
                                 </transformer>
                             </transformers>
                             <outputDirectory>${project.basedir}/../dist</outputDirectory>

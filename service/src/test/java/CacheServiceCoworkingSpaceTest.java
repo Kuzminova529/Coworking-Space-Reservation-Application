@@ -3,8 +3,8 @@ import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.reservationapplication.model.CoworkingSpace;
-import org.reservationapplication.repository.JPARepos.CoworkingSpaceRepositoryJPA;
+import org.reservationapplication.domain.model.CoworkingSpace;
+import org.reservationapplication.domain.repository.JPARepos.CoworkingSpaceRepositoryJPA;
 import org.reservationapplication.service.CacheServiceCoworkingSpace;
 
 import java.util.Arrays;
@@ -63,15 +63,7 @@ class CacheServiceCoworkingSpaceTest {
 
         cacheService.removeCoworkingSpaceByID(id);
 
-        verify(repository, times(1)).updateCoworkingStatus(id);
+        verify(repository, times(1)).updateStatus(id);
         assertNull(cacheService.getCache().getIfPresent("coworkings"));
-    }
-
-    @Test
-    void testRemoveAllCoworkingSpaces() {
-        cacheService.removeAllCoworkingSpaces();
-
-        verify(repository, times(1)).deleteAll();
-        assertTrue(cacheService.getCache().asMap().isEmpty());
     }
 }

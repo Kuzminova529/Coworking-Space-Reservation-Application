@@ -1,15 +1,21 @@
 package org.reservationapplication.service;
 
-import org.reservationapplication.model.User;
-import org.reservationapplication.repository.JPARepos.UserRepositoryJPA;
+import org.reservationapplication.domain.model.User;
+import org.reservationapplication.domain.repository.EntityRepository;
+import org.reservationapplication.domain.repository.JPARepos.UserRepositoryJPA;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class UserService {
-    private UserRepositoryJPA userRepository;
+    private EntityRepository<User, Long> userRepository;
 
-    public UserService(UserRepositoryJPA userRepository) {
+    @Autowired
+    public UserService(@Qualifier("jpaUserRepository") EntityRepository<User, Long> userRepository) {
         this.userRepository = userRepository;
     }
 

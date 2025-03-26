@@ -2,25 +2,21 @@ package org.reservationapplication.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import org.reservationapplication.model.CoworkingSpace;
-import org.reservationapplication.repository.JPARepos.CoworkingSpaceRepositoryJPA;
+import org.reservationapplication.domain.model.CoworkingSpace;
+import org.reservationapplication.domain.repository.EntityRepository;
+import org.reservationapplication.domain.repository.JPARepos.CoworkingSpaceRepositoryJPA;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+@Service
 public class CacheServiceCoworkingSpace {
-    private final CoworkingSpaceRepositoryJPA repository;
+    private final EntityRepository<CoworkingSpace, Long> repository;
     private final Cache<String, List<CoworkingSpace>> cache;
 
-    public CacheServiceCoworkingSpace() {
-        this.repository = new CoworkingSpaceRepositoryJPA();
-        this.cache = Caffeine.newBuilder()
-                .expireAfterWrite(10, TimeUnit.MINUTES) // Clears cache every 10mins
-                .maximumSize(100) // Coworking spaces limit
-                .build();
-    }
-
-    public CacheServiceCoworkingSpace(CoworkingSpaceRepositoryJPA repository) {
+    public CacheServiceCoworkingSpace(@Qualifier("jpaCoworkingSpaceRepository")EntityRepository<CoworkingSpace, Long> repository) {
         this.repository = repository;
         this.cache = Caffeine.newBuilder()
                 .expireAfterWrite(10, TimeUnit.MINUTES) // Clears cache every 10mins
@@ -42,7 +38,7 @@ public class CacheServiceCoworkingSpace {
         cache.invalidate("coworkings");
     }
     public void removeCoworkingSpaceByID(long id) {
-        repository.updateCoworkingStatus(id);
+        repository.updateStatus(id);
         cache.invalidate("coworkings");
     }
 
@@ -53,4 +49,6 @@ public class CacheServiceCoworkingSpace {
     public Cache<String, List<CoworkingSpace>> getCache() {
         return cache;
     }
+
+
 }

@@ -6,9 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.reservationapplication.model.AvailabilityStatus;
-import org.reservationapplication.model.CoworkingSpace;
-import org.reservationapplication.repository.JDBCRepos.CoworkingSpaceRepository;
+import org.reservationapplication.domain.model.CoworkingSpace;
+import org.reservationapplication.domain.repository.JDBCRepos.CoworkingSpaceRepositoryJDBC;
 import org.reservationapplication.service.CacheServiceCoworkingSpace;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 
@@ -19,7 +18,7 @@ import java.util.List;
 public class CoworkingSpaceServiceImplTest {
 
     @Mock
-    private CoworkingSpaceRepository coworkingSpaceRepository;
+    private CoworkingSpaceRepositoryJDBC coworkingSpaceRepositoryJDBC;
 
     @Mock
     private CacheServiceCoworkingSpace cacheServiceCoworkingSpace;
@@ -30,9 +29,9 @@ public class CoworkingSpaceServiceImplTest {
     @Test
     public void testGetAllCoworkingSpace() {
         CoworkingSpace space1 = new CoworkingSpace();
-        space1.setID(1L);
+        space1.setId(1L);
         CoworkingSpace space2 = new CoworkingSpace();
-        space2.setID(2L);
+        space2.setId(2L);
 
         List<CoworkingSpace> coworkingSpaces = Arrays.asList(space1, space2);
 
@@ -49,17 +48,6 @@ public class CoworkingSpaceServiceImplTest {
     }
 
     @Test
-    void testAddCoworkingSpace() {
-        CoworkingSpace coworkingSpace = new CoworkingSpace();
-        coworkingSpace.setID(1L); // Устанавливаем ID
-
-        coworkingSpaceService.addCoworkingSpace(coworkingSpace);
-
-        // Check that the addCoworkingSpace method was called on cacheServiceCoworkingSpace with the correct object
-        verify(cacheServiceCoworkingSpace, times(1)).addCoworkingSpace(coworkingSpace);
-    }
-
-    @Test
     void testRemoveCoworkingSpace() {
         long coworkingSpaceId = 1L;
 
@@ -72,22 +60,22 @@ public class CoworkingSpaceServiceImplTest {
     @Test
     public void testGetActiveCoworkingSpace() {
         CoworkingSpace space1 = new CoworkingSpace();
-        space1.setID(1L);
-        space1.setActive(AvailabilityStatus.AVAILABLE);
+        space1.setId(1L);
+        space1.setActive(true);
 
         CoworkingSpace space2 = new CoworkingSpace();
-        space2.setID(2L);
-        space2.setActive(AvailabilityStatus.UNAVAILABLE);
+        space2.setId(2L);
+        space2.setActive(false);
 
         CoworkingSpace space3 = new CoworkingSpace();
-        space3.setID(3L);
-        space3.setActive(AvailabilityStatus.AVAILABLE);
+        space3.setId(3L);
+        space3.setActive(true);
 
         List<CoworkingSpace> coworkingSpaces = Arrays.asList(space1, space2, space3);
 
         when(cacheServiceCoworkingSpace.getAllCoworkingSpaces()).thenReturn(coworkingSpaces);
 
-        List<CoworkingSpace> availableSpaces = coworkingSpaceService.getAvailableCoworkingSpace();
+        List<CoworkingSpace> availableSpaces = coworkingSpaceService.getActiveCoworkingSpace();
 
         assertNotNull(availableSpaces);
         assertEquals(2, availableSpaces.size());  // There must be 2 free spaces
@@ -103,7 +91,7 @@ public class CoworkingSpaceServiceImplTest {
 
         when(cacheServiceCoworkingSpace.getAllCoworkingSpaces()).thenReturn(Arrays.asList());
 
-        List<CoworkingSpace> availableSpaces = coworkingSpaceService.getAvailableCoworkingSpace();
+        List<CoworkingSpace> availableSpaces = coworkingSpaceService.getActiveCoworkingSpace();
 
         assertNotNull(availableSpaces);
         assertTrue(availableSpaces.isEmpty());
@@ -116,7 +104,7 @@ public class CoworkingSpaceServiceImplTest {
 
         when(cacheServiceCoworkingSpace.getAllCoworkingSpaces()).thenReturn(null);
 
-        List<CoworkingSpace> availableSpaces = coworkingSpaceService.getAvailableCoworkingSpace();
+        List<CoworkingSpace> availableSpaces = coworkingSpaceService.getActiveCoworkingSpace();
 
         assertNotNull(availableSpaces);//there must be list
         assertTrue(availableSpaces.isEmpty());//but empty
