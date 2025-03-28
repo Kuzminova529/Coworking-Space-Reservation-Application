@@ -42,41 +42,33 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
-    public void removeReservationById(long id) {
+    public boolean removeReservationById(long id) {
         try {
             reservationRepository.updateStatus(id);
+            return true;
         } catch (DatabaseException e) {
             throw new BusinessException("Failed to update reservation", e);
         }
     }
 
-    public void addReservation(Reservation reservation) {
+    public Reservation addReservation(Reservation reservation) {
         try {
             reservationRepository.create(reservation);
+            return reservation;
         } catch (DatabaseException e) {
             throw new BusinessException("Failed to add reservation", e);
         }
     }
 
     @Override
-    public boolean userAddReservation(
+    public Reservation userAddReservation(
             long coworkingID, String reservationName, LocalDate bookingDate,
             LocalDateTime startDateTime, LocalDateTime endDateTime,
             User user, CoworkingSpaceService coworkingSpaceService) {
 
         try {
-            Optional<CoworkingSpace> optionalCoworkingSpace = coworkingSpaceService.getCoworkingSpaceByID(coworkingID);
 
-            if (optionalCoworkingSpace.isEmpty()) {
-                throw new IllegalArgumentException("Invalid id of coworkingSpace");
-            }
-
-            CoworkingSpace coworkingSpace = optionalCoworkingSpace.get();
-
-            if (!coworkingSpace.getActive()) {
-                throw new IllegalArgumentException("This coworkingSpace is not active");
-            }
-
+            CoworkingSpace coworkingSpace = coworkingSpaceService.getCoworkingSpaceByID(coworkingID);
 
             Reservation reservation = new Reservation();
             reservation.setCoworkingSpace(coworkingSpace);
@@ -108,7 +100,7 @@ public class ReservationServiceImpl implements ReservationService {
             reservation.setActive(true);
 
             addReservation(reservation);
-            return true;
+            return reservation;
         } catch (DatabaseException e) {
             throw new BusinessException("Failed to add reservation", e);
         }

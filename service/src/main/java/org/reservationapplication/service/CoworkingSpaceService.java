@@ -10,13 +10,16 @@ public interface CoworkingSpaceService {
 
     List<CoworkingSpace> getAllCoworkingSpace();
 
-    void addCoworkingSpace(int typeChoice, double price);
-
-    void removeCoworkingSpace(long id);
 
     List<CoworkingSpace> getActiveCoworkingSpace();
 
-    Optional<CoworkingSpace> getCoworkingSpaceByID(long coworkingID);
+    CoworkingSpace getCoworkingSpaceByID(long coworkingID);
+
+    CoworkingSpace userAddCoworkingSpace(int typeChoice, double price);
+
+    CoworkingSpace addCoworkingSpace(CoworkingSpace coworkingSpace);
+
+    boolean removeCoworkingSpace(long id);
 
     boolean isTimeSlotAvailable(Long coworkingSpaceId, LocalDateTime startDateTime, LocalDateTime endDateTime);
 }

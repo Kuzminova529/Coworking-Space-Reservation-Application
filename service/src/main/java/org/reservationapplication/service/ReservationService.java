@@ -10,14 +10,15 @@ import java.util.List;
 public interface ReservationService {
     List<Reservation> getAllReservation();
 
-    void addReservation(Reservation reservation);
-
-    void removeReservationById(long id);
-
     List<Reservation> getPersonalReservation(User user);
 
-    boolean userAddReservation(
+    Reservation addReservation(Reservation reservation);
+
+    Reservation userAddReservation(
             long id, String reservationName, LocalDate bookingDate,
             LocalDateTime startDateTime, LocalDateTime endDateTime,
             User user, CoworkingSpaceService coworkingSpaceService);
+
+    boolean removeReservationById(long id);
+
 }

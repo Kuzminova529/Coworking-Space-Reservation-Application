@@ -173,7 +173,7 @@ public class ReservationServiceImplTest {
 
         CoworkingSpace coworkingSpace = new CoworkingSpace();
         coworkingSpace.setActive(true);
-        when(coworkingSpaceService.getCoworkingSpaceByID(1L)).thenReturn(Optional.of(coworkingSpace));
+        when(coworkingSpaceService.getCoworkingSpaceByID(1L)).thenReturn(coworkingSpace);
 
         Customer user = new Customer();
         user.setId(1L);

@@ -1,5 +1,6 @@
 package org.reservationapplication.service;
 
+import org.checkerframework.checker.units.qual.C;
 import org.reservationapplication.domain.exeption.BusinessException;
 import org.reservationapplication.domain.exeption.CoworkingSpaceNotFoundException;
 import org.reservationapplication.domain.exeption.DatabaseException;
@@ -35,9 +36,15 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
         }
     }
 
-    public Optional<CoworkingSpace> getCoworkingSpaceByID(long id) {
+    public CoworkingSpace getCoworkingSpaceByID(long id) {
         try {
-            return coworkingSpaceRepository.getById(id);
+            Optional<CoworkingSpace> optionalCoworkingSpace = coworkingSpaceRepository.getById(id);
+            if (optionalCoworkingSpace.isPresent()) {
+                return optionalCoworkingSpace.get();
+            }
+            else {
+                throw new BusinessException("Failed to find coworking space by id");
+            }
         } catch (DatabaseException e){
             throw new BusinessException("Failed to find coworking space by id");
         }
@@ -51,7 +58,7 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
         }
     }
 
-    public void addCoworkingSpace(int typeChoice, double price) {
+    public CoworkingSpace userAddCoworkingSpace(int typeChoice, double price) {
         try {
             CoworkingSpace coworkingSpace = new CoworkingSpace();
 
@@ -73,10 +80,17 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
 
             coworkingSpace.setActive(true);
 
-            cacheServiceCoworkingSpace.addCoworkingSpace(coworkingSpace);
+            addCoworkingSpace(coworkingSpace);
+            return coworkingSpace;
         } catch (DatabaseException e){
             throw new BusinessException("Failed to add coworking space");
         }
+    }
+
+    @Override
+    public CoworkingSpace addCoworkingSpace(CoworkingSpace coworkingSpace) {
+        cacheServiceCoworkingSpace.addCoworkingSpace(coworkingSpace);
+        return coworkingSpace;
     }
 
     public void saveCoworkingSpaces(List<CoworkingSpace> coworkingSpaces) {
@@ -87,9 +101,10 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
         }
     }
 
-    public void removeCoworkingSpace(long id) {
+    public boolean removeCoworkingSpace(long id) {
         try {
             cacheServiceCoworkingSpace.removeCoworkingSpaceByID(id);
+            return true;
         } catch (DatabaseException e){
             throw new BusinessException("Failed to remove coworking space by id");
         }
