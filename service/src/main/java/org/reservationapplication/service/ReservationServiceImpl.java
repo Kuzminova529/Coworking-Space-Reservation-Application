@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.util.*;
 
-@Service
+@Service("reservationServiceImpl")
 public class ReservationServiceImpl implements ReservationService {
 
     private ReservationRepository reservationRepository;
@@ -33,9 +33,9 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
-    public List<Reservation> getPersonalReservation(User user) {
+    public List<Reservation> getPersonalReservation(Long id) {
         try {
-            List<Reservation> reservations = reservationRepository.readPersonalReservations(user.getId());
+            List<Reservation> reservations = reservationRepository.readPersonalReservations(id);
             return reservations;
         } catch (DatabaseException e){
             throw new BusinessException("Failed to retrieve reservations", e);

@@ -1,25 +1,27 @@
 package org.reservationapplication.controller;
 
+import org.checkerframework.checker.units.qual.A;
 import org.reservationapplication.domain.model.CoworkingSpace;
 import org.reservationapplication.service.CoworkingSpaceService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/coworking-space")
 public class CoworkingController {
     private final CoworkingSpaceService service;
 
-    public CoworkingController(CoworkingSpaceService service) {
+    @Autowired
+    public CoworkingController(@Qualifier("coworkingSpaceServiceImpl") CoworkingSpaceService service) {
         this.service = service;
     }
 
     @GetMapping()
     public List<CoworkingSpace> getAllSpaces() {
-        System.out.println("getAllSpaces");
         return service.getAllCoworkingSpace();
     }
 

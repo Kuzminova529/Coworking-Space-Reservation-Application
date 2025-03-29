@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Service
+@Service("coworkingSpaceServiceImpl")
 public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
     private final CacheServiceCoworkingSpace cacheServiceCoworkingSpace;
     private final CoworkingSpaceRepository coworkingSpaceRepository;

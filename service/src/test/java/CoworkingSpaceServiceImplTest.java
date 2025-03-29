@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.reservationapplication.domain.model.CoworkingSpace;
-import org.reservationapplication.domain.repository.JDBCRepos.CoworkingSpaceRepositoryJDBC;
+import org.reservationapplication.domain.repository.JPARepos.CoworkingSpaceRepositoryJPA;
 import org.reservationapplication.service.CacheServiceCoworkingSpace;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 
@@ -18,7 +18,7 @@ import java.util.List;
 public class CoworkingSpaceServiceImplTest {
 
     @Mock
-    private CoworkingSpaceRepositoryJDBC coworkingSpaceRepositoryJDBC;
+    private CoworkingSpaceRepositoryJPA coworkingSpaceRepositoryJDBC;
 
     @Mock
     private CacheServiceCoworkingSpace cacheServiceCoworkingSpace;

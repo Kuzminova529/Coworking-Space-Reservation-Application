@@ -3,6 +3,7 @@ package org.reservationapplication.service;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.reservationapplication.domain.model.CoworkingSpace;
+import org.reservationapplication.domain.repository.CoworkingSpaceRepository;
 import org.reservationapplication.domain.repository.EntityRepository;
 import org.reservationapplication.domain.repository.JPARepos.CoworkingSpaceRepositoryJPA;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,10 +14,10 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class CacheServiceCoworkingSpace {
-    private final EntityRepository<CoworkingSpace, Long> repository;
+    private final CoworkingSpaceRepository repository;
     private final Cache<String, List<CoworkingSpace>> cache;
 
-    public CacheServiceCoworkingSpace(@Qualifier("jpaCoworkingSpaceRepository")EntityRepository<CoworkingSpace, Long> repository) {
+    public CacheServiceCoworkingSpace(@Qualifier("jpaCoworkingSpaceRepository") CoworkingSpaceRepository repository) {
         this.repository = repository;
         this.cache = Caffeine.newBuilder()
                 .expireAfterWrite(10, TimeUnit.MINUTES) // Clears cache every 10mins

@@ -14,6 +14,7 @@ public class FlywayConfig {
                 .locations("classpath:db/migration")
                 .load();
         flyway.migrate();
+        System.out.println("Flyway configured");
         return flyway;
     }
 }

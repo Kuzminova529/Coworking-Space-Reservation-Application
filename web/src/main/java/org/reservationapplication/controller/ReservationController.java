@@ -1,11 +1,11 @@
 package org.reservationapplication.controller;
 
 
-import org.reservationapplication.domain.model.CoworkingSpace;
 import org.reservationapplication.domain.model.Reservation;
 import org.reservationapplication.domain.model.User;
 import org.reservationapplication.service.CoworkingSpaceService;
 import org.reservationapplication.service.ReservationService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -13,11 +13,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/reservation")
+@RequestMapping("/reservation")
 public class ReservationController {
     private final ReservationService service;
 
-    public ReservationController(ReservationService service) {
+    public ReservationController(@Qualifier("reservationServiceImpl") ReservationService service) {
         this.service = service;
     }
 
@@ -26,9 +26,9 @@ public class ReservationController {
         return service.getAllReservation();
     }
 
-    @GetMapping
-    public List<Reservation> getPersonalReservations(@RequestParam User user) {
-        return service.getPersonalReservation(user);
+    @GetMapping("/{id}")
+    public List<Reservation> getPersonalReservations(@PathVariable Long id) {
+        return service.getPersonalReservation(id);
     }
 
     @PostMapping
@@ -36,7 +36,7 @@ public class ReservationController {
         return service.addReservation(reservation);
     }
 
-    @PostMapping
+    @PostMapping("/user")
     public Reservation userCreateReservation(
             @RequestBody long coworkingID, @RequestBody String reservationName, @RequestBody LocalDate bookingDate,
             @RequestBody LocalDateTime startDateTime, @RequestBody LocalDateTime endDateTime,
@@ -44,9 +44,9 @@ public class ReservationController {
         return service.userAddReservation(coworkingID, reservationName, bookingDate, startDateTime, endDateTime, user, coworkingSpaceService);
     }
 
-    @DeleteMapping
-    public boolean deleteReservationById(@RequestBody Long reservationId) {
-        return service.removeReservationById(reservationId);
+    @DeleteMapping("/{id}")
+    public boolean deleteReservationById(@PathVariable Long id) {
+        return service.removeReservationById(id);
     }
 
 }

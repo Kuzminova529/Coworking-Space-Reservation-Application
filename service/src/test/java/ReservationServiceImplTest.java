@@ -90,7 +90,7 @@ public class ReservationServiceImplTest {
 
         when(reservationRepository.readPersonalReservations(user.getId())).thenReturn(personalReservations);
 
-        List<Reservation> result = reservationService.getPersonalReservation(user);
+        List<Reservation> result = reservationService.getPersonalReservation(user.getId());
 
         assertEquals(1, result.size());
         assertTrue(result.contains(reservation1));
@@ -112,7 +112,7 @@ public class ReservationServiceImplTest {
 
         when(reservationRepository.readPersonalReservations(user.getId())).thenReturn(new ArrayList<>());
 
-        List<Reservation> result = reservationService.getPersonalReservation(user);
+        List<Reservation> result = reservationService.getPersonalReservation(user.getId());
 
         assertTrue(result.isEmpty());
     }
