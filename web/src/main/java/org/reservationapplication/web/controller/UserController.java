@@ -1,8 +1,9 @@
-package org.reservationapplication.controller;
+package org.reservationapplication.web.controller;
 
 
 import org.reservationapplication.domain.model.User;
 import org.reservationapplication.service.UserService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 public class UserController {
     UserService service;
 
-    public UserController(UserService service) {
+    public UserController(@Qualifier("userService") UserService service) {
         this.service = service;
     }
 

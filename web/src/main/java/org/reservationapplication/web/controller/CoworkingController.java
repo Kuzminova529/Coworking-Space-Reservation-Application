@@ -1,11 +1,9 @@
-package org.reservationapplication.controller;
+package org.reservationapplication.web.controller;
 
-import org.checkerframework.checker.units.qual.A;
 import org.reservationapplication.domain.model.CoworkingSpace;
 import org.reservationapplication.service.CoworkingSpaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

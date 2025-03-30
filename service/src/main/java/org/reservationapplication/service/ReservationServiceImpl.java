@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.util.*;
 
-@Service("reservationServiceImpl")
+@Service()
 public class ReservationServiceImpl implements ReservationService {
 
     private ReservationRepository reservationRepository;

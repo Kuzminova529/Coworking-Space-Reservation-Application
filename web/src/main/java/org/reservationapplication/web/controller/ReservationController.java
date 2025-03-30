@@ -1,4 +1,4 @@
-package org.reservationapplication.controller;
+package org.reservationapplication.web.controller;
 
 
 import org.reservationapplication.domain.model.Reservation;
