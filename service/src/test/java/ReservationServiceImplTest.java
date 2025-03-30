@@ -1,6 +1,8 @@
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import org.reservationapplication.domain.dto.CoworkingSpaceDto;
+import org.reservationapplication.domain.dto.ReservationDto;
 import org.reservationapplication.domain.model.CoworkingSpace;
 import org.reservationapplication.domain.model.Customer;
 import org.reservationapplication.domain.model.Reservation;
@@ -49,7 +51,7 @@ public class ReservationServiceImplTest {
 
         when(reservationRepository.read()).thenReturn(reservations);
 
-        List<Reservation> allReservations = reservationService.getAllReservation();
+        List<ReservationDto> allReservations = reservationService.getAllReservation();
 
         assertEquals(2, allReservations.size());
         assertTrue(allReservations.contains(reservation1));
@@ -90,7 +92,7 @@ public class ReservationServiceImplTest {
 
         when(reservationRepository.readPersonalReservations(user.getId())).thenReturn(personalReservations);
 
-        List<Reservation> result = reservationService.getPersonalReservation(user.getId());
+        List<ReservationDto> result = reservationService.getPersonalReservation(user.getId());
 
         assertEquals(1, result.size());
         assertTrue(result.contains(reservation1));
@@ -112,7 +114,7 @@ public class ReservationServiceImplTest {
 
         when(reservationRepository.readPersonalReservations(user.getId())).thenReturn(new ArrayList<>());
 
-        List<Reservation> result = reservationService.getPersonalReservation(user.getId());
+        List<ReservationDto> result = reservationService.getPersonalReservation(user.getId());
 
         assertTrue(result.isEmpty());
     }
@@ -153,13 +155,13 @@ public class ReservationServiceImplTest {
         reservation.setEndDateTime(LocalDateTime.now().plusHours(2));
 
         doNothing().when(reservationRepository).create(any(Reservation.class));
-        reservationService.addReservation(reservation);
+        reservationService.addReservation(reservationService.toDto(reservation));
 
         List<Reservation> reservations = new ArrayList<>();
         reservations.add(reservation);
         when(reservationRepository.read()).thenReturn(reservations);
 
-        List<Reservation> allReservations = reservationService.getAllReservation();
+        List<ReservationDto> allReservations = reservationService.getAllReservation();
 
         assertEquals(1, allReservations.size());
         assertTrue(allReservations.contains(reservation));
@@ -171,7 +173,7 @@ public class ReservationServiceImplTest {
         CoworkingSpaceServiceImpl coworkingSpaceService = mock(CoworkingSpaceServiceImpl.class);
         ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
 
-        CoworkingSpace coworkingSpace = new CoworkingSpace();
+        CoworkingSpaceDto coworkingSpace = new CoworkingSpaceDto();
         coworkingSpace.setActive(true);
         when(coworkingSpaceService.getCoworkingSpaceByID(1L)).thenReturn(coworkingSpace);
 

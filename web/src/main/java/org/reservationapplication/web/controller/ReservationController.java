@@ -1,6 +1,7 @@
 package org.reservationapplication.web.controller;
 
 
+import org.reservationapplication.domain.dto.ReservationDto;
 import org.reservationapplication.domain.model.Reservation;
 import org.reservationapplication.domain.model.User;
 import org.reservationapplication.service.CoworkingSpaceService;
@@ -22,22 +23,22 @@ public class ReservationController {
     }
 
     @GetMapping
-    public List<Reservation> getAllReservations() {
+    public List<ReservationDto> getAllReservations() {
         return service.getAllReservation();
     }
 
     @GetMapping("/{id}")
-    public List<Reservation> getPersonalReservations(@PathVariable Long id) {
+    public List<ReservationDto> getPersonalReservations(@PathVariable Long id) {
         return service.getPersonalReservation(id);
     }
 
     @PostMapping
-    public Reservation createReservation(@RequestBody Reservation reservation) {
+    public ReservationDto createReservation(@RequestBody ReservationDto reservation) {
         return service.addReservation(reservation);
     }
 
     @PostMapping("/user")
-    public Reservation userCreateReservation(
+    public ReservationDto userCreateReservation(
             @RequestBody long coworkingID, @RequestBody String reservationName, @RequestBody LocalDate bookingDate,
             @RequestBody LocalDateTime startDateTime, @RequestBody LocalDateTime endDateTime,
             @RequestBody User user, @RequestBody CoworkingSpaceService coworkingSpaceService) {

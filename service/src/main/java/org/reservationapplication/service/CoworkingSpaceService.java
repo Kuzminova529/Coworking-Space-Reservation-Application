@@ -1,25 +1,30 @@
 package org.reservationapplication.service;
 
+import org.reservationapplication.domain.dto.CoworkingSpaceDto;
 import org.reservationapplication.domain.model.CoworkingSpace;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface CoworkingSpaceService {
 
-    List<CoworkingSpace> getAllCoworkingSpace();
+    CoworkingSpaceDto toDto(CoworkingSpace space);
 
+    CoworkingSpace toEntity(CoworkingSpaceDto dto);
 
-    List<CoworkingSpace> getActiveCoworkingSpace();
+    void saveCoworkingSpaces(List<CoworkingSpace> coworkingSpaces);
 
-    CoworkingSpace getCoworkingSpaceByID(long coworkingID);
+    List<CoworkingSpaceDto> getAllCoworkingSpace();
 
-    CoworkingSpace userAddCoworkingSpace(int typeChoice, double price);
+    List<CoworkingSpaceDto> getActiveCoworkingSpace();
 
-    CoworkingSpace addCoworkingSpace(CoworkingSpace coworkingSpace);
+    CoworkingSpaceDto getCoworkingSpaceByID(long coworkingID);
 
-    boolean removeCoworkingSpace(long id);
+    CoworkingSpaceDto userAddCoworkingSpace(int typeChoice, double price);
+
+    CoworkingSpaceDto addCoworkingSpace(CoworkingSpaceDto coworkingSpace);
+
+    boolean removeCoworkingSpaceById(long id);
 
     boolean isTimeSlotAvailable(Long coworkingSpaceId, LocalDateTime startDateTime, LocalDateTime endDateTime);
 }

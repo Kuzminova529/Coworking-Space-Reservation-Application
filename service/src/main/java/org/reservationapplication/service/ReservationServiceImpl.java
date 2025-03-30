@@ -1,5 +1,7 @@
 package org.reservationapplication.service;
 
+import org.reservationapplication.domain.dto.CoworkingSpaceDto;
+import org.reservationapplication.domain.dto.ReservationDto;
 import org.reservationapplication.domain.exeption.BusinessException;
 import org.reservationapplication.domain.exeption.DatabaseException;
 import org.reservationapplication.domain.repository.ReservationRepository;
@@ -25,23 +27,69 @@ public class ReservationServiceImpl implements ReservationService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<Reservation> getAllReservation() {
+    public ReservationDto toDto(Reservation reservation) {
+        CoworkingSpaceDto coworkingSpaceDto = new CoworkingSpaceDto(
+                reservation.getCoworkingSpace().getId(),
+                reservation.getCoworkingSpace().getType(),
+                reservation.getCoworkingSpace().getPrice(),
+                reservation.getCoworkingSpace().getActive()
+        );
+
+        return new ReservationDto(
+                reservation.getId(),
+                coworkingSpaceDto,
+                reservation.getUserID(),
+                reservation.getReservationName(),
+                reservation.getStartDateTime(),
+                reservation.getEndDateTime(),
+                reservation.getActive()
+        );
+    }
+
+    public Reservation toEntity(ReservationDto dto) {
+        Reservation reservation = new Reservation();
+
+        if (dto.getCoworkingSpace() != null) {
+            CoworkingSpace coworkingSpace = new CoworkingSpace();
+            coworkingSpace.setId(dto.getCoworkingSpace().getId());
+            coworkingSpace.setType(dto.getCoworkingSpace().getType());
+            coworkingSpace.setPrice(dto.getCoworkingSpace().getPrice());
+            coworkingSpace.setActive(dto.getCoworkingSpace().isActive());
+            reservation.setCoworkingSpace(coworkingSpace);
+        }
+
+        reservation.setUserID(dto.getUserID());
+        reservation.setReservationName(dto.getReservationName());
+        reservation.setStartDateTime(dto.getStartDateTime());
+        reservation.setEndDateTime(dto.getEndDateTime());
+        reservation.setActive(dto.isActive());
+
+        return reservation;
+    }
+
+    @Override
+    public List<ReservationDto> getAllReservation() {
         try {
-            return reservationRepository.read();
+            return reservationRepository.read().stream()
+                    .map(this::toDto)
+                    .toList();
         } catch (DatabaseException e){
             throw new BusinessException("Failed to retrieve reservations", e);
         }
     }
 
-    public List<Reservation> getPersonalReservation(Long id) {
+    @Override
+    public List<ReservationDto> getPersonalReservation(Long id) {
         try {
-            List<Reservation> reservations = reservationRepository.readPersonalReservations(id);
-            return reservations;
+            return reservationRepository.readPersonalReservations(id).stream()
+                    .map(this::toDto)
+                    .toList();
         } catch (DatabaseException e){
             throw new BusinessException("Failed to retrieve reservations", e);
         }
     }
 
+    @Override
     public boolean removeReservationById(long id) {
         try {
             reservationRepository.updateStatus(id);
@@ -51,26 +99,30 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
-    public Reservation addReservation(Reservation reservation) {
+    @Override
+    public ReservationDto addReservation(ReservationDto dto) {
         try {
+            Reservation reservation = toEntity(dto);
             reservationRepository.create(reservation);
-            return reservation;
+            return dto;
         } catch (DatabaseException e) {
             throw new BusinessException("Failed to add reservation", e);
         }
     }
 
     @Override
-    public Reservation userAddReservation(
+    public ReservationDto userAddReservation(
             long coworkingID, String reservationName, LocalDate bookingDate,
             LocalDateTime startDateTime, LocalDateTime endDateTime,
             User user, CoworkingSpaceService coworkingSpaceService) {
 
         try {
 
-            CoworkingSpace coworkingSpace = coworkingSpaceService.getCoworkingSpaceByID(coworkingID);
+            CoworkingSpaceDto dto = coworkingSpaceService.getCoworkingSpaceByID(coworkingID);
+            CoworkingSpace coworkingSpace = coworkingSpaceService.toEntity(dto);
 
             Reservation reservation = new Reservation();
+
             reservation.setCoworkingSpace(coworkingSpace);
             reservation.setUserID(user.getId());
             reservation.setReservationName(reservationName);
@@ -99,8 +151,8 @@ public class ReservationServiceImpl implements ReservationService {
 
             reservation.setActive(true);
 
-            addReservation(reservation);
-            return reservation;
+            addReservation(toDto(reservation));
+            return toDto(reservation);
         } catch (DatabaseException e) {
             throw new BusinessException("Failed to add reservation", e);
         }
