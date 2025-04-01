@@ -84,5 +84,4 @@ public class Reservation extends BaseEntity {
                 "is_actve="+super.getActive() +
                 '}';
     }
-
 }

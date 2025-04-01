@@ -13,22 +13,15 @@ import java.sql.SQLException;
 public class DatabaseConfigJDBC {
     private static HikariDataSource dataSource;
 
-    static {
+
+    @Bean
+    public DataSource dataSource() {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(DatabaseSettings.getUrl());
         config.setUsername(DatabaseSettings.getUsername());
         config.setPassword(DatabaseSettings.getPassword());
         config.setDriverClassName(DatabaseSettings.getDriver());
-        config.setMaximumPoolSize(10); // Maximum number of connections in the pool
-        dataSource = new HikariDataSource(config);
-    }
-
-    @Bean
-    public DataSource dataSource() {
-        return dataSource;
-    }
-
-    public Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
+        config.setMaximumPoolSize(10);
+        return new HikariDataSource(config);
     }
 }
