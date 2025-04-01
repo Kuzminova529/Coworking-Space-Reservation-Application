@@ -1,5 +1,6 @@
 package org.reservationapplication.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -14,7 +15,8 @@ public class CoworkingSpace extends BaseEntity {
 
     private double price;
 
-    @OneToMany(mappedBy = "coworkingSpace")
+    @OneToMany(mappedBy = "coworkingSpace", fetch = FetchType.EAGER)
+    @JsonManagedReference
     private List<Reservation> reservations = new ArrayList<>();
 
     public CoworkingSpace() {}

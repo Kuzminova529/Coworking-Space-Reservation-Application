@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Repository("jpaUserRepository")
+@Repository
 public class UserRepositoryJPA implements EntityRepository<User, Long> {
     private EntityManagerFactory emf;
 
@@ -84,7 +84,7 @@ public class UserRepositoryJPA implements EntityRepository<User, Long> {
         EntityTransaction transaction = entityManager.getTransaction();
         try {
             transaction.begin();
-            entityManager.merge(user);
+            entityManager.persist(user);
             transaction.commit();
         } catch (Exception e) {
             if (transaction.isActive()) {

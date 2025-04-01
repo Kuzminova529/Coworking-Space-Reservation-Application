@@ -1,5 +1,6 @@
 package org.reservationapplication.service;
 
+import org.reservationapplication.domain.dto.ReservationDto;
 import org.reservationapplication.domain.model.Reservation;
 import org.reservationapplication.domain.model.User;
 
@@ -8,16 +9,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ReservationService {
-    List<Reservation> getAllReservation();
+    List<ReservationDto> getAllReservation();
 
-    void addReservation(Reservation reservation);
+    List<ReservationDto> getPersonalReservation(Long id);
 
-    void removeReservationById(long id);
+    ReservationDto addReservation(ReservationDto reservation);
 
-    List<Reservation> getPersonalReservation(User user);
-
-    boolean userAddReservation(
+    ReservationDto userAddReservation(
             long id, String reservationName, LocalDate bookingDate,
             LocalDateTime startDateTime, LocalDateTime endDateTime,
             User user, CoworkingSpaceService coworkingSpaceService);
+
+    boolean removeReservationById(long id);
 }

@@ -1,5 +1,6 @@
 package org.reservationapplication.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ public class Reservation extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "coworking_space_id", nullable = false)
+    @JsonBackReference
     private CoworkingSpace coworkingSpace;
 
     @Column(name = "user_id", nullable = false)
@@ -82,5 +84,4 @@ public class Reservation extends BaseEntity {
                 "is_actve="+super.getActive() +
                 '}';
     }
-
 }

@@ -1,5 +1,7 @@
 package org.reservationapplication.service;
 
+import org.reservationapplication.domain.dto.CoworkingSpaceDto;
+import org.reservationapplication.domain.dto.ReservationDto;
 import org.reservationapplication.domain.exeption.BusinessException;
 import org.reservationapplication.domain.exeption.DatabaseException;
 import org.reservationapplication.domain.repository.ReservationRepository;
@@ -15,70 +17,112 @@ import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.util.*;
 
-@Service
+@Service()
 public class ReservationServiceImpl implements ReservationService {
 
     private ReservationRepository reservationRepository;
 
     @Autowired
-    public ReservationServiceImpl(@Qualifier("jpaReservationRepository") ReservationRepository reservationRepository) {
+    public ReservationServiceImpl(@Qualifier("reservationRepositoryJDBC") ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<Reservation> getAllReservation() {
+    public ReservationDto toDto(Reservation reservation) {
+        CoworkingSpaceDto coworkingSpaceDto = new CoworkingSpaceDto(
+                reservation.getCoworkingSpace().getId(),
+                reservation.getCoworkingSpace().getType(),
+                reservation.getCoworkingSpace().getPrice(),
+                reservation.getCoworkingSpace().getActive()
+        );
+
+        return new ReservationDto(
+                reservation.getId(),
+                coworkingSpaceDto,
+                reservation.getUserID(),
+                reservation.getReservationName(),
+                reservation.getStartDateTime(),
+                reservation.getEndDateTime(),
+                reservation.getActive()
+        );
+    }
+
+    public Reservation toEntity(ReservationDto dto) {
+        Reservation reservation = new Reservation();
+
+        if (dto.getCoworkingSpace() != null) {
+            CoworkingSpace coworkingSpace = new CoworkingSpace();
+            coworkingSpace.setId(dto.getCoworkingSpace().getId());
+            coworkingSpace.setType(dto.getCoworkingSpace().getType());
+            coworkingSpace.setPrice(dto.getCoworkingSpace().getPrice());
+            coworkingSpace.setActive(dto.getCoworkingSpace().isActive());
+            reservation.setCoworkingSpace(coworkingSpace);
+        }
+
+        reservation.setUserID(dto.getUserID());
+        reservation.setReservationName(dto.getReservationName());
+        reservation.setStartDateTime(dto.getStartDateTime());
+        reservation.setEndDateTime(dto.getEndDateTime());
+        reservation.setActive(dto.isActive());
+
+        return reservation;
+    }
+
+    @Override
+    public List<ReservationDto> getAllReservation() {
         try {
-            return reservationRepository.read();
+            return reservationRepository.read().stream()
+                    .map(this::toDto)
+                    .toList();
         } catch (DatabaseException e){
             throw new BusinessException("Failed to retrieve reservations", e);
         }
     }
 
-    public List<Reservation> getPersonalReservation(User user) {
+    @Override
+    public List<ReservationDto> getPersonalReservation(Long id) {
         try {
-            List<Reservation> reservations = reservationRepository.readPersonalReservations(user.getId());
-            return reservations;
+            return reservationRepository.readPersonalReservations(id).stream()
+                    .map(this::toDto)
+                    .toList();
         } catch (DatabaseException e){
             throw new BusinessException("Failed to retrieve reservations", e);
         }
     }
 
-    public void removeReservationById(long id) {
+    @Override
+    public boolean removeReservationById(long id) {
         try {
             reservationRepository.updateStatus(id);
+            return true;
         } catch (DatabaseException e) {
             throw new BusinessException("Failed to update reservation", e);
         }
     }
 
-    public void addReservation(Reservation reservation) {
+    @Override
+    public ReservationDto addReservation(ReservationDto dto) {
         try {
+            Reservation reservation = toEntity(dto);
             reservationRepository.create(reservation);
+            return dto;
         } catch (DatabaseException e) {
             throw new BusinessException("Failed to add reservation", e);
         }
     }
 
     @Override
-    public boolean userAddReservation(
+    public ReservationDto userAddReservation(
             long coworkingID, String reservationName, LocalDate bookingDate,
             LocalDateTime startDateTime, LocalDateTime endDateTime,
             User user, CoworkingSpaceService coworkingSpaceService) {
 
         try {
-            Optional<CoworkingSpace> optionalCoworkingSpace = coworkingSpaceService.getCoworkingSpaceByID(coworkingID);
 
-            if (optionalCoworkingSpace.isEmpty()) {
-                throw new IllegalArgumentException("Invalid id of coworkingSpace");
-            }
-
-            CoworkingSpace coworkingSpace = optionalCoworkingSpace.get();
-
-            if (!coworkingSpace.getActive()) {
-                throw new IllegalArgumentException("This coworkingSpace is not active");
-            }
-
+            CoworkingSpaceDto dto = coworkingSpaceService.getCoworkingSpaceByID(coworkingID);
+            CoworkingSpace coworkingSpace = coworkingSpaceService.toEntity(dto);
 
             Reservation reservation = new Reservation();
+
             reservation.setCoworkingSpace(coworkingSpace);
             reservation.setUserID(user.getId());
             reservation.setReservationName(reservationName);
@@ -107,8 +151,8 @@ public class ReservationServiceImpl implements ReservationService {
 
             reservation.setActive(true);
 
-            addReservation(reservation);
-            return true;
+            addReservation(toDto(reservation));
+            return toDto(reservation);
         } catch (DatabaseException e) {
             throw new BusinessException("Failed to add reservation", e);
         }
