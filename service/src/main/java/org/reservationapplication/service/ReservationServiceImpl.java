@@ -23,7 +23,7 @@ public class ReservationServiceImpl implements ReservationService {
     private ReservationRepository reservationRepository;
 
     @Autowired
-    public ReservationServiceImpl(@Qualifier("jpaReservationRepository") ReservationRepository reservationRepository) {
+    public ReservationServiceImpl(@Qualifier("reservationRepositoryJDBC") ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
     }
 

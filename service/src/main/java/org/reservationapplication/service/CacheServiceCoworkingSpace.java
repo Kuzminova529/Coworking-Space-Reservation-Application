@@ -17,7 +17,7 @@ public class CacheServiceCoworkingSpace {
     private final CoworkingSpaceRepository repository;
     private final Cache<String, List<CoworkingSpace>> cache;
 
-    public CacheServiceCoworkingSpace(@Qualifier("jpaCoworkingSpaceRepository") CoworkingSpaceRepository repository) {
+    public CacheServiceCoworkingSpace(@Qualifier("coworkingSpaceRepositoryJDBC") CoworkingSpaceRepository repository) {
         this.repository = repository;
         this.cache = Caffeine.newBuilder()
                 .expireAfterWrite(10, TimeUnit.MINUTES) // Clears cache every 10mins

@@ -24,7 +24,7 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
     private final CoworkingSpaceRepository coworkingSpaceRepository;
 
     @Autowired
-    public CoworkingSpaceServiceImpl(CacheServiceCoworkingSpace cacheServiceCoworkingSpace, @Qualifier("jpaCoworkingSpaceRepository") CoworkingSpaceRepository coworkingSpaceRepository) {
+    public CoworkingSpaceServiceImpl(CacheServiceCoworkingSpace cacheServiceCoworkingSpace, @Qualifier("coworkingSpaceRepositoryJDBC") CoworkingSpaceRepository coworkingSpaceRepository) {
         this.cacheServiceCoworkingSpace = cacheServiceCoworkingSpace;
         this.coworkingSpaceRepository = coworkingSpaceRepository;
     }

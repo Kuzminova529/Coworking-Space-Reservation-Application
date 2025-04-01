@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Repository("jpaUserRepository")
+@Repository
 public class UserRepositoryJPA implements EntityRepository<User, Long> {
     private EntityManagerFactory emf;
 

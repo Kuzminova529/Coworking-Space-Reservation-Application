@@ -16,7 +16,7 @@ public class UserService {
     private EntityRepository<User, Long> userRepository;
 
     @Autowired
-    public UserService(@Qualifier("jpaUserRepository") EntityRepository<User, Long> userRepository) {
+    public UserService(@Qualifier("userRepositoryJPA") EntityRepository<User, Long> userRepository) {
         this.userRepository = userRepository;
     }
 
