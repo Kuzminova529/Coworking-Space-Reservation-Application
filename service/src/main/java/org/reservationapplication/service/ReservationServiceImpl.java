@@ -4,7 +4,7 @@ import org.reservationapplication.domain.dto.CoworkingSpaceDto;
 import org.reservationapplication.domain.dto.ReservationDto;
 import org.reservationapplication.domain.exeption.BusinessException;
 import org.reservationapplication.domain.exeption.DatabaseException;
-import org.reservationapplication.domain.repository.ReservationRepository;
+import org.reservationapplication.domain.repository.SpringDataJPARepos.ReservationRepositorySpring;
 import org.reservationapplication.logger.Loggers;
 import org.reservationapplication.domain.model.CoworkingSpace;
 import org.reservationapplication.domain.model.Reservation;
@@ -17,13 +17,13 @@ import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.util.*;
 
-@Service()
+@Service
 public class ReservationServiceImpl implements ReservationService {
 
-    private ReservationRepository reservationRepository;
+    private ReservationRepositorySpring reservationRepository;
 
     @Autowired
-    public ReservationServiceImpl(@Qualifier("reservationRepositoryJDBC") ReservationRepository reservationRepository) {
+    public ReservationServiceImpl(@Qualifier("reservationRepositorySpring") ReservationRepositorySpring reservationRepository) {
         this.reservationRepository = reservationRepository;
     }
 
@@ -70,7 +70,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public List<ReservationDto> getAllReservation() {
         try {
-            return reservationRepository.read().stream()
+            return reservationRepository.findAll().stream()
                     .map(this::toDto)
                     .toList();
         } catch (DatabaseException e){
@@ -103,7 +103,7 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationDto addReservation(ReservationDto dto) {
         try {
             Reservation reservation = toEntity(dto);
-            reservationRepository.create(reservation);
+            reservationRepository.save(reservation);
             return dto;
         } catch (DatabaseException e) {
             throw new BusinessException("Failed to add reservation", e);

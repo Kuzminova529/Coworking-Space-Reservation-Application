@@ -4,6 +4,7 @@ import org.reservationapplication.domain.exeption.DatabaseErrorCode;
 import org.reservationapplication.domain.exeption.DatabaseException;
 import org.reservationapplication.domain.model.Reservation;
 import org.reservationapplication.domain.repository.CoworkingSpaceRepository;
+import org.reservationapplication.domain.sql.DatabaseConfigJDBC;
 import org.reservationapplication.logger.Loggers;
 import org.reservationapplication.domain.model.CoworkingSpace;
 import org.reservationapplication.domain.model.CoworkingSpaceType;

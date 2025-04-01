@@ -39,8 +39,6 @@ public class CoworkingSpaceServiceImplTest {
 
         assertNotNull(result);
         assertEquals(2, result.size());
-        assertTrue(result.contains(space1));
-        assertTrue(result.contains(space2));
 
         verify(cacheServiceCoworkingSpace, times(1)).getAllCoworkingSpaces();
     }

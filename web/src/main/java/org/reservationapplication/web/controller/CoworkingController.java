@@ -1,7 +1,6 @@
 package org.reservationapplication.web.controller;
 
 import org.reservationapplication.domain.dto.CoworkingSpaceDto;
-import org.reservationapplication.domain.model.CoworkingSpace;
 import org.reservationapplication.service.CoworkingSpaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
