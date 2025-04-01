@@ -4,8 +4,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.reservationapplication.domain.model.CoworkingSpace;
 import org.reservationapplication.domain.repository.CoworkingSpaceRepository;
-import org.reservationapplication.domain.repository.EntityRepository;
-import org.reservationapplication.domain.repository.JPARepos.CoworkingSpaceRepositoryJPA;
+import org.reservationapplication.domain.repository.SpringDataJPARepos.CoworkingSpaceRepositorySpring;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +13,10 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class CacheServiceCoworkingSpace {
-    private final CoworkingSpaceRepository repository;
+    private final CoworkingSpaceRepositorySpring repository;
     private final Cache<String, List<CoworkingSpace>> cache;
 
-    public CacheServiceCoworkingSpace(@Qualifier("jpaCoworkingSpaceRepository") CoworkingSpaceRepository repository) {
+    public CacheServiceCoworkingSpace(@Qualifier("coworkingSpaceRepositorySpring") CoworkingSpaceRepositorySpring repository) {
         this.repository = repository;
         this.cache = Caffeine.newBuilder()
                 .expireAfterWrite(10, TimeUnit.MINUTES) // Clears cache every 10mins
@@ -26,25 +25,21 @@ public class CacheServiceCoworkingSpace {
     }
 
     public List<CoworkingSpace> getAllCoworkingSpaces() {
-        return cache.get("coworkings", key -> repository.read());
+        return cache.get("coworkings", key -> repository.findAll());
     }
 
     public void addCoworkingSpace(CoworkingSpace coworkingSpace) {
-        repository.create(coworkingSpace);
+        repository.save(coworkingSpace);
         cache.invalidate("coworkings");
     }
 
     public void saveCoworkingSpaces(List<CoworkingSpace> coworkingSpace) {
-        repository.save(coworkingSpace);
+        repository.saveAll(coworkingSpace);
         cache.invalidate("coworkings");
     }
     public void removeCoworkingSpaceByID(long id) {
         repository.updateStatus(id);
         cache.invalidate("coworkings");
-    }
-
-    public void removeAllCoworkingSpaces() {
-        cache.invalidateAll();
     }
 
     public Cache<String, List<CoworkingSpace>> getCache() {
