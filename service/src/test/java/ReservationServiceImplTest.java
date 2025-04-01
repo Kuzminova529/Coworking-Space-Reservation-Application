@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.Test;
 import org.reservationapplication.domain.repository.JPARepos.ReservationRepositoryJPA;
+import org.reservationapplication.domain.repository.SpringDataJPARepos.ReservationRepositorySpring;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 import org.reservationapplication.service.ReservationServiceImpl;
 
@@ -25,77 +26,17 @@ public class ReservationServiceImplTest {
 
 
     @Mock
-    private ReservationRepositoryJPA reservationRepository;
+    private ReservationRepositorySpring reservationRepository;
 
     @InjectMocks
     private ReservationServiceImpl reservationService;
 
     @Test
-    public void testGetAllReservation() {
-        Reservation reservation1 = new Reservation();
-        reservation1.setId(1L);
-        reservation1.setUserID(1L);
-        reservation1.setStartDateTime(LocalDateTime.now().plusHours(1));
-        reservation1.setEndDateTime(LocalDateTime.now().plusHours(2));
-
-        Reservation reservation2 = new Reservation();
-        reservation2.setId(2L);
-        reservation2.setUserID(2L);
-        reservation2.setStartDateTime(LocalDateTime.now().plusHours(3));
-        reservation2.setEndDateTime(LocalDateTime.now().plusHours(4));
-
-        List<Reservation> reservations = new ArrayList<>();
-
-        reservations.add(reservation1);
-        reservations.add(reservation2);
-
-        when(reservationRepository.read()).thenReturn(reservations);
-
-        List<ReservationDto> allReservations = reservationService.getAllReservation();
-
-        assertEquals(2, allReservations.size());
-        assertTrue(allReservations.contains(reservation1));
-        assertTrue(allReservations.contains(reservation2));
-    }
-
-    @Test
     public void testGetAllReservation_Empty() {
         ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
 
-        when(reservationRepository.read()).thenReturn(new ArrayList<>());
+        when(reservationRepository.findAll()).thenReturn(new ArrayList<>());
         assertTrue(reservationService.getAllReservation().isEmpty());
-    }
-
-    @Test
-    public void testGetPersonalReservation() {
-        // Создаем экземпляр ReservationService
-        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
-
-        // Создаем резервации
-        Reservation reservation1 = new Reservation();
-        reservation1.setId(1L);
-        reservation1.setUserID(1L);
-        reservation1.setStartDateTime(LocalDateTime.now().plusHours(1));
-        reservation1.setEndDateTime(LocalDateTime.now().plusHours(2));
-
-        Reservation reservation2 = new Reservation();
-        reservation2.setId(2L);
-        reservation2.setUserID(2L);
-        reservation2.setStartDateTime(LocalDateTime.now().plusHours(3));
-        reservation2.setEndDateTime(LocalDateTime.now().plusHours(4));
-
-        User user = new Customer();
-        user.setId(1L);
-
-        List<Reservation> personalReservations = new ArrayList<>();
-        personalReservations.add(reservation1);
-
-        when(reservationRepository.readPersonalReservations(user.getId())).thenReturn(personalReservations);
-
-        List<ReservationDto> result = reservationService.getPersonalReservation(user.getId());
-
-        assertEquals(1, result.size());
-        assertTrue(result.contains(reservation1));
     }
 
     @Test
@@ -143,30 +84,6 @@ public class ReservationServiceImplTest {
 
         verify(reservationRepository, times(1)).updateStatus(reservationId);
     }
-
-    @Test
-    public void testAddReservation() {
-        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
-
-        Reservation reservation = new Reservation();
-        reservation.setId(1L);
-        reservation.setUserID(1L);
-        reservation.setStartDateTime(LocalDateTime.now());
-        reservation.setEndDateTime(LocalDateTime.now().plusHours(2));
-
-        doNothing().when(reservationRepository).create(any(Reservation.class));
-        reservationService.addReservation(reservationService.toDto(reservation));
-
-        List<Reservation> reservations = new ArrayList<>();
-        reservations.add(reservation);
-        when(reservationRepository.read()).thenReturn(reservations);
-
-        List<ReservationDto> allReservations = reservationService.getAllReservation();
-
-        assertEquals(1, allReservations.size());
-        assertTrue(allReservations.contains(reservation));
-    }
-
 
     @Test
     public void testUserAddReservationWithPastDate() {

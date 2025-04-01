@@ -1,6 +1,5 @@
 package org.reservationapplication.service;
 
-import org.checkerframework.checker.units.qual.C;
 import org.reservationapplication.domain.dto.CoworkingSpaceDto;
 import org.reservationapplication.domain.exeption.BusinessException;
 import org.reservationapplication.domain.exeption.CoworkingSpaceNotFoundException;
@@ -8,7 +7,7 @@ import org.reservationapplication.domain.exeption.DatabaseException;
 import org.reservationapplication.domain.model.CoworkingSpace;
 import org.reservationapplication.domain.model.CoworkingSpaceType;
 import org.reservationapplication.domain.model.Reservation;
-import org.reservationapplication.domain.repository.CoworkingSpaceRepository;
+import org.reservationapplication.domain.repository.SpringDataJPARepos.CoworkingSpaceRepositorySpring;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -18,13 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Service()
+@Service
 public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
     private final CacheServiceCoworkingSpace cacheServiceCoworkingSpace;
-    private final CoworkingSpaceRepository coworkingSpaceRepository;
+    private final CoworkingSpaceRepositorySpring coworkingSpaceRepository;
 
     @Autowired
-    public CoworkingSpaceServiceImpl(CacheServiceCoworkingSpace cacheServiceCoworkingSpace, @Qualifier("coworkingSpaceRepositoryJDBC") CoworkingSpaceRepository coworkingSpaceRepository) {
+    public CoworkingSpaceServiceImpl(CacheServiceCoworkingSpace cacheServiceCoworkingSpace, @Qualifier("coworkingSpaceRepositorySpring") CoworkingSpaceRepositorySpring coworkingSpaceRepository) {
         this.cacheServiceCoworkingSpace = cacheServiceCoworkingSpace;
         this.coworkingSpaceRepository = coworkingSpaceRepository;
     }
@@ -51,7 +50,7 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
     @Override
     public CoworkingSpaceDto getCoworkingSpaceByID(long id) {
         try {
-            Optional<CoworkingSpace> optionalCoworkingSpace = coworkingSpaceRepository.getById(id);
+            Optional<CoworkingSpace> optionalCoworkingSpace = coworkingSpaceRepository.getCoworkingSpaceById(id);
             if (optionalCoworkingSpace.isPresent()) {
                 return toDto(optionalCoworkingSpace.get());
             }
