@@ -28,22 +28,12 @@ public class CoworkingController {
         return service.getCoworkingSpaceByID(spaceId);
     }
 
-    @GetMapping("/active")
-    public List<CoworkingSpaceDto> getActiveSpaces() {
-        return service.getActiveCoworkingSpace();
-    }
-
-    @PostMapping
+    @PostMapping("/create")
     public CoworkingSpaceDto createSpace(@RequestBody CoworkingSpaceDto space) {
         return service.addCoworkingSpace(space);
     }
 
-    @PostMapping("/user")
-    public CoworkingSpaceDto userCreateSpace(@RequestBody int choice, @RequestBody double price) {
-        return service.userAddCoworkingSpace(choice, price);
-    }
-
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public boolean deleteSpace(@PathVariable Long id) {
         return service.removeCoworkingSpaceById(id);
     }

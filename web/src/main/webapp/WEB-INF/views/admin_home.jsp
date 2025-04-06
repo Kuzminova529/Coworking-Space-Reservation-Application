@@ -9,10 +9,10 @@
 <h1>Welcome to Reservation App! Admin</h1>
 <p>Reservation App is a modern web application designed to manage bookings of workspaces in coworking spaces. With it, you can:</p>
 <ul>
-    <li><a href="${pageContext.request.contextPath}/admin/add-coworking">Add a new coworking space</a></li>
-    <li><a href="${pageContext.request.contextPath}/admin/remove-coworking">Remove a coworking space</a></li>
-    <li><a href="${pageContext.request.contextPath}/admin/view-reservations">View all reservations</a></li>
-    <li><a href="${pageContext.request.contextPath}/admin/view-coworkings">View all coworking spaces</a></li>
+    <li>Add a new coworking space</li>
+    <li>Remove a coworking space</li>
+    <li>View all reservations</li>
+    <li>View all coworking spaces</li>
 </ul>
 <p>The application is developed using Java technologies, including servlets and JSP, ensuring stability and high performance. You can easily manage your bookings and find suitable workspaces.</p>
 <p>Start using Reservation App today and optimize your workspace booking process!</p>

@@ -33,7 +33,7 @@ public class CacheServiceCoworkingSpace {
         });    }
 
     public List<CoworkingSpace> getAllCoworkingSpaces() {
-        return cache.get("coworkings", key -> repository.findAll());
+        return cache.get("coworkings", key -> repository.getCoworkingSpaces());
     }
 
     public void addCoworkingSpace(CoworkingSpace coworkingSpace) {

@@ -1,6 +1,7 @@
 package org.reservationapplication.web.controller;
 
 
+import jakarta.servlet.http.HttpSession;
 import org.reservationapplication.domain.dto.ReservationDto;
 import org.reservationapplication.domain.model.Reservation;
 import org.reservationapplication.domain.model.User;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -27,22 +29,19 @@ public class ReservationController {
         return service.getAllReservation();
     }
 
-    @GetMapping("/{id}")
-    public List<ReservationDto> getPersonalReservations(@PathVariable Long id) {
-        return service.getPersonalReservation(id);
+    @GetMapping("/personal")
+    public List<ReservationDto> getPersonalReservations(HttpSession session) {
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null) {
+            return new ArrayList<>();
+        }
+        Long userId = currentUser.getId();
+        return service.getPersonalReservation(userId);
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ReservationDto createReservation(@RequestBody ReservationDto reservation) {
         return service.addReservation(reservation);
-    }
-
-    @PostMapping("/user")
-    public ReservationDto userCreateReservation(
-            @RequestBody long coworkingID, @RequestBody String reservationName, @RequestBody LocalDate bookingDate,
-            @RequestBody LocalDateTime startDateTime, @RequestBody LocalDateTime endDateTime,
-            @RequestBody User user, @RequestBody CoworkingSpaceService coworkingSpaceService) {
-        return service.userAddReservation(coworkingID, reservationName, bookingDate, startDateTime, endDateTime, user, coworkingSpaceService);
     }
 
     @DeleteMapping("/{id}")

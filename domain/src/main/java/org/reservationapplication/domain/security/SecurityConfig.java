@@ -35,7 +35,9 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/register")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/login")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/WEB-INF/views/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
+                        .requestMatchers(new AntPathRequestMatcher("/reservation")).hasRole("ADMIN")
+                        .requestMatchers(new AntPathRequestMatcher("/coworking-space/create")).hasRole("ADMIN")
+                        .requestMatchers(new AntPathRequestMatcher("/coworking-space//delete/{id}")).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
