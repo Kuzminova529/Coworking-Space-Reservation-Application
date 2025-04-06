@@ -20,4 +20,7 @@ public interface UserRepositorySpring extends JpaRepository<User, Long> {
     @Transactional
     @Query("UPDATE User u SET u.isActive = false WHERE u.id = :id")
     void updateStatus(@Param("id") Long id);
+
+    @Query("SELECT u FROM User u WHERE u.username = :username")
+    Optional<User> findByUsername(@Param("username") String username);
 }

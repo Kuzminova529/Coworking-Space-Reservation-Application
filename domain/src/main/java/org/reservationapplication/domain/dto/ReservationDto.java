@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class ReservationDto {
     private Long id;
-    private CoworkingSpaceDto coworkingSpace;
+    private Long coworkingSpaceId;
     private Long userID;
     private String reservationName;
     private LocalDateTime startDateTime;
@@ -13,9 +13,9 @@ public class ReservationDto {
 
     public ReservationDto() {}
 
-    public ReservationDto(Long id, CoworkingSpaceDto coworkingSpace, Long userID, String reservationName, LocalDateTime startDateTime, LocalDateTime endDateTime, boolean active) {
+    public ReservationDto(Long id, Long coworkingSpaceId, Long userID, String reservationName, LocalDateTime startDateTime, LocalDateTime endDateTime, boolean active) {
         this.id = id;
-        this.coworkingSpace = coworkingSpace;
+        this.coworkingSpaceId = coworkingSpaceId;
         this.userID = userID;
         this.reservationName = reservationName;
         this.startDateTime = startDateTime;
@@ -31,12 +31,12 @@ public class ReservationDto {
         this.id = id;
     }
 
-    public CoworkingSpaceDto getCoworkingSpace() {
-        return coworkingSpace;
+    public Long getCoworkingSpaceId() {
+        return coworkingSpaceId;
     }
 
-    public void setCoworkingSpace(CoworkingSpaceDto coworkingSpace) {
-        this.coworkingSpace = coworkingSpace;
+    public void setCoworkingSpaceId(Long coworkingSpaceId) {
+        this.coworkingSpaceId = coworkingSpaceId;
     }
 
     public Long getUserID() {

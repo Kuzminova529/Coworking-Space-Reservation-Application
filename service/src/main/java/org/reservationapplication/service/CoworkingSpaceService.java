@@ -14,11 +14,13 @@ public interface CoworkingSpaceService {
 
     void saveCoworkingSpaces(List<CoworkingSpace> coworkingSpaces);
 
+    CoworkingSpace getCoworkingSpaceByIDForReservation(Long id);
+
     List<CoworkingSpaceDto> getAllCoworkingSpace();
 
     List<CoworkingSpaceDto> getActiveCoworkingSpace();
 
-    CoworkingSpaceDto getCoworkingSpaceByID(long coworkingID);
+    CoworkingSpaceDto getCoworkingSpaceByID(Long coworkingID);
 
     CoworkingSpaceDto userAddCoworkingSpace(int typeChoice, double price);
 

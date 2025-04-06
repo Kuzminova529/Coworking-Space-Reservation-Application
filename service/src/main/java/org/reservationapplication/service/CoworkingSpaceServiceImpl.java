@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
@@ -48,14 +47,31 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
     }
 
     @Override
-    public CoworkingSpaceDto getCoworkingSpaceByID(long id) {
+    public CoworkingSpaceDto getCoworkingSpaceByID(Long id) {
         try {
-            Optional<CoworkingSpace> optionalCoworkingSpace = coworkingSpaceRepository.getCoworkingSpaceById(id);
-            if (optionalCoworkingSpace.isPresent()) {
-                return toDto(optionalCoworkingSpace.get());
+            List<CoworkingSpace> coworkingSpaceList = cacheServiceCoworkingSpace.findById(id);
+            if (!coworkingSpaceList.isEmpty()) {
+                CoworkingSpace coworkingSpace = coworkingSpaceList.get(0);
+                return toDto(coworkingSpace);
             }
             else {
-                throw new BusinessException("Failed to find coworking space by id");
+                throw new BusinessException("No coworking space with this id");
+            }
+        } catch (DatabaseException e) {
+            throw new BusinessException("Failed to find coworking space by id");
+        }
+    }
+
+    @Override
+    public CoworkingSpace getCoworkingSpaceByIDForReservation(Long id) {
+        try {
+            List<CoworkingSpace> coworkingSpaceList = cacheServiceCoworkingSpace.findById(id);
+            if (!coworkingSpaceList.isEmpty()) {
+                CoworkingSpace coworkingSpace = coworkingSpaceList.get(0);
+                return coworkingSpace;
+            }
+            else {
+                throw new BusinessException("No coworking space with this id");
             }
         } catch (DatabaseException e){
             throw new BusinessException("Failed to find coworking space by id");
@@ -122,6 +138,11 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
 
     @Override
     public boolean removeCoworkingSpaceById(long id) {
+        try {
+            CoworkingSpaceDto coworkingSpace = getCoworkingSpaceByID(id);
+        } catch (BusinessException e) {
+            throw new BusinessException("Failed to remove coworking space");
+        }
         try {
             cacheServiceCoworkingSpace.removeCoworkingSpaceByID(id);
             return true;

@@ -2,8 +2,8 @@ package org.reservationapplication.domain.repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.reservationapplication.domain.model.ApplicationState;
-import org.reservationapplication.domain.model.Customer;
 import org.reservationapplication.domain.model.User;
+import org.reservationapplication.domain.model.UserRole;
 
 import java.util.ArrayList;
 import java.util.TreeSet;
@@ -17,7 +17,8 @@ public class ApplicationStateDataStorage extends JsonDataStorage<ApplicationStat
 
     @Override
     protected ApplicationState defaultValue() {
-        User defaultUser = new Customer();
+        User defaultUser = new User();
+        defaultUser.setRole(UserRole.ROLE_CUSTOMER);
         return new ApplicationState(defaultUser, new ArrayList<>(), new TreeSet<>());
     }
 

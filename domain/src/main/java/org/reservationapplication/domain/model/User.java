@@ -1,22 +1,52 @@
 package org.reservationapplication.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
-
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = "role_type"
-)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = Customer.class, name = "CUSTOMER"),
-        @JsonSubTypes.Type(value = Admin.class, name = "ADMIN")
-})
 
 @Entity
 @Table(name = "users")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "role_type", discriminatorType = DiscriminatorType.STRING)
-public abstract class User extends BaseEntity {
+public class User extends BaseEntity {
+
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
+
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role_type")
+    private UserRole role;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public UserRole getRole() {
+        return role;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + super.getId() +
+                ", username='" + username + '\'' +
+                ", role=" + role +
+                ", is_active=" + super.getActive() +
+                '}';
+    }
 }

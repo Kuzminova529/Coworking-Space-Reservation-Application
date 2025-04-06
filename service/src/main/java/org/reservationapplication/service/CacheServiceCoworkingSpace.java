@@ -8,7 +8,9 @@ import org.reservationapplication.domain.repository.SpringDataJPARepos.Coworking
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -24,8 +26,14 @@ public class CacheServiceCoworkingSpace {
                 .build();
     }
 
+    public List<CoworkingSpace> findById(Long id) {
+        return cache.get("coworkings", key -> {
+            Optional<CoworkingSpace> coworkingSpace = repository.getCoworkingSpaceById(id);
+            return coworkingSpace.map(Collections::singletonList).orElse(Collections.emptyList());
+        });    }
+
     public List<CoworkingSpace> getAllCoworkingSpaces() {
-        return cache.get("coworkings", key -> repository.findAll());
+        return cache.get("coworkings", key -> repository.getCoworkingSpaces());
     }
 
     public void addCoworkingSpace(CoworkingSpace coworkingSpace) {
