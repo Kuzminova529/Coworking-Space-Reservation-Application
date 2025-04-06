@@ -44,7 +44,7 @@ public class ReservationController {
         return service.addReservation(reservation);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("delete/{id}")
     public boolean deleteReservationById(@PathVariable Long id) {
         return service.removeReservationById(id);
     }

@@ -18,7 +18,7 @@ public class ApplicationStateDataStorage extends JsonDataStorage<ApplicationStat
     @Override
     protected ApplicationState defaultValue() {
         User defaultUser = new User();
-        defaultUser.setRole(UserRole.CUSTOMER);
+        defaultUser.setRole(UserRole.ROLE_CUSTOMER);
         return new ApplicationState(defaultUser, new ArrayList<>(), new TreeSet<>());
     }
 

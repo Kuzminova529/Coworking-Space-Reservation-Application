@@ -1,8 +1,8 @@
 package org.reservationapplication.domain.model;
 
 public enum UserRole {
-    ADMIN("ADMIN"),
-    CUSTOMER("CUSTOMER");
+    ROLE_ADMIN("ROLE_ADMIN"),
+    ROLE_CUSTOMER("ROLE_ADMIN");
 
     private String role;
 
