@@ -7,8 +7,11 @@ import org.reservationapplication.domain.model.User;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface ReservationService {
+    ReservationDto findReservationById(Long id);
+
     List<ReservationDto> getAllReservation();
 
     List<ReservationDto> getPersonalReservation(Long id);

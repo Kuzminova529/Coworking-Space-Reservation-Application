@@ -4,7 +4,6 @@ import static org.mockito.Mockito.*;
 import org.reservationapplication.domain.dto.CoworkingSpaceDto;
 import org.reservationapplication.domain.dto.ReservationDto;
 import org.reservationapplication.domain.model.CoworkingSpace;
-import org.reservationapplication.domain.model.Customer;
 import org.reservationapplication.domain.model.Reservation;
 import org.reservationapplication.domain.model.User;
 import org.mockito.InjectMocks;
@@ -50,7 +49,7 @@ public class ReservationServiceImplTest {
         reservation1.setUserID(1L);
         reservation1.setStartDateTime(LocalDateTime.now().plusHours(1));
         reservation1.setEndDateTime(LocalDateTime.now().plusHours(2));
-        User user = new Customer();
+        User user = new User();
         user.setId(99L);
 
         when(reservationRepository.readPersonalReservations(user.getId())).thenReturn(new ArrayList<>());
@@ -94,7 +93,7 @@ public class ReservationServiceImplTest {
         coworkingSpace.setActive(true);
         when(coworkingSpaceService.getCoworkingSpaceByID(1L)).thenReturn(coworkingSpace);
 
-        Customer user = new Customer();
+        User user = new User();
         user.setId(1L);
 
         // Creating an object with a past booking date

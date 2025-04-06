@@ -5,7 +5,7 @@ public enum CoworkingSpaceType {
     PRIVATE("PRIVATE"),
     ROOM("ROOM");
 
-    private String type;
+    private final String type;
 
     CoworkingSpaceType(String type) {
         this.type = type;

@@ -21,23 +21,19 @@ import java.util.*;
 public class ReservationServiceImpl implements ReservationService {
 
     private ReservationRepositorySpring reservationRepository;
+    private CoworkingSpaceService coworkingSpaceService;
 
     @Autowired
-    public ReservationServiceImpl(@Qualifier("reservationRepositorySpring") ReservationRepositorySpring reservationRepository) {
+    public ReservationServiceImpl(@Qualifier("reservationRepositorySpring") ReservationRepositorySpring reservationRepository,
+                                  @Qualifier("coworkingSpaceServiceImpl") CoworkingSpaceService coworkingSpaceService) {
         this.reservationRepository = reservationRepository;
+        this.coworkingSpaceService = coworkingSpaceService;
     }
 
     public ReservationDto toDto(Reservation reservation) {
-        CoworkingSpaceDto coworkingSpaceDto = new CoworkingSpaceDto(
-                reservation.getCoworkingSpace().getId(),
-                reservation.getCoworkingSpace().getType(),
-                reservation.getCoworkingSpace().getPrice(),
-                reservation.getCoworkingSpace().getActive()
-        );
-
         return new ReservationDto(
                 reservation.getId(),
-                coworkingSpaceDto,
+                reservation.getCoworkingSpace().getId(),
                 reservation.getUserID(),
                 reservation.getReservationName(),
                 reservation.getStartDateTime(),
@@ -49,12 +45,8 @@ public class ReservationServiceImpl implements ReservationService {
     public Reservation toEntity(ReservationDto dto) {
         Reservation reservation = new Reservation();
 
-        if (dto.getCoworkingSpace() != null) {
-            CoworkingSpace coworkingSpace = new CoworkingSpace();
-            coworkingSpace.setId(dto.getCoworkingSpace().getId());
-            coworkingSpace.setType(dto.getCoworkingSpace().getType());
-            coworkingSpace.setPrice(dto.getCoworkingSpace().getPrice());
-            coworkingSpace.setActive(dto.getCoworkingSpace().isActive());
+        if (dto.getCoworkingSpaceId() != null) {
+            CoworkingSpace coworkingSpace = coworkingSpaceService.getCoworkingSpaceByIDForReservation(dto.getCoworkingSpaceId());
             reservation.setCoworkingSpace(coworkingSpace);
         }
 
@@ -90,7 +82,26 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    public ReservationDto findReservationById(Long id){
+        try {
+            Optional<Reservation> optReservation = reservationRepository.findById(id);
+            if (optReservation.isPresent()) {
+                return toDto(optReservation.get());
+            } else {
+                throw new BusinessException("Failed to find reservation");
+            }
+        } catch (DatabaseException e) {
+            throw new BusinessException("Failed to find coworking space by id");
+        }
+    }
+
+    @Override
     public boolean removeReservationById(long id) {
+        try {
+            findReservationById(id);
+        } catch (BusinessException e) {
+            throw new BusinessException("Failed to remove reservation", e);
+        }
         try {
             reservationRepository.updateStatus(id);
             return true;
