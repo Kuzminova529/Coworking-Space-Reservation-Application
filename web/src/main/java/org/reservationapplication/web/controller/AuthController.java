@@ -5,6 +5,7 @@ import org.reservationapplication.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,6 +29,7 @@ public class AuthController {
         this.authenticationManager = authenticationManager;
     }
 
+    @PreAuthorize("permitAll()")
     @PostMapping("register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         try {
@@ -38,6 +40,7 @@ public class AuthController {
         }
     }
 
+    @PreAuthorize("permitAll()")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {

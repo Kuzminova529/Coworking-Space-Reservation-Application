@@ -3,7 +3,6 @@ package org.reservationapplication.domain.security;
 import org.reservationapplication.domain.model.User;
 import org.reservationapplication.domain.repository.SpringDataJPARepos.UserRepositorySpring;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

@@ -8,6 +8,8 @@ import org.reservationapplication.domain.model.User;
 import org.reservationapplication.service.CoworkingSpaceService;
 import org.reservationapplication.service.ReservationService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -24,11 +26,13 @@ public class ReservationController {
         this.service = service;
     }
 
+    @Secured("ROLE_ADMIN")
     @GetMapping
     public List<ReservationDto> getAllReservations() {
         return service.getAllReservation();
     }
 
+    @Secured("ROLE_CUSTOMER")
     @GetMapping("/personal")
     public List<ReservationDto> getPersonalReservations(HttpSession session) {
         User currentUser = (User) session.getAttribute("currentUser");
@@ -39,11 +43,13 @@ public class ReservationController {
         return service.getPersonalReservation(userId);
     }
 
+    @Secured("ROLE_CUSTOMER")
     @PostMapping("/create")
     public ReservationDto createReservation(@RequestBody ReservationDto reservation) {
         return service.addReservation(reservation);
     }
 
+    @Secured("ROLE_CUSTOMER")
     @DeleteMapping("delete/{id}")
     public boolean deleteReservationById(@PathVariable Long id) {
         return service.removeReservationById(id);
