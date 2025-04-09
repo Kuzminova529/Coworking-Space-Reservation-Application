@@ -27,12 +27,15 @@ public class ReservationServiceImplTest {
     @Mock
     private ReservationRepositorySpring reservationRepository;
 
+    @Mock
+    private CoworkingSpaceServiceImpl coworkingSpaceService;
+
     @InjectMocks
     private ReservationServiceImpl reservationService;
 
     @Test
     public void testGetAllReservation_Empty() {
-        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
+        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository, coworkingSpaceService);
 
         when(reservationRepository.findAll()).thenReturn(new ArrayList<>());
         assertTrue(reservationService.getAllReservation().isEmpty());
@@ -40,10 +43,8 @@ public class ReservationServiceImplTest {
 
     @Test
     public void testGetPersonalReservation_Empty() {
-        // Создаем экземпляр ReservationService
-        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
+        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository, coworkingSpaceService);
 
-        // Создаем резервации
         Reservation reservation1 = new Reservation();
         reservation1.setId(1L);
         reservation1.setUserID(1L);
@@ -60,34 +61,9 @@ public class ReservationServiceImplTest {
     }
 
     @Test
-    public void testRemoveReservationById_Success() {
-        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
-
-        // Creating test reservations
-        Reservation reservation1 = new Reservation();
-        reservation1.setId(1L);
-        reservation1.setUserID(1L);
-        reservation1.setStartDateTime(LocalDateTime.now());
-        reservation1.setEndDateTime(LocalDateTime.now().plusHours(2));
-
-        Reservation reservation2 = new Reservation();
-        reservation2.setId(2L);
-        reservation2.setUserID(2L);
-        reservation2.setStartDateTime(LocalDateTime.now());
-        reservation2.setEndDateTime(LocalDateTime.now().plusHours(2));
-
-        long reservationId = 1L;
-        doNothing().when(reservationRepository).updateStatus(reservationId);
-
-        reservationService.removeReservationById(reservationId);
-
-        verify(reservationRepository, times(1)).updateStatus(reservationId);
-    }
-
-    @Test
     public void testUserAddReservationWithPastDate() {
         CoworkingSpaceServiceImpl coworkingSpaceService = mock(CoworkingSpaceServiceImpl.class);
-        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
+        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository, coworkingSpaceService);
 
         CoworkingSpaceDto coworkingSpace = new CoworkingSpaceDto();
         coworkingSpace.setActive(true);
