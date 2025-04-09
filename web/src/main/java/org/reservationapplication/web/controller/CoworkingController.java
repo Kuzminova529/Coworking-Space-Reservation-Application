@@ -43,5 +43,4 @@ public class CoworkingController {
     public boolean deleteSpace(@PathVariable Long id) {
         return service.removeCoworkingSpaceById(id);
     }
-
 }
