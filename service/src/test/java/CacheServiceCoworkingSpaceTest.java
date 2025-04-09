@@ -25,18 +25,18 @@ class CacheServiceCoworkingSpaceTest {
     @Test
     void testGetAllCoworkingSpaces_CacheMiss() {
         List<CoworkingSpace> spaces = Arrays.asList(new CoworkingSpace(), new CoworkingSpace());
-        when(repository.findAll()).thenReturn(spaces);
+        when(repository.getCoworkingSpaces()).thenReturn(spaces);
 
         List<CoworkingSpace> result = cacheService.getAllCoworkingSpaces();
 
         assertEquals(spaces, result);
-        verify(repository, times(1)).findAll();
+        verify(repository, times(1)).getCoworkingSpaces();
     }
 
     @Test
     void testGetAllCoworkingSpaces_CacheHit() {
         List<CoworkingSpace> spaces = Arrays.asList(new CoworkingSpace(), new CoworkingSpace());
-        when(repository.findAll()).thenReturn(spaces);
+        when(repository.getCoworkingSpaces()).thenReturn(spaces);
 
         // First call is a cache miss
         cacheService.getAllCoworkingSpaces();
@@ -45,7 +45,7 @@ class CacheServiceCoworkingSpaceTest {
         List<CoworkingSpace> result = cacheService.getAllCoworkingSpaces();
 
         assertEquals(spaces, result);
-        verify(repository, times(1)).findAll();
+        verify(repository, times(1)).getCoworkingSpaces();
     }
 
     @Test

@@ -3,7 +3,7 @@
     <persistence-unit name="my-persistence-unit">
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/reservation_app_db"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://db:5432/reservation_app_db"/>
             <property name="jakarta.persistence.jdbc.user" value="postgres"/>
             <property name="jakarta.persistence.jdbc.password" value="1234"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>

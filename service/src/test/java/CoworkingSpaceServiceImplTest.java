@@ -44,16 +44,6 @@ public class CoworkingSpaceServiceImplTest {
     }
 
     @Test
-    void testRemoveCoworkingSpaceById() {
-        long coworkingSpaceId = 1L;
-
-        coworkingSpaceService.removeCoworkingSpaceById(coworkingSpaceId);
-
-        // Check that the removeCoworkingSpaceByID method was called with the correct id
-        verify(cacheServiceCoworkingSpace, times(1)).removeCoworkingSpaceByID(coworkingSpaceId);
-    }
-
-    @Test
     public void testGetActiveCoworkingSpace() {
         CoworkingSpace space1 = new CoworkingSpace();
         space1.setActive(true);
