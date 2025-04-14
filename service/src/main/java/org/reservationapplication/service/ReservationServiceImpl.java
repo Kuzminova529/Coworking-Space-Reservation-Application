@@ -1,5 +1,6 @@
 package org.reservationapplication.service;
 
+import org.reservationapplication.domain.builder.ReservationBuilder;
 import org.reservationapplication.domain.dto.CoworkingSpaceDto;
 import org.reservationapplication.domain.dto.ReservationDto;
 import org.reservationapplication.domain.exeption.BusinessException;
@@ -43,18 +44,15 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     public Reservation toEntity(ReservationDto dto) {
-        Reservation reservation = new Reservation();
-
-        if (dto.getCoworkingSpaceId() != null) {
-            CoworkingSpace coworkingSpace = coworkingSpaceService.getCoworkingSpaceByIDForReservation(dto.getCoworkingSpaceId());
-            reservation.setCoworkingSpace(coworkingSpace);
-        }
-
-        reservation.setUserID(dto.getUserID());
-        reservation.setReservationName(dto.getReservationName());
-        reservation.setStartDateTime(dto.getStartDateTime());
-        reservation.setEndDateTime(dto.getEndDateTime());
-        reservation.setActive(dto.isActive());
+        CoworkingSpace coworkingSpace = coworkingSpaceService.getCoworkingSpaceByIDForReservation(dto.getCoworkingSpaceId());
+        Reservation reservation = new ReservationBuilder()
+                .setCoworkingSpace(coworkingSpace)
+                .setReservationName(dto.getReservationName())
+                .setStartDateTime(dto.getStartDateTime())
+                .setEndDateTime(dto.getEndDateTime())
+                .setUserId(dto.getUserID())
+                .setActive(true)
+                .build();
 
         return reservation;
     }
@@ -65,7 +63,7 @@ public class ReservationServiceImpl implements ReservationService {
             return reservationRepository.findAll().stream()
                     .map(this::toDto)
                     .toList();
-        } catch (DatabaseException e){
+        } catch (DatabaseException e) {
             throw new BusinessException("Failed to retrieve reservations", e);
         }
     }
@@ -76,13 +74,13 @@ public class ReservationServiceImpl implements ReservationService {
             return reservationRepository.readPersonalReservations(id).stream()
                     .map(this::toDto)
                     .toList();
-        } catch (DatabaseException e){
+        } catch (DatabaseException e) {
             throw new BusinessException("Failed to retrieve reservations", e);
         }
     }
 
     @Override
-    public ReservationDto findReservationById(Long id){
+    public ReservationDto findReservationById(Long id) {
         try {
             Optional<Reservation> optReservation = reservationRepository.findById(id);
             if (optReservation.isPresent()) {
@@ -132,12 +130,6 @@ public class ReservationServiceImpl implements ReservationService {
             CoworkingSpaceDto dto = coworkingSpaceService.getCoworkingSpaceByID(coworkingID);
             CoworkingSpace coworkingSpace = coworkingSpaceService.toEntity(dto);
 
-            Reservation reservation = new Reservation();
-
-            reservation.setCoworkingSpace(coworkingSpace);
-            reservation.setUserID(user.getId());
-            reservation.setReservationName(reservationName);
-
             LocalDate today = LocalDate.now();
 
             if (bookingDate.isBefore(today)) {
@@ -156,12 +148,14 @@ public class ReservationServiceImpl implements ReservationService {
                 throw new IllegalArgumentException("This reservation time is booked");
             }
 
-
-            reservation.setStartDateTime(startDateTime);
-            reservation.setEndDateTime(endDateTime);
-
-            reservation.setActive(true);
-
+            Reservation reservation = new ReservationBuilder()
+                    .setCoworkingSpace(coworkingSpace)
+                    .setUserId(user.getId())
+                    .setReservationName(reservationName)
+                    .setStartDateTime(startDateTime)
+                    .setEndDateTime(endDateTime)
+                    .setActive(true)
+                    .build();
             addReservation(toDto(reservation));
             return toDto(reservation);
         } catch (DatabaseException e) {
