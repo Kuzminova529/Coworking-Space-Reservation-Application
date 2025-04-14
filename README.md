@@ -1,1 +1,0 @@
-java -jar dist/coworking-fat-jar.jar
