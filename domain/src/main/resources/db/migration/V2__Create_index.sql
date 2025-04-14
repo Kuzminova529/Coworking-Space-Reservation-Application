@@ -1,1 +1,0 @@
-CREATE INDEX idx_coworkings_id ON coworking_spaces (id);
