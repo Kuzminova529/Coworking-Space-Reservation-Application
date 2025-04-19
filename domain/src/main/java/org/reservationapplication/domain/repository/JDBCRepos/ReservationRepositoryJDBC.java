@@ -4,7 +4,6 @@ import org.reservationapplication.domain.exeption.DatabaseErrorCode;
 import org.reservationapplication.domain.exeption.DatabaseException;
 import org.reservationapplication.domain.model.CoworkingSpace;
 import org.reservationapplication.domain.model.CoworkingSpaceType;
-import org.reservationapplication.domain.repository.EntityRepository;
 import org.reservationapplication.domain.repository.ReservationRepository;
 import org.reservationapplication.logger.Loggers;
 import org.reservationapplication.domain.model.Reservation;
@@ -130,7 +129,7 @@ public class ReservationRepositoryJDBC implements ReservationRepository {
         return reservations;
     }
 
-    public void save(Reservation reservation) {
+    public Reservation save(Reservation reservation) {
         String sql = "INSERT INTO reservations ( coworking_space_id, user_id, reservation_name, start_datetime, end_datetime) VALUES ( ?, ?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -145,6 +144,7 @@ public class ReservationRepositoryJDBC implements ReservationRepository {
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
             throw new DatabaseException("Something went wrong while crating Reservation", e, DatabaseErrorCode.QUERY_FAILED);
         }
+        return reservation;
     }
 
     public Optional<Reservation> getByIdOptional(Long id) {

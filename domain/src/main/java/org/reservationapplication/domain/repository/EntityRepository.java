@@ -10,7 +10,7 @@ public interface EntityRepository<T, K> {
 
     List<T> findAll();
 
-    void save(T item);
+    <S extends T> S save(S entity);
 
     Optional<T> getByIdOptional(K id);
 

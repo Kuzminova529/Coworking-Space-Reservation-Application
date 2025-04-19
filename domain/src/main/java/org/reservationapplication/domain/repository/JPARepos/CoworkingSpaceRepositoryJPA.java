@@ -77,7 +77,7 @@ public class CoworkingSpaceRepositoryJPA implements CoworkingSpaceRepository {
 
 
     @Override
-    public void save(CoworkingSpace coworkingSpace) {
+    public CoworkingSpace save(CoworkingSpace coworkingSpace) {
         EntityManager entityManager = emf.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         try (entityManager){
@@ -91,6 +91,7 @@ public class CoworkingSpaceRepositoryJPA implements CoworkingSpaceRepository {
             Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred while persisting coworking space: {}", e.getMessage());
             Loggers.USER_LOGGER.error("Something went wrong while saving your coworking space. Please try again later.");
         }
+        return coworkingSpace;
     }
 
     @Override

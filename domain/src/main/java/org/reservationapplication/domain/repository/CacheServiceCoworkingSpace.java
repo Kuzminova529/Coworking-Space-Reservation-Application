@@ -43,9 +43,10 @@ public class CacheServiceCoworkingSpace implements CoworkingSpaceRepository{
     }
 
     @Override
-    public void save(CoworkingSpace coworkingSpace) {
-        repository.save(coworkingSpace);
+    public CoworkingSpace save(CoworkingSpace coworkingSpace) {
+        CoworkingSpace returnedCoworking = repository.save(coworkingSpace);
         cache.invalidate("coworkings");
+        return returnedCoworking;
     }
 
     @Override

@@ -79,7 +79,7 @@ public class UserRepositoryJPA implements EntityRepository<User, Long> {
     }
 
     @Override
-    public void save(User user) {
+    public User save(User user) {
         EntityManager entityManager = emf.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         try {
@@ -98,6 +98,7 @@ public class UserRepositoryJPA implements EntityRepository<User, Long> {
                 entityManager.close();
             }
         }
+        return user;
     }
 
     @Override

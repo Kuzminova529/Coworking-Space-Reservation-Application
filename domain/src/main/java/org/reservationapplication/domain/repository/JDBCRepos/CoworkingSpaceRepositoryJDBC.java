@@ -4,7 +4,6 @@ import org.reservationapplication.domain.exeption.DatabaseErrorCode;
 import org.reservationapplication.domain.exeption.DatabaseException;
 import org.reservationapplication.domain.model.Reservation;
 import org.reservationapplication.domain.repository.CoworkingSpaceRepository;
-import org.reservationapplication.domain.sql.DatabaseConfigJDBC;
 import org.reservationapplication.logger.Loggers;
 import org.reservationapplication.domain.model.CoworkingSpace;
 import org.reservationapplication.domain.model.CoworkingSpaceType;
@@ -70,7 +69,7 @@ public class CoworkingSpaceRepositoryJDBC implements CoworkingSpaceRepository {
         return spaces;
     }
 
-    public void save(CoworkingSpace coworkingSpace) {
+    public CoworkingSpace save(CoworkingSpace coworkingSpace) {
         String sql = "INSERT INTO coworking_spaces (type, price, availability_status) VALUES ( ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -83,6 +82,7 @@ public class CoworkingSpaceRepositoryJDBC implements CoworkingSpaceRepository {
             Loggers.TECHNICAL_LOGGER.error(e.getMessage());
             throw new DatabaseException("Something went wrong while creating CoworkingSpaces", e, DatabaseErrorCode.QUERY_FAILED);
         }
+        return coworkingSpace;
     }
 
     public Optional<CoworkingSpace> getByIdOptional(Long id) {

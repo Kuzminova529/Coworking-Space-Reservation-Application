@@ -1,8 +1,7 @@
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import org.reservationapplication.domain.dto.CoworkingSpaceDto;
-import org.reservationapplication.domain.dto.ReservationDto;
+import org.reservationapplication.domain.model.CoworkingSpace;
 import org.reservationapplication.domain.model.Reservation;
 import org.reservationapplication.domain.model.User;
 import org.mockito.InjectMocks;
@@ -25,15 +24,12 @@ public class ReservationServiceImplTest {
     @Mock
     private ReservationRepositorySpring reservationRepository;
 
-    @Mock
-    private CoworkingSpaceServiceImpl coworkingSpaceService;
-
     @InjectMocks
     private ReservationServiceImpl reservationService;
 
     @Test
     public void testGetAllReservation_Empty() {
-        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository, coworkingSpaceService);
+        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
 
         when(reservationRepository.findAll()).thenReturn(new ArrayList<>());
         assertTrue(reservationService.getAllReservation().isEmpty());
@@ -41,7 +37,7 @@ public class ReservationServiceImplTest {
 
     @Test
     public void testGetPersonalReservation_Empty() {
-        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository, coworkingSpaceService);
+        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
 
         Reservation reservation1 = new Reservation();
         reservation1.setId(1L);
@@ -53,7 +49,7 @@ public class ReservationServiceImplTest {
 
         when(reservationRepository.readPersonalReservations(user.getId())).thenReturn(new ArrayList<>());
 
-        List<ReservationDto> result = reservationService.getPersonalReservation(user.getId());
+        List<Reservation> result = reservationService.getPersonalReservation(user.getId());
 
         assertTrue(result.isEmpty());
     }
@@ -61,9 +57,9 @@ public class ReservationServiceImplTest {
     @Test
     public void testUserAddReservationWithPastDate() {
         CoworkingSpaceServiceImpl coworkingSpaceService = mock(CoworkingSpaceServiceImpl.class);
-        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository, coworkingSpaceService);
+        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
 
-        CoworkingSpaceDto coworkingSpace = new CoworkingSpaceDto();
+        CoworkingSpace coworkingSpace = new CoworkingSpace();
         coworkingSpace.setActive(true);
         when(coworkingSpaceService.getCoworkingSpaceByID(1L)).thenReturn(coworkingSpace);
 

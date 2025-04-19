@@ -6,7 +6,6 @@ import org.hibernate.JDBCException;
 import org.reservationapplication.domain.repository.ReservationRepository;
 import org.reservationapplication.logger.Loggers;
 import org.reservationapplication.domain.model.Reservation;
-import org.reservationapplication.domain.repository.EntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -116,7 +115,7 @@ public class ReservationRepositoryJPA implements ReservationRepository {
     }
 
     @Override
-    public void save(Reservation reservation) {
+    public Reservation save(Reservation reservation) {
         EntityManager entityManager = emf.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         try {
@@ -135,6 +134,7 @@ public class ReservationRepositoryJPA implements ReservationRepository {
                 entityManager.close();
             }
         }
+        return reservation;
     }
 
     @Override

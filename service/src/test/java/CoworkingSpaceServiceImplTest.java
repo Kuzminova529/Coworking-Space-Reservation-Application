@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.reservationapplication.domain.dto.CoworkingSpaceDto;
 import org.reservationapplication.domain.model.CoworkingSpace;
 import org.reservationapplication.domain.repository.CacheServiceCoworkingSpace;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
@@ -34,7 +33,7 @@ public class CoworkingSpaceServiceImplTest {
 
         when(cacheServiceCoworkingSpace.findAll()).thenReturn(coworkingSpaces);
 
-        List<CoworkingSpaceDto> result = coworkingSpaceService.getAllCoworkingSpace();
+        List<CoworkingSpace> result = coworkingSpaceService.getAllCoworkingSpace();
 
         assertNotNull(result);
         assertEquals(2, result.size());
@@ -57,7 +56,7 @@ public class CoworkingSpaceServiceImplTest {
 
         when(cacheServiceCoworkingSpace.findAll()).thenReturn(coworkingSpaces);
 
-        List<CoworkingSpaceDto> availableSpaces = coworkingSpaceService.getActiveCoworkingSpace();
+        List<CoworkingSpace> availableSpaces = coworkingSpaceService.getActiveCoworkingSpace();
 
         assertNotNull(availableSpaces);
         assertEquals(2, availableSpaces.size());  // There must be 2 free spaces
@@ -70,7 +69,7 @@ public class CoworkingSpaceServiceImplTest {
 
         when(cacheServiceCoworkingSpace.findAll()).thenReturn(Arrays.asList());
 
-        List<CoworkingSpaceDto> availableSpaces = coworkingSpaceService.getActiveCoworkingSpace();
+        List<CoworkingSpace> availableSpaces = coworkingSpaceService.getActiveCoworkingSpace();
 
         assertNotNull(availableSpaces);
         assertTrue(availableSpaces.isEmpty());
@@ -83,7 +82,7 @@ public class CoworkingSpaceServiceImplTest {
 
         when(cacheServiceCoworkingSpace.findAll()).thenReturn(null);
 
-        List<CoworkingSpaceDto> availableSpaces = coworkingSpaceService.getActiveCoworkingSpace();
+        List<CoworkingSpace> availableSpaces = coworkingSpaceService.getActiveCoworkingSpace();
 
         assertNotNull(availableSpaces);//there must be list
         assertTrue(availableSpaces.isEmpty());//but empty
