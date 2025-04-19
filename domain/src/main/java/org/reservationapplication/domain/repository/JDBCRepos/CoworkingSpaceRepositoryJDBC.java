@@ -31,7 +31,7 @@ public class CoworkingSpaceRepositoryJDBC implements CoworkingSpaceRepository {
         this.dataSource = dataSource;
     }
 
-    public void save(List<CoworkingSpace> coworkingSpaces) {
+    public void saveAll(List<CoworkingSpace> coworkingSpaces) {
         String sql = "INSERT INTO coworking_spaces (id, type, price, availability_status) VALUES (?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -49,7 +49,7 @@ public class CoworkingSpaceRepositoryJDBC implements CoworkingSpaceRepository {
         }
     }
 
-    public List<CoworkingSpace> read() {
+    public List<CoworkingSpace> findAll() {
         List<CoworkingSpace> spaces = new ArrayList<>();
         String sql = "SELECT * FROM coworking_spaces";
         try (Connection connection = dataSource.getConnection();
@@ -70,7 +70,7 @@ public class CoworkingSpaceRepositoryJDBC implements CoworkingSpaceRepository {
         return spaces;
     }
 
-    public void create(CoworkingSpace coworkingSpace) {
+    public void save(CoworkingSpace coworkingSpace) {
         String sql = "INSERT INTO coworking_spaces (type, price, availability_status) VALUES ( ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -85,7 +85,7 @@ public class CoworkingSpaceRepositoryJDBC implements CoworkingSpaceRepository {
         }
     }
 
-    public Optional<CoworkingSpace> getById(Long id) {
+    public Optional<CoworkingSpace> getByIdOptional(Long id) {
         String sql = "SELECT * FROM coworking_spaces WHERE id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -113,11 +113,11 @@ public class CoworkingSpaceRepositoryJDBC implements CoworkingSpaceRepository {
     }
 
     public void updateStatus(Long id) {
-        String sql = "UPDATE coworking_spaces SET is_active = false WHERE id = ? and is_active = true";
+        String sql = "UPDATE coworking_spaces SET is_active = false WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setLong(2, id);
+            statement.setLong(1, id);
 
             int updatedRows = statement.executeUpdate();
 

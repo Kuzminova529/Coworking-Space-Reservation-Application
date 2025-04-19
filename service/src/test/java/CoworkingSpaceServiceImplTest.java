@@ -8,8 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.reservationapplication.domain.dto.CoworkingSpaceDto;
 import org.reservationapplication.domain.model.CoworkingSpace;
-import org.reservationapplication.domain.repository.JPARepos.CoworkingSpaceRepositoryJPA;
-import org.reservationapplication.service.CacheServiceCoworkingSpace;
+import org.reservationapplication.domain.repository.CacheServiceCoworkingSpace;
 import org.reservationapplication.service.CoworkingSpaceServiceImpl;
 
 import java.util.Arrays;
@@ -33,14 +32,14 @@ public class CoworkingSpaceServiceImplTest {
 
         List<CoworkingSpace> coworkingSpaces = Arrays.asList(space1, space2);
 
-        when(cacheServiceCoworkingSpace.getAllCoworkingSpaces()).thenReturn(coworkingSpaces);
+        when(cacheServiceCoworkingSpace.findAll()).thenReturn(coworkingSpaces);
 
         List<CoworkingSpaceDto> result = coworkingSpaceService.getAllCoworkingSpace();
 
         assertNotNull(result);
         assertEquals(2, result.size());
 
-        verify(cacheServiceCoworkingSpace, times(1)).getAllCoworkingSpaces();
+        verify(cacheServiceCoworkingSpace, times(1)).findAll();
     }
 
     @Test
@@ -56,40 +55,40 @@ public class CoworkingSpaceServiceImplTest {
 
         List<CoworkingSpace> coworkingSpaces = Arrays.asList(space1, space2, space3);
 
-        when(cacheServiceCoworkingSpace.getAllCoworkingSpaces()).thenReturn(coworkingSpaces);
+        when(cacheServiceCoworkingSpace.findAll()).thenReturn(coworkingSpaces);
 
         List<CoworkingSpaceDto> availableSpaces = coworkingSpaceService.getActiveCoworkingSpace();
 
         assertNotNull(availableSpaces);
         assertEquals(2, availableSpaces.size());  // There must be 2 free spaces
 
-        verify(cacheServiceCoworkingSpace, times(1)).getAllCoworkingSpaces();
+        verify(cacheServiceCoworkingSpace, times(1)).findAll();
     }
 
     @Test
     public void testGetActiveCoworkingSpaceWhenNoSpaces() {
 
-        when(cacheServiceCoworkingSpace.getAllCoworkingSpaces()).thenReturn(Arrays.asList());
+        when(cacheServiceCoworkingSpace.findAll()).thenReturn(Arrays.asList());
 
         List<CoworkingSpaceDto> availableSpaces = coworkingSpaceService.getActiveCoworkingSpace();
 
         assertNotNull(availableSpaces);
         assertTrue(availableSpaces.isEmpty());
 
-        verify(cacheServiceCoworkingSpace, times(1)).getAllCoworkingSpaces();
+        verify(cacheServiceCoworkingSpace, times(1)).findAll();
     }
 
     @Test
     public void testGetActiveCoworkingSpaceWhenNull() {
 
-        when(cacheServiceCoworkingSpace.getAllCoworkingSpaces()).thenReturn(null);
+        when(cacheServiceCoworkingSpace.findAll()).thenReturn(null);
 
         List<CoworkingSpaceDto> availableSpaces = coworkingSpaceService.getActiveCoworkingSpace();
 
         assertNotNull(availableSpaces);//there must be list
         assertTrue(availableSpaces.isEmpty());//but empty
 
-        verify(cacheServiceCoworkingSpace, times(1)).getAllCoworkingSpaces();
+        verify(cacheServiceCoworkingSpace, times(1)).findAll();
     }
 }
 

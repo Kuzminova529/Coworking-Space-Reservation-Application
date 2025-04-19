@@ -3,6 +3,8 @@ package org.reservationapplication.domain.repository.JPARepos;
 import jakarta.persistence.*;
 import org.hibernate.HibernateException;
 import org.hibernate.JDBCException;
+import org.reservationapplication.domain.exeption.DatabaseErrorCode;
+import org.reservationapplication.domain.exeption.DatabaseException;
 import org.reservationapplication.domain.repository.CoworkingSpaceRepository;
 import org.reservationapplication.logger.Loggers;
 import org.reservationapplication.domain.model.CoworkingSpace;
@@ -22,7 +24,7 @@ public class CoworkingSpaceRepositoryJPA implements CoworkingSpaceRepository {
     }
 
     @Override
-    public void save(List<CoworkingSpace> coworkingSpaces) {
+    public void saveAll(List<CoworkingSpace> coworkingSpaces) {
         EntityManager entityManager = emf.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         try (entityManager)  {
@@ -61,7 +63,7 @@ public class CoworkingSpaceRepositoryJPA implements CoworkingSpaceRepository {
     }
 
     @Override
-    public List<CoworkingSpace> read() {
+    public List<CoworkingSpace> findAll() {
         EntityManager entityManager = emf.createEntityManager();
         try (entityManager){
             TypedQuery<CoworkingSpace> query = entityManager.createQuery("SELECT c FROM CoworkingSpace c", CoworkingSpace.class);
@@ -75,7 +77,7 @@ public class CoworkingSpaceRepositoryJPA implements CoworkingSpaceRepository {
 
 
     @Override
-    public void create(CoworkingSpace coworkingSpace) {
+    public void save(CoworkingSpace coworkingSpace) {
         EntityManager entityManager = emf.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         try (entityManager){
@@ -98,10 +100,14 @@ public class CoworkingSpaceRepositoryJPA implements CoworkingSpaceRepository {
             EntityTransaction transaction = entityManager.getTransaction();
             try {
                 transaction.begin();
-                String jpql = "UPDATE CoworkingSpace c SET c.isActive = false WHERE c.id = :id";
-                entityManager.createQuery(jpql)
-                        .setParameter("id", id)
-                        .executeUpdate();
+
+                CoworkingSpace coworkingSpace = entityManager.find(CoworkingSpace.class, id);
+                if (coworkingSpace == null) {
+                    throw new DatabaseException("Coworking space with ID " + id + " not found", DatabaseErrorCode.DATA_NOT_FOUND);
+                }
+
+                coworkingSpace.setActive(false);
+
                 transaction.commit();
             } catch (Exception e) {
                 if (transaction.isActive()) {
@@ -117,7 +123,7 @@ public class CoworkingSpaceRepositoryJPA implements CoworkingSpaceRepository {
     }
 
     @Override
-    public Optional<CoworkingSpace> getById(Long id) {
+    public Optional<CoworkingSpace> getByIdOptional(Long id) {
         EntityManager entityManager = emf.createEntityManager();
         try(entityManager) {
             CoworkingSpace coworkingSpace = entityManager.createQuery(

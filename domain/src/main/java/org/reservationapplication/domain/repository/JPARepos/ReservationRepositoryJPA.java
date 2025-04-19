@@ -26,7 +26,7 @@ public class ReservationRepositoryJPA implements ReservationRepository {
     }
 
     @Override
-    public void save(List<Reservation> reservations) {
+    public void saveAll(List<Reservation> reservations) {
         EntityManager entityManager = emf.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         try {
@@ -64,7 +64,7 @@ public class ReservationRepositoryJPA implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> read() {
+    public List<Reservation> findAll() {
         EntityManager entityManager = emf.createEntityManager();
         try {
             return entityManager.createQuery("from Reservation", Reservation.class)
@@ -116,7 +116,7 @@ public class ReservationRepositoryJPA implements ReservationRepository {
     }
 
     @Override
-    public void create(Reservation reservation) {
+    public void save(Reservation reservation) {
         EntityManager entityManager = emf.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         try {
@@ -138,7 +138,7 @@ public class ReservationRepositoryJPA implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> getById(Long id) {
+    public Optional<Reservation> getByIdOptional(Long id) {
         EntityManager entityManager = emf.createEntityManager();
         try(entityManager) {
             Reservation reservation = entityManager.createQuery(

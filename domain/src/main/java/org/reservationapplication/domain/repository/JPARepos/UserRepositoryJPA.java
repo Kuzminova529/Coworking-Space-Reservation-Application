@@ -23,7 +23,7 @@ public class UserRepositoryJPA implements EntityRepository<User, Long> {
     }
 
     @Override
-    public void save(List<User> users) {
+    public void saveAll(List<User> users) {
         EntityManager entityManager = emf.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         try {
@@ -61,7 +61,7 @@ public class UserRepositoryJPA implements EntityRepository<User, Long> {
     }
 
     @Override
-    public List<User> read() {
+    public List<User> findAll() {
         EntityManager entityManager = emf.createEntityManager();
         try {
             TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u", User.class);
@@ -79,7 +79,7 @@ public class UserRepositoryJPA implements EntityRepository<User, Long> {
     }
 
     @Override
-    public void create(User user) {
+    public void save(User user) {
         EntityManager entityManager = emf.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         try {
@@ -101,7 +101,7 @@ public class UserRepositoryJPA implements EntityRepository<User, Long> {
     }
 
     @Override
-    public Optional<User> getById(Long id) {
+    public Optional<User> getByIdOptional(Long id) {
         EntityManager entityManager = emf.createEntityManager();
         try {
             User user = entityManager.createQuery(

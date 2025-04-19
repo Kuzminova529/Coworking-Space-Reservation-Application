@@ -6,13 +6,13 @@ import java.util.Optional;
 
 public interface EntityRepository<T, K> {
 
-    void save(List<T> items);
+    void saveAll(List<T> items);
 
-    List<T> read();
+    List<T> findAll();
 
-    void create(T item);
+    void save(T item);
 
-    Optional<T> getById(K id);
+    Optional<T> getByIdOptional(K id);
 
     void updateStatus(K id);
 }

@@ -1,12 +1,12 @@
 package org.reservationapplication.service;
 
-import org.reservationapplication.domain.dto.CoworkingSpaceDto;
 import org.reservationapplication.domain.exeption.BusinessException;
 import org.reservationapplication.domain.exeption.CoworkingSpaceNotFoundException;
 import org.reservationapplication.domain.exeption.DatabaseException;
 import org.reservationapplication.domain.model.CoworkingSpace;
 import org.reservationapplication.domain.model.CoworkingSpaceType;
 import org.reservationapplication.domain.model.Reservation;
+import org.reservationapplication.domain.repository.CacheServiceCoworkingSpace;
 import org.reservationapplication.domain.repository.SpringDataJPARepos.CoworkingSpaceRepositorySpring;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,44 +15,24 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
     private final CacheServiceCoworkingSpace cacheServiceCoworkingSpace;
-    private final CoworkingSpaceRepositorySpring coworkingSpaceRepository;
 
     @Autowired
-    public CoworkingSpaceServiceImpl(CacheServiceCoworkingSpace cacheServiceCoworkingSpace, @Qualifier("coworkingSpaceRepositorySpring") CoworkingSpaceRepositorySpring coworkingSpaceRepository) {
+    public CoworkingSpaceServiceImpl( @Qualifier("cacheServiceCoworkingSpace") CacheServiceCoworkingSpace cacheServiceCoworkingSpace) {
         this.cacheServiceCoworkingSpace = cacheServiceCoworkingSpace;
-        this.coworkingSpaceRepository = coworkingSpaceRepository;
     }
 
     @Override
-    public CoworkingSpaceDto toDto(CoworkingSpace space) {
-        return new CoworkingSpaceDto(
-                space.getId(),
-                space.getType(),
-                space.getPrice(),
-                space.getActive()
-        );
-    }
-
-    @Override
-    public CoworkingSpace toEntity(CoworkingSpaceDto dto) {
-        CoworkingSpace coworkingSpace = new CoworkingSpace();
-        coworkingSpace.setType(dto.getType());
-        coworkingSpace.setPrice(dto.getPrice());
-        coworkingSpace.setActive(dto.isActive());
-        return coworkingSpace;
-    }
-
-    @Override
-    public CoworkingSpaceDto getCoworkingSpaceByID(Long id) {
+    public CoworkingSpace getCoworkingSpaceByID(Long id) {
         try {
-            List<CoworkingSpace> coworkingSpaceList = cacheServiceCoworkingSpace.findById(id);
-            if (!coworkingSpaceList.isEmpty()) {
-                CoworkingSpace coworkingSpace = coworkingSpaceList.get(0);
-                return toDto(coworkingSpace);
+            Optional<CoworkingSpace> optCoworkingSpace = cacheServiceCoworkingSpace.getByIdOptional(id);
+            if (optCoworkingSpace.isPresent()) {
+                CoworkingSpace coworkingSpace = optCoworkingSpace.get();
+                return coworkingSpace;
             }
             else {
                 throw new BusinessException("No coworking space with this id");
@@ -65,9 +45,9 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
     @Override
     public CoworkingSpace getCoworkingSpaceByIDForReservation(Long id) {
         try {
-            List<CoworkingSpace> coworkingSpaceList = cacheServiceCoworkingSpace.findById(id);
-            if (!coworkingSpaceList.isEmpty()) {
-                CoworkingSpace coworkingSpace = coworkingSpaceList.get(0);
+            Optional<CoworkingSpace> optCoworkingSpace = cacheServiceCoworkingSpace.getByIdOptional(id);
+            if (optCoworkingSpace.isPresent()) {
+                CoworkingSpace coworkingSpace = optCoworkingSpace.get();
                 return coworkingSpace;
             }
             else {
@@ -79,20 +59,18 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
     }
 
     @Override
-    public List<CoworkingSpaceDto> getAllCoworkingSpace() {
+    public List<CoworkingSpace> getAllCoworkingSpace() {
         try {
-            return cacheServiceCoworkingSpace.getAllCoworkingSpaces().stream()
-                    .map(this::toDto)
-                    .toList();
+            return cacheServiceCoworkingSpace.findAll();
         } catch (DatabaseException e){
             throw new BusinessException("Failed to get all coworking spaces");
         }
     }
 
     @Override
-    public CoworkingSpaceDto userAddCoworkingSpace(int typeChoice, double price) {
+    public CoworkingSpace userAddCoworkingSpace(int typeChoice, double price) {
         try {
-            CoworkingSpaceDto coworkingSpace = new CoworkingSpaceDto();
+            CoworkingSpace coworkingSpace = new CoworkingSpace();
 
             switch (typeChoice) {
                 case 1:
@@ -120,17 +98,15 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
     }
 
     @Override
-    public CoworkingSpaceDto addCoworkingSpace(CoworkingSpaceDto dto) {
-        CoworkingSpace coworkingSpace = toEntity(dto);
-        cacheServiceCoworkingSpace.addCoworkingSpace(coworkingSpace);
-
-        return dto;
+    public CoworkingSpace addCoworkingSpace(CoworkingSpace coworkingSpace) {
+        cacheServiceCoworkingSpace.save(coworkingSpace);
+        return coworkingSpace;
     }
 
     @Override
     public void saveCoworkingSpaces(List<CoworkingSpace> coworkingSpaces) {
         try {
-            cacheServiceCoworkingSpace.saveCoworkingSpaces(coworkingSpaces);
+            cacheServiceCoworkingSpace.saveAll(coworkingSpaces);
         } catch (DatabaseException e){
             throw new BusinessException("Failed to save coworking spaces");
         }
@@ -139,12 +115,12 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
     @Override
     public boolean removeCoworkingSpaceById(long id) {
         try {
-            CoworkingSpaceDto coworkingSpace = getCoworkingSpaceByID(id);
+            CoworkingSpace coworkingSpace = getCoworkingSpaceByID(id);
         } catch (BusinessException e) {
             throw new BusinessException("Failed to remove coworking space");
         }
         try {
-            cacheServiceCoworkingSpace.removeCoworkingSpaceByID(id);
+            cacheServiceCoworkingSpace.updateStatus(id);
             return true;
         } catch (DatabaseException e){
             throw new BusinessException("Failed to remove coworking space by id");
@@ -152,14 +128,14 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
     }
 
     @Override
-    public List<CoworkingSpaceDto> getActiveCoworkingSpace() {
+    public List<CoworkingSpace> getActiveCoworkingSpace() {
         try {
-            List<CoworkingSpace> coworkingSpaces = cacheServiceCoworkingSpace.getAllCoworkingSpaces();
-            List<CoworkingSpaceDto> availableSpaces = new ArrayList<>();
+            List<CoworkingSpace> coworkingSpaces = cacheServiceCoworkingSpace.findAll();
+            List<CoworkingSpace> availableSpaces = new ArrayList<>();
             if (coworkingSpaces != null) {
                 for (CoworkingSpace cs : coworkingSpaces) {
                     if (cs.getActive()) {
-                        availableSpaces.add(toDto(cs));
+                        availableSpaces.add(cs);
                     }
                 }
             }
@@ -172,7 +148,7 @@ public class CoworkingSpaceServiceImpl implements CoworkingSpaceService {
     @Override
     public boolean isTimeSlotAvailable(Long coworkingSpaceId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         try {
-            CoworkingSpace coworkingSpace = coworkingSpaceRepository.getCoworkingSpaceWithReservations(coworkingSpaceId);
+            CoworkingSpace coworkingSpace = cacheServiceCoworkingSpace.getCoworkingSpaceWithReservations(coworkingSpaceId);
             if (coworkingSpace == null) {
                 throw new CoworkingSpaceNotFoundException(coworkingSpaceId, 404);
             }

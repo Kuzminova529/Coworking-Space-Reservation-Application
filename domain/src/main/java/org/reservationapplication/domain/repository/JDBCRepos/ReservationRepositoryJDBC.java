@@ -25,7 +25,7 @@ public class ReservationRepositoryJDBC implements ReservationRepository {
         this.dataSource = dataSource;
     }
 
-    public void save(List<Reservation> reservations) {
+    public void saveAll(List<Reservation> reservations) {
         String sql = "INSERT INTO reservations (id, coworking_space_id, user_id, reservation_name, start_datetime, end_datetime) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -45,7 +45,7 @@ public class ReservationRepositoryJDBC implements ReservationRepository {
         }
     }
 
-    public List<Reservation> read() {
+    public List<Reservation> findAll() {
         List<Reservation> reservations = new ArrayList<>();
         String sql = "SELECT * FROM reservations";
         try (Connection connection = dataSource.getConnection();
@@ -130,7 +130,7 @@ public class ReservationRepositoryJDBC implements ReservationRepository {
         return reservations;
     }
 
-    public void create(Reservation reservation) {
+    public void save(Reservation reservation) {
         String sql = "INSERT INTO reservations ( coworking_space_id, user_id, reservation_name, start_datetime, end_datetime) VALUES ( ?, ?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -147,7 +147,7 @@ public class ReservationRepositoryJDBC implements ReservationRepository {
         }
     }
 
-    public Optional<Reservation> getById(Long id) {
+    public Optional<Reservation> getByIdOptional(Long id) {
         String sql = "SELECT * FROM reservations WHERE id = ? and is_active = true";
 
         try (Connection connection = dataSource.getConnection();

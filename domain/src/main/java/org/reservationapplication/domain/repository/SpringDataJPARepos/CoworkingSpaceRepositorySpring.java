@@ -1,6 +1,7 @@
 package org.reservationapplication.domain.repository.SpringDataJPARepos;
 
 import org.reservationapplication.domain.model.CoworkingSpace;
+import org.reservationapplication.domain.repository.CoworkingSpaceRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,10 +13,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CoworkingSpaceRepositorySpring extends JpaRepository<CoworkingSpace, Long> {
+public interface CoworkingSpaceRepositorySpring extends JpaRepository<CoworkingSpace, Long>, CoworkingSpaceRepository {
 
     @Query("SELECT c FROM CoworkingSpace c WHERE c.id = :id")
-    Optional<CoworkingSpace> getCoworkingSpaceById(@Param("id") Long id);
+    Optional<CoworkingSpace> findByIdOptional(@Param("id") Long id);
 
     @Query("SELECT c FROM CoworkingSpace c LEFT JOIN FETCH c.reservations WHERE c.id = :id")
     CoworkingSpace getCoworkingSpaceWithReservations(@Param("id") Long id);

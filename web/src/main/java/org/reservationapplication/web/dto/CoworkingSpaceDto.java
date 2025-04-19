@@ -1,4 +1,4 @@
-package org.reservationapplication.domain.dto;
+package org.reservationapplication.web.dto;
 
 import org.reservationapplication.domain.model.CoworkingSpaceType;
 
