@@ -5,20 +5,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.reservationapplication.domain.model.CoworkingSpace;
 import org.reservationapplication.domain.repository.SpringDataJPARepos.CoworkingSpaceRepositorySpring;
-import org.reservationapplication.domain.repository.CacheServiceCoworkingSpace;
+import org.reservationapplication.domain.repository.CacheCoworkingSpaceRepository;
 
 import java.util.Arrays;
 import java.util.List;
 
-class CacheServiceCoworkingSpaceTest {
+class CacheCoworkingSpaceRepositoryTest {
 
     private CoworkingSpaceRepositorySpring repository;
-    private CacheServiceCoworkingSpace cacheService;
+    private CacheCoworkingSpaceRepository cacheService;
 
     @BeforeEach
     void setUp() {
         repository = mock(CoworkingSpaceRepositorySpring.class);
-        cacheService = new CacheServiceCoworkingSpace(repository);
+        cacheService = new CacheCoworkingSpaceRepository(repository);
     }
 
     @Test

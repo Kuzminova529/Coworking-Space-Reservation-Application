@@ -1,22 +1,26 @@
 package org.reservationapplication.web.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDateTime;
 
 public class ReservationDto {
     private Long id;
     private Long coworkingSpaceId;
-    private Long userID;
+    private Long userId;
     private String reservationName;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime startDateTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime endDateTime;
     private boolean active;
 
     public ReservationDto() {}
 
-    public ReservationDto(Long id, Long coworkingSpaceId, Long userID, String reservationName, LocalDateTime startDateTime, LocalDateTime endDateTime, boolean active) {
+    public ReservationDto(Long id, Long coworkingSpaceId, Long userId, String reservationName, LocalDateTime startDateTime, LocalDateTime endDateTime, boolean active) {
         this.id = id;
         this.coworkingSpaceId = coworkingSpaceId;
-        this.userID = userID;
+        this.userId = userId;
         this.reservationName = reservationName;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
@@ -39,12 +43,12 @@ public class ReservationDto {
         this.coworkingSpaceId = coworkingSpaceId;
     }
 
-    public Long getUserID() {
-        return userID;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUserID(Long userID) {
-        this.userID = userID;
+    public void setUserId(Long userID) {
+        this.userId = userID;
     }
 
     public String getReservationName() {

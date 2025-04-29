@@ -6,19 +6,20 @@ import org.reservationapplication.domain.model.CoworkingSpace;
 import org.reservationapplication.domain.repository.SpringDataJPARepos.CoworkingSpaceRepositorySpring;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Repository
-public class CacheServiceCoworkingSpace implements CoworkingSpaceRepository{
+public class CacheCoworkingSpaceRepository implements CoworkingSpaceRepository{
     private final CoworkingSpaceRepositorySpring repository;
 
     private final Cache<String, List<CoworkingSpace>> cache;
     private final Cache<Long, CoworkingSpace> idCache;
 
-    public CacheServiceCoworkingSpace(@Qualifier("coworkingSpaceRepositorySpring") CoworkingSpaceRepositorySpring repository) {
+    public CacheCoworkingSpaceRepository(@Qualifier("coworkingSpaceRepositorySpring") CoworkingSpaceRepositorySpring repository) {
         this.repository = repository;
         this.cache = Caffeine.newBuilder()
                 .expireAfterWrite(10, TimeUnit.MINUTES) // Clears cache every 10mins
@@ -31,9 +32,9 @@ public class CacheServiceCoworkingSpace implements CoworkingSpaceRepository{
     }
 
     @Override
-    public Optional<CoworkingSpace> getByIdOptional(Long id) {
+    public Optional<CoworkingSpace> findByIdCustom(Long id) {
         return Optional.ofNullable(idCache.get(id, key ->
-                repository.findByIdOptional(key).orElse(null)
+                repository.findByIdCustom(key).orElse(null)
         ));
     }
 
@@ -43,13 +44,13 @@ public class CacheServiceCoworkingSpace implements CoworkingSpaceRepository{
     }
 
     @Override
-    public CoworkingSpace save(CoworkingSpace coworkingSpace) {
-        CoworkingSpace returnedCoworking = repository.save(coworkingSpace);
+    @Transactional
+    public <S extends CoworkingSpace> S save(S coworkingSpace) {
+        S returnedCoworking = repository.save(coworkingSpace);
         cache.invalidate("coworkings");
         return returnedCoworking;
     }
 
-    @Override
     public void saveAll(List<CoworkingSpace> coworkingSpace) {
         repository.saveAll(coworkingSpace);
         cache.invalidate("coworkings");
@@ -66,7 +67,7 @@ public class CacheServiceCoworkingSpace implements CoworkingSpaceRepository{
     }
 
     @Override
-    public CoworkingSpace getCoworkingSpaceWithReservations(Long coworkingSpaceId) {
-        return null;
+    public Optional<CoworkingSpace> getCoworkingSpaceWithReservations(Long coworkingSpaceId) {
+        return repository.getCoworkingSpaceWithReservations(coworkingSpaceId);
     }
 }

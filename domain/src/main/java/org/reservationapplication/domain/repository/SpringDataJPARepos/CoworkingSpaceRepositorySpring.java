@@ -16,13 +16,14 @@ import java.util.Optional;
 public interface CoworkingSpaceRepositorySpring extends JpaRepository<CoworkingSpace, Long>, CoworkingSpaceRepository {
 
     @Query("SELECT c FROM CoworkingSpace c WHERE c.id = :id")
-    Optional<CoworkingSpace> findByIdOptional(@Param("id") Long id);
+    Optional<CoworkingSpace> findByIdCustom(@Param("id") Long id);
 
     @Query("SELECT c FROM CoworkingSpace c LEFT JOIN FETCH c.reservations WHERE c.id = :id")
-    CoworkingSpace getCoworkingSpaceWithReservations(@Param("id") Long id);
+    Optional<CoworkingSpace> getCoworkingSpaceWithReservations(@Param("id") Long id);
 
     @Query("SELECT c FROM CoworkingSpace c WHERE c.isActive = true")
     List<CoworkingSpace> getCoworkingSpaces();
+
     @Modifying
     @Transactional
     @Query("UPDATE CoworkingSpace c SET c.isActive = false WHERE c.id = :id")

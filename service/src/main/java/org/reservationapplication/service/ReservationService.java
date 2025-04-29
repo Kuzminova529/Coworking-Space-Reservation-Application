@@ -16,10 +16,7 @@ public interface ReservationService {
 
     Reservation addReservation(Reservation reservation);
 
-    Reservation userAddReservation(
-            long id, String reservationName, LocalDate bookingDate,
-            LocalDateTime startDateTime, LocalDateTime endDateTime,
-            User user, CoworkingSpaceService coworkingSpaceService);
+    boolean removeReservation(long id);
 
-    boolean removeReservationById(long id);
+    boolean isTimeSlotAvailable(Long coworkingSpaceId, LocalDateTime startDateTime, LocalDateTime endDateTime);
 }

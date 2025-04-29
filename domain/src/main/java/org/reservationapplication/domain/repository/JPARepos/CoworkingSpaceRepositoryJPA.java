@@ -23,7 +23,6 @@ public class CoworkingSpaceRepositoryJPA implements CoworkingSpaceRepository {
         this.emf = emf;
     }
 
-    @Override
     public void saveAll(List<CoworkingSpace> coworkingSpaces) {
         EntityManager entityManager = emf.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
@@ -40,25 +39,21 @@ public class CoworkingSpaceRepositoryJPA implements CoworkingSpaceRepository {
                 transaction.rollback();
             }
             Loggers.TECHNICAL_LOGGER.error("JDBC error occurred: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong, please try again later.");
         } catch (OptimisticLockException e) {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
             Loggers.TECHNICAL_LOGGER.error("Optimistic lock failure: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong, please try again later.");
-        } catch (PersistenceException e) { // PersistenceException вместо HibernateException
+        } catch (PersistenceException e) {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
             Loggers.TECHNICAL_LOGGER.error("Persistence error occurred: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong, please try again later.");
         } catch (Exception e) {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
             Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong, please try again later.");
         }
     }
 
@@ -70,7 +65,6 @@ public class CoworkingSpaceRepositoryJPA implements CoworkingSpaceRepository {
             return query.getResultList();
         } catch (Exception e) {
             Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong, please try again later.");
             return new ArrayList<>();
         }
     }
@@ -89,7 +83,6 @@ public class CoworkingSpaceRepositoryJPA implements CoworkingSpaceRepository {
                 transaction.rollback();
             }
             Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred while persisting coworking space: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong while saving your coworking space. Please try again later.");
         }
         return coworkingSpace;
     }
@@ -115,16 +108,14 @@ public class CoworkingSpaceRepositoryJPA implements CoworkingSpaceRepository {
                     transaction.rollback();
                 }
                 Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred while updating reservation: {}", e.getMessage());
-                Loggers.USER_LOGGER.error("Something went wrong while updating coworking space. Please try again later.");
             }
         } catch (HibernateException e) {
             Loggers.TECHNICAL_LOGGER.error("Error opening Hibernate session: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong while connecting to the database. Please try again later.");
         }
     }
 
     @Override
-    public Optional<CoworkingSpace> getByIdOptional(Long id) {
+    public Optional<CoworkingSpace> findByIdCustom(Long id) {
         EntityManager entityManager = emf.createEntityManager();
         try(entityManager) {
             CoworkingSpace coworkingSpace = entityManager.createQuery(
@@ -135,20 +126,20 @@ public class CoworkingSpaceRepositoryJPA implements CoworkingSpaceRepository {
             return Optional.ofNullable(coworkingSpace);
         } catch (Exception e) {
             Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred while opening Hibernate session: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong. Please try again later.");
             return Optional.empty();
         }
     }
 
     @Override
-    public CoworkingSpace getCoworkingSpaceWithReservations(Long coworkingSpaceId) {
+    public Optional<CoworkingSpace> getCoworkingSpaceWithReservations(Long coworkingSpaceId) {
         try (EntityManager em = emf.createEntityManager()) {
-            return em.createQuery(
+            return Optional.ofNullable(em.createQuery(
                     "SELECT c FROM CoworkingSpace c LEFT JOIN FETCH c.reservations WHERE c.id = :id",
                     CoworkingSpace.class
-            ).setParameter("id", coworkingSpaceId).getSingleResult();
-        } catch (NoResultException e) {
-            return null;
+            ).setParameter("id", coworkingSpaceId).getSingleResult());
+        } catch (Exception e) {
+            Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred while opening Hibernate session: {}", e.getMessage());
+            return Optional.empty();
         }
     }
 }

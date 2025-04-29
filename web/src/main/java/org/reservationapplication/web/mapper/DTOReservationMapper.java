@@ -24,7 +24,7 @@ public class DTOReservationMapper {
         return new ReservationDto(
                 reservation.getId(),
                 reservation.getCoworkingSpace().getId(),
-                reservation.getUserID(),
+                reservation.getUserId(),
                 reservation.getReservationName(),
                 reservation.getStartDateTime(),
                 reservation.getEndDateTime(),
@@ -33,13 +33,13 @@ public class DTOReservationMapper {
     }
 
     public Reservation toEntity(ReservationDto dto) {
-        CoworkingSpace coworkingSpace = coworkingSpaceService.getCoworkingSpaceByIDForReservation(dto.getCoworkingSpaceId());
+        CoworkingSpace coworkingSpace = coworkingSpaceService.getCoworkingSpaceByID(dto.getCoworkingSpaceId());
         Reservation reservation = new ReservationBuilder()
+                .setUserId(dto.getUserId())
                 .setCoworkingSpace(coworkingSpace)
                 .setReservationName(dto.getReservationName())
                 .setStartDateTime(dto.getStartDateTime())
                 .setEndDateTime(dto.getEndDateTime())
-                .setUserId(dto.getUserID())
                 .setActive(true)
                 .build();
 

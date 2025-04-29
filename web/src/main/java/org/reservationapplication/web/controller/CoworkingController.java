@@ -50,6 +50,6 @@ public class CoworkingController {
     @Secured("ROLE_ADMIN")
     @DeleteMapping("/delete/{id}")
     public boolean deleteSpace(@PathVariable Long id) {
-        return service.removeCoworkingSpaceById(id);
+        return service.removeCoworkingSpace(id);
     }
 }

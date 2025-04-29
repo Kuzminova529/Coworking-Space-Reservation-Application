@@ -41,7 +41,7 @@ public class ReservationServiceImplTest {
 
         Reservation reservation1 = new Reservation();
         reservation1.setId(1L);
-        reservation1.setUserID(1L);
+        reservation1.setUserId(1L);
         reservation1.setStartDateTime(LocalDateTime.now().plusHours(1));
         reservation1.setEndDateTime(LocalDateTime.now().plusHours(2));
         User user = new User();

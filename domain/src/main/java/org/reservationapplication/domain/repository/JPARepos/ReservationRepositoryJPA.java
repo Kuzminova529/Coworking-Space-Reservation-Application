@@ -24,7 +24,6 @@ public class ReservationRepositoryJPA implements ReservationRepository {
         this.emf = emf;
     }
 
-    @Override
     public void saveAll(List<Reservation> reservations) {
         EntityManager entityManager = emf.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
@@ -41,19 +40,16 @@ public class ReservationRepositoryJPA implements ReservationRepository {
                 transaction.rollback();
             }
             Loggers.TECHNICAL_LOGGER.error("Optimistic lock failure: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong, please try again later.");
         } catch (JDBCException e) {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
             Loggers.TECHNICAL_LOGGER.error("JDBC error occurred: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong, please try again later.");
         } catch (Exception e) {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
             Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong, please try again later.");
         }
         finally {
             if (entityManager.isOpen()) {
@@ -70,7 +66,6 @@ public class ReservationRepositoryJPA implements ReservationRepository {
                     .getResultList();
         } catch (Exception e) {
             Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong, please try again later.");
             return new ArrayList<>();
         }
         finally {
@@ -80,21 +75,21 @@ public class ReservationRepositoryJPA implements ReservationRepository {
         }
     }
 
-    public List<Reservation> readPersonalReservations(Long userID) {
+    public List<Reservation> readPersonalReservations(Long userId) {
         EntityManager entityManager = emf.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         try {
             LocalDateTime now = LocalDateTime.now();
 
             transaction.begin();
-            entityManager.createQuery("UPDATE Reservation r SET r.isActive = false WHERE r.startDateTime < :now AND r.userID = :userID")
+            entityManager.createQuery("UPDATE Reservation r SET r.isActive = false WHERE r.startDateTime < :now AND r.userId = :userId")
                     .setParameter("now", now)
-                    .setParameter("userID", userID)
+                    .setParameter("userId", userId)
                     .executeUpdate();
 
             List<Reservation> reservations = entityManager.createQuery(
-                            "FROM Reservation r WHERE r.userID = :userID AND r.isActive = true", Reservation.class)
-                    .setParameter("userID", userID)
+                            "FROM Reservation r WHERE r.userId = :userId AND r.isActive = true", Reservation.class)
+                    .setParameter("userId", userId)
                     .getResultList();
 
             transaction.commit();
@@ -104,7 +99,6 @@ public class ReservationRepositoryJPA implements ReservationRepository {
                 transaction.rollback();
             }
             Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong, please try again later.");
             return new ArrayList<>();
         }
         finally {
@@ -127,7 +121,6 @@ public class ReservationRepositoryJPA implements ReservationRepository {
                 transaction.rollback();
             }
             Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred while persisting reservation: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong while saving your reservation. Please try again later.");
         }
         finally {
             if (entityManager.isOpen()) {
@@ -138,7 +131,7 @@ public class ReservationRepositoryJPA implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> getByIdOptional(Long id) {
+    public Optional<Reservation> findByIdCustom(Long id) {
         EntityManager entityManager = emf.createEntityManager();
         try(entityManager) {
             Reservation reservation = entityManager.createQuery(
@@ -149,7 +142,6 @@ public class ReservationRepositoryJPA implements ReservationRepository {
             return Optional.ofNullable(reservation);
         } catch (Exception e) {
             Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred while opening Hibernate session: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong. Please try again later.");
             return Optional.empty();
         }
     }
@@ -171,11 +163,9 @@ public class ReservationRepositoryJPA implements ReservationRepository {
                     transaction.rollback();
                 }
                 Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred while updating reservation: {}", e.getMessage());
-                Loggers.USER_LOGGER.error("Something went wrong while updating your reservation. Please try again later.");
             }
         } catch (HibernateException e) {
             Loggers.TECHNICAL_LOGGER.error("Error opening Hibernate session: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong while connecting to the database. Please try again later.");
         }
     }
 }

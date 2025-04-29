@@ -16,13 +16,13 @@ import java.util.Optional;
 public interface ReservationRepositorySpring extends JpaRepository<Reservation, Long>, ReservationRepository {
 
     @Query("SELECT r FROM Reservation r WHERE r.id = :id")
-    Optional<Reservation> getByIdOptional(@Param("id") Long id);
+    Optional<Reservation> findByIdCustom(@Param("id") Long id);
 
     @Modifying
     @Transactional
     @Query("UPDATE Reservation r SET r.isActive = false WHERE r.id = :id")
     void updateStatus(@Param("id") Long id);
 
-    @Query("SELECT r FROM Reservation r WHERE r.userID = :userID")
-    List<Reservation> readPersonalReservations(@Param("userID") Long userID);
+    @Query("SELECT r FROM Reservation r WHERE r.userId = :userId")
+    List<Reservation> readPersonalReservations(@Param("userId") Long userId);
 }

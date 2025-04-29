@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepositorySpring extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.id = :id")
-    Optional<User> getUserById(@Param("id") Long id);
+    Optional<User> findByIdOptional(@Param("id") Long id);
 
     @Modifying
     @Transactional

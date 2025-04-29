@@ -22,7 +22,6 @@ public class UserRepositoryJPA implements EntityRepository<User, Long> {
         this.emf = emf;
     }
 
-    @Override
     public void saveAll(List<User> users) {
         EntityManager entityManager = emf.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
@@ -45,13 +44,11 @@ public class UserRepositoryJPA implements EntityRepository<User, Long> {
                 transaction.rollback();
             }
             Loggers.TECHNICAL_LOGGER.error("JDBC error occurred: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong, please try again later.");
         } catch (Exception e) {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
             Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong, please try again later.");
         }
         finally {
             if (entityManager.isOpen()) {
@@ -68,7 +65,6 @@ public class UserRepositoryJPA implements EntityRepository<User, Long> {
             return query.getResultList();
         } catch (Exception e) {
             Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong, please try again later.");
             return new ArrayList<>();
         }
         finally {
@@ -91,7 +87,6 @@ public class UserRepositoryJPA implements EntityRepository<User, Long> {
                 transaction.rollback();
             }
             Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred while persisting user: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong while saving your user. Please try again later.");
         }
         finally {
             if (entityManager.isOpen()) {
@@ -102,7 +97,7 @@ public class UserRepositoryJPA implements EntityRepository<User, Long> {
     }
 
     @Override
-    public Optional<User> getByIdOptional(Long id) {
+    public Optional<User> findByIdCustom(Long id) {
         EntityManager entityManager = emf.createEntityManager();
         try {
             User user = entityManager.createQuery(
@@ -113,7 +108,6 @@ public class UserRepositoryJPA implements EntityRepository<User, Long> {
             return Optional.ofNullable(user);
         } catch (Exception e) {
             Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred while opening Hibernate session: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong. Please try again later.");
             return Optional.empty();
         }
         finally {
@@ -140,11 +134,9 @@ public class UserRepositoryJPA implements EntityRepository<User, Long> {
                     transaction.rollback();
                 }
                 Loggers.TECHNICAL_LOGGER.error("Unexpected error occurred while updating user: {}", e.getMessage());
-                Loggers.USER_LOGGER.error("Something went wrong while updating your reservation. Please try again later.");
             }
         } catch (HibernateException e) {
             Loggers.TECHNICAL_LOGGER.error("Error opening Hibernate session: {}", e.getMessage());
-            Loggers.USER_LOGGER.error("Something went wrong while connecting to the database. Please try again later.");
         }
     }
 }

@@ -5,5 +5,5 @@ import org.reservationapplication.domain.model.Reservation;
 import java.util.List;
 
 public interface ReservationRepository extends EntityRepository<Reservation, Long>{
-    List<Reservation> readPersonalReservations(Long userID);
+    List<Reservation> readPersonalReservations(Long userId);
 }

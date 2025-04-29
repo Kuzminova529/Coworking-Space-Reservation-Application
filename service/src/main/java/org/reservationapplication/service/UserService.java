@@ -43,7 +43,7 @@ public class UserService {
 
     public User getUserByID(Long id) {
         try {
-            Optional<User> optionalUser = userRepository.getUserById(id);
+            Optional<User> optionalUser = userRepository.findByIdOptional(id);
             if (optionalUser.isPresent()) {
                 return optionalUser.get();
             } else {

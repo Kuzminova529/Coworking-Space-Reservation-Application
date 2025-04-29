@@ -2,6 +2,7 @@ package org.reservationapplication.service;
 
 import org.reservationapplication.domain.builder.ReservationBuilder;
 import org.reservationapplication.domain.exeption.BusinessException;
+import org.reservationapplication.domain.exeption.CoworkingSpaceNotFoundException;
 import org.reservationapplication.domain.exeption.DatabaseException;
 import org.reservationapplication.domain.repository.ReservationRepository;
 import org.reservationapplication.logger.Loggers;
@@ -47,7 +48,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public Reservation findReservationById(Long id) {
         try {
-            Optional<Reservation> optReservation = reservationRepository.getByIdOptional(id);
+            Optional<Reservation> optReservation = reservationRepository.findByIdCustom(id);
             if (optReservation.isPresent()) {
                 return optReservation.get();
             } else {
@@ -59,12 +60,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public boolean removeReservationById(long id) {
-        try {
-            findReservationById(id);
-        } catch (BusinessException e) {
-            throw new BusinessException("Failed to remove reservation", e);
-        }
+    public boolean removeReservation(long id) {
         try {
             reservationRepository.updateStatus(id);
             return true;
@@ -76,6 +72,24 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public Reservation addReservation(Reservation reservation) {
         try {
+
+            LocalDateTime today = LocalDateTime.now();
+
+            if (reservation.getStartDateTime().isBefore(today)) {
+                Loggers.TECHNICAL_LOGGER.warn("Attempted to register a booking with a past date: {}", reservation.getStartDateTime());
+
+                throw new IllegalArgumentException("You cannot register a past date!");
+            }
+            if (!reservation.getStartDateTime().isBefore(reservation.getEndDateTime())) {
+                Loggers.TECHNICAL_LOGGER.warn("Reservation start time {} is not before end time {}", reservation.getStartDateTime(), reservation.getEndDateTime());
+
+                throw new IllegalArgumentException("The reservation start time must be before the end time!");
+            }
+
+            if (!isTimeSlotAvailable(reservation.getCoworkingSpace().getId(), reservation.getStartDateTime(), reservation.getEndDateTime())) {
+                throw new IllegalArgumentException("This reservation time is booked");
+            }
+
             reservationRepository.save(reservation);
             return reservation;
         } catch (DatabaseException e) {
@@ -84,45 +98,17 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public Reservation userAddReservation(
-            long coworkingID, String reservationName, LocalDate bookingDate,
-            LocalDateTime startDateTime, LocalDateTime endDateTime,
-            User user, CoworkingSpaceService coworkingSpaceService) {
-
+    public boolean isTimeSlotAvailable(Long coworkingSpaceId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         try {
-
-            CoworkingSpace coworkingSpace = coworkingSpaceService.getCoworkingSpaceByID(coworkingID);
-
-            LocalDate today = LocalDate.now();
-
-            if (bookingDate.isBefore(today)) {
-                Loggers.TECHNICAL_LOGGER.warn("Attempted to register a booking with a past date: {}", bookingDate);
-
-                throw new IllegalArgumentException("You cannot register a past date!");
+            for (Reservation reservation : reservationRepository.findAll()) {
+                if (Objects.equals(coworkingSpaceId, reservation.getCoworkingSpace().getId()) && ((startDateTime.isBefore(reservation.getEndDateTime()) && endDateTime.isAfter(reservation.getStartDateTime())) ||
+                        (startDateTime.equals(reservation.getStartDateTime()) || endDateTime.equals(reservation.getEndDateTime())))) {
+                    return false;
+                }
             }
-            if (!startDateTime.isBefore(endDateTime)) {
-                Loggers.TECHNICAL_LOGGER.warn("Reservation start time {} is not before end time {}", startDateTime, endDateTime);
-                Loggers.USER_LOGGER.warn("The reservation start time must be before the end time!");
-
-                throw new IllegalArgumentException("The reservation start time must be before the end time!");
-            }
-
-            if (!coworkingSpaceService.isTimeSlotAvailable(coworkingID, startDateTime, endDateTime)) {
-                throw new IllegalArgumentException("This reservation time is booked");
-            }
-
-            Reservation reservation = new ReservationBuilder()
-                    .setCoworkingSpace(coworkingSpace)
-                    .setUserId(user.getId())
-                    .setReservationName(reservationName)
-                    .setStartDateTime(startDateTime)
-                    .setEndDateTime(endDateTime)
-                    .setActive(true)
-                    .build();
-            addReservation(reservation);
-            return reservation;
-        } catch (DatabaseException e) {
-            throw new BusinessException("Failed to add reservation", e);
+            return true;
+        } catch (DatabaseException e){
+            throw new BusinessException("Failed to check if time slots are available", e);
         }
     }
 }

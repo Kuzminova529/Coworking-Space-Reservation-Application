@@ -47,7 +47,7 @@ public class ReservationBuilder {
     public Reservation build() {
         Reservation reservation = new Reservation();
         reservation.setCoworkingSpace(coworkingSpace);
-        reservation.setUserID(userId);
+        reservation.setUserId(userId);
         reservation.setReservationName(reservationName);
         reservation.setStartDateTime(startDateTime);
         reservation.setEndDateTime(endDateTime);

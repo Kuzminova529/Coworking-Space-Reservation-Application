@@ -31,7 +31,7 @@ public class ReservationRepositoryJDBC implements ReservationRepository {
             for (Reservation reservation : reservations) {
                 statement.setLong(1, reservation.getId());
                 statement.setLong(2, reservation.getCoworkingSpace().getId());
-                statement.setLong(3, reservation.getUserID());
+                statement.setLong(3, reservation.getUserId());
                 statement.setString(4, reservation.getReservationName());
                 statement.setTimestamp(5, Timestamp.valueOf(reservation.getStartDateTime()));
                 statement.setTimestamp(6, Timestamp.valueOf(reservation.getEndDateTime()));
@@ -60,7 +60,7 @@ public class ReservationRepositoryJDBC implements ReservationRepository {
                         reservation.setCoworkingSpace(coworkingSpace.get());
                     }
                 }
-                reservation.setUserID(resultSet.getLong("user_id"));
+                reservation.setUserId(resultSet.getLong("user_id"));
                 reservation.setReservationName(resultSet.getString("reservation_name"));
                 reservation.setStartDateTime(resultSet.getTimestamp("start_datetime").toLocalDateTime());
                 reservation.setEndDateTime(resultSet.getTimestamp("end_datetime").toLocalDateTime());
@@ -115,7 +115,7 @@ public class ReservationRepositoryJDBC implements ReservationRepository {
                         reservation.setCoworkingSpace(coworkingSpace.get());
                     }
                 }
-                reservation.setUserID(resultSet.getLong("user_id"));
+                reservation.setUserId(resultSet.getLong("user_id"));
                 reservation.setReservationName(resultSet.getString("reservation_name"));
                 reservation.setStartDateTime(resultSet.getTimestamp("start_datetime").toLocalDateTime());
                 reservation.setEndDateTime(resultSet.getTimestamp("end_datetime").toLocalDateTime());
@@ -134,7 +134,7 @@ public class ReservationRepositoryJDBC implements ReservationRepository {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setLong(1, reservation.getCoworkingSpace().getId());
-            statement.setLong(2, reservation.getUserID());
+            statement.setLong(2, reservation.getUserId());
             statement.setString(3, reservation.getReservationName());
             statement.setTimestamp(4, Timestamp.valueOf(reservation.getStartDateTime()));
             statement.setTimestamp(5, Timestamp.valueOf(reservation.getEndDateTime()));
@@ -147,7 +147,7 @@ public class ReservationRepositoryJDBC implements ReservationRepository {
         return reservation;
     }
 
-    public Optional<Reservation> getByIdOptional(Long id) {
+    public Optional<Reservation> findByIdCustom(Long id) {
         String sql = "SELECT * FROM reservations WHERE id = ? and is_active = true";
 
         try (Connection connection = dataSource.getConnection();
@@ -164,7 +164,7 @@ public class ReservationRepositoryJDBC implements ReservationRepository {
                         if (coworkingSpace.isPresent()) {
                             reservation.setCoworkingSpace(coworkingSpace.get());
                         }
-                    }                    reservation.setUserID(resultSet.getLong("user_id"));
+                    }                    reservation.setUserId(resultSet.getLong("user_id"));
                     reservation.setReservationName(resultSet.getString("reservation_name"));
                     reservation.setStartDateTime(resultSet.getTimestamp("start_datetime").toLocalDateTime());
                     reservation.setEndDateTime(resultSet.getTimestamp("end_datetime").toLocalDateTime());

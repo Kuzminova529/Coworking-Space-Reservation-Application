@@ -85,7 +85,7 @@ public class CoworkingSpaceRepositoryJDBC implements CoworkingSpaceRepository {
         return coworkingSpace;
     }
 
-    public Optional<CoworkingSpace> getByIdOptional(Long id) {
+    public Optional<CoworkingSpace> findByIdCustom(Long id) {
         String sql = "SELECT * FROM coworking_spaces WHERE id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -131,7 +131,7 @@ public class CoworkingSpaceRepositoryJDBC implements CoworkingSpaceRepository {
         }
     }
 
-    public CoworkingSpace getCoworkingSpaceWithReservations(Long coworkingSpaceId) {
+    public Optional<CoworkingSpace> getCoworkingSpaceWithReservations(Long coworkingSpaceId) {
         String sql = "SELECT c.id, c.type, c.price, c.active, r.id AS reservation_id, r.start_time, r.end_time " +
                 "FROM coworking_spaces c " +
                 "LEFT JOIN reservations r ON c.id = r.coworking_space_id " +
@@ -143,8 +143,8 @@ public class CoworkingSpaceRepositoryJDBC implements CoworkingSpaceRepository {
             statement.setLong(1, coworkingSpaceId);
 
             try (ResultSet resultSet = statement.executeQuery()) {
+                CoworkingSpace coworkingSpace = new CoworkingSpace();
                 if (resultSet.next()) {
-                    CoworkingSpace coworkingSpace = new CoworkingSpace();
                     coworkingSpace.setId(resultSet.getLong("id"));
                     coworkingSpace.setType(CoworkingSpaceType.valueOf(resultSet.getString("type")));
                     coworkingSpace.setPrice(resultSet.getDouble("price"));
@@ -160,10 +160,8 @@ public class CoworkingSpaceRepositoryJDBC implements CoworkingSpaceRepository {
                     } while (resultSet.next());
 
                     coworkingSpace.setReservations(reservations);
-                    return coworkingSpace;
-                } else {
-                    return null;
                 }
+                return Optional.ofNullable(coworkingSpace);
             }
 
         } catch (SQLException e) {

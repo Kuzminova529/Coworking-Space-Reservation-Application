@@ -1,6 +1,7 @@
 package org.reservationapplication.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -15,33 +16,31 @@ public class Reservation extends BaseEntity {
     private CoworkingSpace coworkingSpace;
 
     @Column(name = "user_id", nullable = false)
-    private Long userID;
+    private Long userId;
 
     @Column(name = "reservation_name", length = 255, nullable = false)
     private String reservationName;
 
     @Column(name = "start_datetime", nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime startDateTime;
 
     @Column(name = "end_datetime", nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime endDateTime;
 
     public Reservation(){}
 
-    public Long getUserID() {
-        return userID;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUserID(long customerID) {
-        this.userID = customerID;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getReservationName() {
         return reservationName;
-    }
-
-    public void setUserID(Long userID) {
-        this.userID = userID;
     }
 
     public CoworkingSpace getCoworkingSpace() {
@@ -77,7 +76,7 @@ public class Reservation extends BaseEntity {
         return "Reservation{" +
                 "id=" + super.getId() +
                 ", coworkingSpace=" + coworkingSpace +
-                ", userID=" + userID +
+                ", userId=" + userId +
                 ", reservationName='" + reservationName + '\'' +
                 ", startDateTime=" + startDateTime +
                 ", endDateTime=" + endDateTime +
