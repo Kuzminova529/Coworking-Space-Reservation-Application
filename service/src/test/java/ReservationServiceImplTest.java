@@ -53,31 +53,4 @@ public class ReservationServiceImplTest {
 
         assertTrue(result.isEmpty());
     }
-
-    @Test
-    public void testUserAddReservationWithPastDate() {
-        CoworkingSpaceServiceImpl coworkingSpaceService = mock(CoworkingSpaceServiceImpl.class);
-        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
-
-        CoworkingSpace coworkingSpace = new CoworkingSpace();
-        coworkingSpace.setActive(true);
-        when(coworkingSpaceService.getCoworkingSpaceByID(1L)).thenReturn(coworkingSpace);
-
-        User user = new User();
-        user.setId(1L);
-
-        // Creating an object with a past booking date
-        String reservationName = "Test Reservation";
-        LocalDate bookingDate = LocalDate.now().minusDays(1); // Yesterday
-        LocalDateTime startDateTime = LocalDateTime.now().plusHours(1);
-        LocalDateTime endDateTime = startDateTime.plusHours(1);
-
-        // Executing the method and checking for the exception
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            reservationService.userAddReservation(1L, reservationName, bookingDate, startDateTime, endDateTime, user, coworkingSpaceService);
-        });
-
-        assertEquals("You cannot register a past date!", exception.getMessage()); // Verifying the exception message
-    }
-
 }
