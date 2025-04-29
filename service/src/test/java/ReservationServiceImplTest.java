@@ -1,0 +1,56 @@
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import org.reservationapplication.domain.model.CoworkingSpace;
+import org.reservationapplication.domain.model.Reservation;
+import org.reservationapplication.domain.model.User;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Test;
+import org.reservationapplication.domain.repository.SpringDataJPARepos.ReservationRepositorySpring;
+import org.reservationapplication.service.CoworkingSpaceServiceImpl;
+import org.reservationapplication.service.ReservationServiceImpl;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+
+@ExtendWith(MockitoExtension.class)
+public class ReservationServiceImplTest {
+
+
+    @Mock
+    private ReservationRepositorySpring reservationRepository;
+
+    @InjectMocks
+    private ReservationServiceImpl reservationService;
+
+    @Test
+    public void testGetAllReservation_Empty() {
+        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
+
+        when(reservationRepository.findAll()).thenReturn(new ArrayList<>());
+        assertTrue(reservationService.getAllReservation().isEmpty());
+    }
+
+    @Test
+    public void testGetPersonalReservation_Empty() {
+        ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationRepository);
+
+        Reservation reservation1 = new Reservation();
+        reservation1.setId(1L);
+        reservation1.setUserId(1L);
+        reservation1.setStartDateTime(LocalDateTime.now().plusHours(1));
+        reservation1.setEndDateTime(LocalDateTime.now().plusHours(2));
+        User user = new User();
+        user.setId(99L);
+
+        when(reservationRepository.readPersonalReservations(user.getId())).thenReturn(new ArrayList<>());
+
+        List<Reservation> result = reservationService.getPersonalReservation(user.getId());
+
+        assertTrue(result.isEmpty());
+    }
+}
